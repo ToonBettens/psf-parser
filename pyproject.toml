@@ -1,0 +1,20 @@
+[project]
+name = "psf-parser"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "ToonBettens",email = "toon.bettens@outlook.com"}
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "lark (>=1.2.2,<2.0.0)"
+]
+
+[tool.poetry]
+packages = [{include = "psf_parser", from = "src"}]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
