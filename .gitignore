@@ -1,0 +1,19 @@
+
+### General ###
+*.log
+
+### Python ###
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Unit test / coverage reports
+.cache
+.pytest_cache
+
+# pyenv
+.python-version
