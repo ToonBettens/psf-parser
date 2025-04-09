@@ -1,0 +1,88 @@
+HEADER
+"PSFversion" "1.00"
+"simulator" "spectre"
+"version" "23.1.0.242.isr1"
+"date" "2:57:56 PM, Fri Nov 29, 2024"
+"design" "# Simulate DC sweeps of gate to source voltage"
+"analysis type" "dc"
+"analysis name" "vgs-005_vds"
+"analysis description" "DC Analysis `vgs-005_vds': vds = (0 -> 1.2)"
+"xVecSorted" "unsorted"
+"tolerance.relative" 1.000000000000000e-03
+"reltol" 1.000000000000000e-03
+"abstol(V)" 1.000000000000000e-06
+"abstol(I)" 1.000000000000000e-12
+"temp" 2.700000000000000e+01
+"tnom" 2.700000000000000e+01
+"tempeffects" "all"
+"gmindc" 1.000000000000000e-12
+TYPE
+"sweep" FLOAT DOUBLE PROP(
+"key" "sweep"
+)
+"V" FLOAT DOUBLE PROP(
+"units" "V"
+"key" "node"
+"tolerance" 1.000000000000000e-06
+)
+"I" FLOAT DOUBLE PROP(
+"units" "A"
+"key" "branch"
+"tolerance" 1.000000000000000e-12
+)
+"A" FLOAT DOUBLE PROP(
+"key" "inst"
+)
+SWEEP
+"vds" "sweep" PROP(
+"sweep_direction" 0
+"plot" 0
+"grid" 1
+)
+TRACE
+"M1:ids" "A"
+"D" "V"
+"S" "V"
+"G" "V"
+"B" "V"
+"M1.n1" "V"
+"Vb:p" "I"
+"Vd:p" "I"
+"Vg:p" "I"
+"Vs:p" "I"
+VALUE
+"vds" 0.000000000000000e+00
+"M1:ids" 0.000000000000000e+00
+"D" 0.000000000000000e+00
+"S" 0.000000000000000e+00
+"G" 1.000000000000000e+00
+"B" 0.000000000000000e+00
+"M1.n1" 9.999999950029447e-01
+"Vb:p" 6.452474943947732e-15
+"Vd:p" 4.890733589124062e-10
+"Vg:p" -9.781531702997562e-10
+"Vs:p" 9.472695971340464e-26
+"vds" 1.000000000000000e-02
+"M1:ids" 1.953145150544782e-06
+"D" 1.000000000000000e-02
+"S" 0.000000000000000e+00
+"G" 1.000000000000000e+00
+"B" 0.000000000000000e+00
+"M1.n1" 9.999999950460874e-01
+"Vb:p" 1.649735457881012e-14
+"Vd:p" -1.952661946973692e-06
+"Vg:p" -9.697081639791410e-10
+"Vs:p" 3.772890862838890e-22
+"vds" 2.000000000000000e-02
+"M1:ids" 3.877274353428986e-06
+"D" 2.000000000000000e-02
+"S" 0.000000000000000e+00
+"G" 1.000000000000000e+00
+"B" 0.000000000000000e+00
+"M1.n1" 9.999999951090092e-01
+"Vb:p" 2.654111687538225e-14
+"Vd:p" -3.876799576158188e-06
+"Vg:p" -9.573914842355313e-10
+"Vs:p" 2.532119944009399e-22
+"vds" 3.000000000000000e-02
+END
