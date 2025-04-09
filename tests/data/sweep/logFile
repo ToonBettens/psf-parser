@@ -1,0 +1,127 @@
+HEADER
+"PSFversion" "1.00"
+"Log Generator" "drlLog rev. 1.0"
+"Log Time Stamp" "Fri Nov 29 14:57:56 2024"
+"psfversion" "1.4.0"
+"simulator" "spectre"
+"version" "23.1.0.242.isr1"
+"date" "2:57:56 PM, Fri Nov 29, 2024"
+"design" "# Simulate DC sweeps of gate to source voltage"
+"signalNameType" "spectre"
+"simMode" "Spectre"
+"measdgt" 0
+"ingold" 2
+"sst2usecolon" 0
+TYPE
+"analysisInst" STRUCT(
+"analysisType" STRING *
+"dataFile" STRING *
+"format" STRING *
+"parent" STRING *
+"sweepVariable" ARRAY ( * ) STRING *
+"description" STRING *
+)
+VALUE
+"vgs_vds-sweep" "analysisInst" (
+"sweep"
+"vgs_vds.sweep"
+"PSF"
+""
+("vgs")
+"Sweep parent"
+) PROP(
+"sweep_tree_type" "sweepNode"
+)
+
+"vgs-000_vds-dc" "analysisInst" (
+"dc"
+"vgs-000_vds.dc"
+"PSF"
+"vgs_vds-sweep"
+("vds")
+"DC Analysis `vgs-000_vds': vds = (0 -> 1.2)"
+) PROP(
+"data_type" "scalar"
+"sweep_tree_type" "leafNode"
+"vgs" 0.00000
+)
+
+"vgs-001_vds-dc" "analysisInst" (
+"dc"
+"vgs-001_vds.dc"
+"PSF"
+"vgs_vds-sweep"
+("vds")
+"DC Analysis `vgs-001_vds': vds = (0 -> 1.2)"
+) PROP(
+"data_type" "scalar"
+"sweep_tree_type" "leafNode"
+"vgs" 0.200000
+)
+
+"vgs-002_vds-dc" "analysisInst" (
+"dc"
+"vgs-002_vds.dc"
+"PSF"
+"vgs_vds-sweep"
+("vds")
+"DC Analysis `vgs-002_vds': vds = (0 -> 1.2)"
+) PROP(
+"data_type" "scalar"
+"sweep_tree_type" "leafNode"
+"vgs" 0.400000
+)
+
+"vgs-003_vds-dc" "analysisInst" (
+"dc"
+"vgs-003_vds.dc"
+"PSF"
+"vgs_vds-sweep"
+("vds")
+"DC Analysis `vgs-003_vds': vds = (0 -> 1.2)"
+) PROP(
+"data_type" "scalar"
+"sweep_tree_type" "leafNode"
+"vgs" 0.600000
+)
+
+"vgs-004_vds-dc" "analysisInst" (
+"dc"
+"vgs-004_vds.dc"
+"PSF"
+"vgs_vds-sweep"
+("vds")
+"DC Analysis `vgs-004_vds': vds = (0 -> 1.2)"
+) PROP(
+"data_type" "scalar"
+"sweep_tree_type" "leafNode"
+"vgs" 0.800000
+)
+
+"vgs-005_vds-dc" "analysisInst" (
+"dc"
+"vgs-005_vds.dc"
+"PSF"
+"vgs_vds-sweep"
+("vds")
+"DC Analysis `vgs-005_vds': vds = (0 -> 1.2)"
+) PROP(
+"data_type" "scalar"
+"sweep_tree_type" "leafNode"
+"vgs" 1.00000
+)
+
+"vgs-006_vds-dc" "analysisInst" (
+"dc"
+"vgs-006_vds.dc"
+"PSF"
+"vgs_vds-sweep"
+("vds")
+"DC Analysis `vgs-006_vds': vds = (0 -> 1.2)"
+) PROP(
+"data_type" "scalar"
+"sweep_tree_type" "leafNode"
+"vgs" 1.20000
+)
+
+END

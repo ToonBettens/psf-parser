@@ -1,0 +1,20 @@
+TYPE
+"simple_type_1" STRING
+"simple_type_2" FLOAT DOUBLE
+
+"array_type" ARRAY ( * ) STRING
+
+"prop_1" FLOAT DOUBLE PROP(
+  "key" "sweep"
+)
+
+"prop_2" FLOAT DOUBLE PROP(
+"units" ""
+"key" "node"
+"tolerance" 1.000000000000000e-06
+)
+
+"struct_type" STRUCT(
+  "struct_field_1" FLOAT DOUBLE
+  "struct_field_2" STRING
+)

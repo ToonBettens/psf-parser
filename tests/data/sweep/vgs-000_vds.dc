@@ -1,0 +1,206 @@
+HEADER
+"PSFversion" "1.00"
+"simulator" "spectre"
+"version" "23.1.0.242.isr1"
+"date" "2:57:56 PM, Fri Nov 29, 2024"
+"design" "# Simulate DC sweeps of gate to source voltage"
+"analysis type" "dc"
+"analysis name" "vgs-000_vds"
+"analysis description" "DC Analysis `vgs-000_vds': vds = (0 -> 1.2)"
+"xVecSorted" "unsorted"
+"tolerance.relative" 1.000000000000000e-03
+"reltol" 1.000000000000000e-03
+"abstol(V)" 1.000000000000000e-06
+"abstol(I)" 1.000000000000000e-12
+"temp" 2.700000000000000e+01
+"tnom" 2.700000000000000e+01
+"tempeffects" "all"
+"gmindc" 1.000000000000000e-12
+TYPE
+"sweep" FLOAT DOUBLE PROP(
+"key" "sweep"
+)
+"LogicV" FLOAT DOUBLE PROP(
+"key" "node"
+)
+"Real" FLOAT DOUBLE PROP(
+"units" ""
+"key" "node"
+"tolerance" 1.000000000000000e-06
+)
+"Tau" FLOAT DOUBLE PROP(
+"units" "N*m"
+"key" "node"
+"tolerance" 1.000000000000000e-06
+)
+"Alpha" FLOAT DOUBLE PROP(
+"units" "rads/s^2"
+"key" "node"
+"tolerance" 1.000000000000000e-06
+)
+"Omega" FLOAT DOUBLE PROP(
+"units" "rads/s"
+"key" "node"
+"tolerance" 1.000000000000000e-06
+)
+"Theta" FLOAT DOUBLE PROP(
+"units" "rads"
+"key" "node"
+"tolerance" 1.000000000000000e-06
+)
+"F" FLOAT DOUBLE PROP(
+"units" "N"
+"key" "node"
+"tolerance" 1.000000000000000e-06
+)
+"Imp" FLOAT DOUBLE PROP(
+"units" "m/s^3"
+"key" "node"
+"tolerance" 1.000000000000000e-06
+)
+"Acc" FLOAT DOUBLE PROP(
+"units" "m/s^2"
+"key" "node"
+"tolerance" 1.000000000000000e-06
+)
+"Vel" FLOAT DOUBLE PROP(
+"units" "m/s"
+"key" "node"
+"tolerance" 1.000000000000000e-06
+)
+"Pos" FLOAT DOUBLE PROP(
+"units" "m"
+"key" "node"
+"tolerance" 1.000000000000000e-06
+)
+"Phi" FLOAT DOUBLE PROP(
+"units" "Wb"
+"key" "node"
+"tolerance" 1.000000000000000e-09
+)
+"V" FLOAT DOUBLE PROP(
+"units" "V"
+"key" "node"
+"tolerance" 1.000000000000000e-06
+)
+"I" FLOAT DOUBLE PROP(
+"units" "A"
+"key" "branch"
+"tolerance" 1.000000000000000e-12
+)
+"MMF" FLOAT DOUBLE PROP(
+"units" "A*turn"
+"key" "node"
+"tolerance" 1.000000000000000e-12
+)
+"Wb" FLOAT DOUBLE PROP(
+"units" "Wb"
+"key" "node"
+"tolerance" 1.000000000000000e-09
+)
+"Temp" FLOAT DOUBLE PROP(
+"units" "C"
+"key" "node"
+"tolerance" 1.000000000000000e-04
+)
+"Pwr" FLOAT DOUBLE PROP(
+"units" "W"
+"key" "node"
+"tolerance" 1.000000000000000e-09
+)
+"U" FLOAT DOUBLE PROP(
+"units" ""
+"key" "node"
+"tolerance" 1.000000000000000e-06
+)
+"V/Sec" FLOAT DOUBLE PROP(
+"units" "V/s"
+"key" "node"
+"tolerance" 9.999999999999999e-05
+)
+"I/Sec" FLOAT DOUBLE PROP(
+"units" "A/s"
+"key" "node"
+"tolerance" 1.000000000000000e-06
+)
+"1/Sec" FLOAT DOUBLE PROP(
+"units" "1/s"
+"key" "node"
+"tolerance" 9.999999999999999e-05
+)
+"HOD" FLOAT DOUBLE PROP(
+"units" ""
+"key" "node"
+"tolerance" 1.000000000000000e-02
+)
+"Q" FLOAT DOUBLE PROP(
+"units" "coul"
+"key" "node"
+"tolerance" 1.000000000000000e-14
+)
+"A" FLOAT DOUBLE PROP(
+"key" "inst"
+)
+SWEEP
+"vds" "sweep" PROP(
+"sweep_direction" 0
+"plot" 0
+"grid" 1
+)
+TRACE
+"M1:ids" "A"
+"D" "V"
+"S" "V"
+"G" "V"
+"B" "V"
+"M1.n1" "V"
+"Vb:p" "I"
+"Vd:p" "I"
+"Vg:p" "I"
+"Vs:p" "I"
+VALUE
+"vds" 0.000000000000000e+00
+"M1:ids" 0.000000000000000e+00
+"D" 0.000000000000000e+00
+"S" 0.000000000000000e+00
+"G" 0.000000000000000e+00
+"B" 0.000000000000000e+00
+"M1.n1" 0.000000000000000e+00
+"Vb:p" 0.000000000000000e+00
+"Vd:p" 0.000000000000000e+00
+"Vg:p" 0.000000000000000e+00
+"Vs:p" 0.000000000000000e+00
+"vds" 1.000000000000000e-02
+"M1:ids" 1.407924099403585e-12
+"D" 1.000000000000000e-02
+"S" 0.000000000000000e+00
+"G" 0.000000000000000e+00
+"B" 0.000000000000000e+00
+"M1.n1" 1.776777956220022e-15
+"Vb:p" 1.000071866183289e-14
+"Vd:p" -1.428272615099670e-12
+"Vg:p" 3.477970373857622e-16
+"Vs:p" -2.524354896707238e-29
+"vds" 2.000000000000000e-02
+"M1:ids" 2.472879773698093e-12
+"D" 2.000000000000000e-02
+"S" 0.000000000000000e+00
+"G" 0.000000000000000e+00
+"B" 0.000000000000000e+00
+"M1.n1" 4.967968390211461e-15
+"Vb:p" 2.000120687684174e-14
+"Vd:p" -2.513853440117102e-12
+"Vg:p" 9.724595478534135e-16
+"Vs:p" -2.271919407036514e-28
+"vds" 3.000000000000000e-02
+"M1:ids" 3.223246214676634e-12
+"D" 3.000000000000000e-02
+"S" 0.000000000000000e+00
+"G" 0.000000000000000e+00
+"B" 0.000000000000000e+00
+"M1.n1" 9.675621395166462e-15
+"Vb:p" 3.000153854033536e-14
+"Vd:p" -3.285141716630615e-12
+"Vg:p" 1.893963420879112e-15
+"Vs:p" -2.524354896707236e-28
+"vds" 4.000000000000000e-02
