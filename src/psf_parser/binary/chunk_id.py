@@ -1,5 +1,4 @@
 from collections.abc import Iterable
-from psf_parser.exceptions import InvalidFileError
 
 SECTION_HEADER = 0
 SECTION_TYPE = 1
@@ -23,8 +22,8 @@ property = {PROP_STRING, PROP_INT, PROP_FLOAT}
 def validate(identifier: int, expected: int | Iterable):
     if isinstance(expected, int):
         if identifier != expected:
-            raise InvalidFileError(f'Invalid identifier: {identifier}. Expected identifier: {expected}')
+            raise SyntaxError(f'Invalid identifier: {identifier}. Expected identifier: {expected}')
     elif isinstance(expected, Iterable):
         if identifier not in expected:
-            raise InvalidFileError(f'Invalid identifier: {identifier}. Expected identifier: {expected}')
+            raise SyntaxError(f'Invalid identifier: {identifier}. Expected identifier: {expected}')
     return identifier

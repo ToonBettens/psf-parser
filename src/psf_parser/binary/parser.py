@@ -3,7 +3,6 @@ import time
 
 from psf_parser.parser import PsfParser
 from psf_parser.registry import Datatype, TypeDeclaration, SweepDeclaration, TraceDeclaration, ValueDeclaration
-from psf_parser.exceptions import InvalidFileError
 from psf_parser.binary.reader import BinaryReader
 import psf_parser.binary.chunk_id as cid
 
@@ -46,7 +45,7 @@ class PsfBinParser(PsfParser):
         self.reader.goto(-12, os.SEEK_END)
         magic_number = self.reader.read_bytes(8).decode()
         if magic_number != 'Clarissa':
-            raise InvalidFileError("Footer magic number incorrect")
+            raise SyntaxError("Footer magic number incorrect")
 
 
     def _parse_toc(self):
