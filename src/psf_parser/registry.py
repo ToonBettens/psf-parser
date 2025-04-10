@@ -106,6 +106,9 @@ class Registry:
     def get_by_name(self, name: str) -> Optional[Declaration]:
         return self._members_by_name.get(name)
 
+    def get_by_group(self, cls) -> list[Declaration]:
+        return [decl for decl in self.get_all() if isinstance(decl, cls)]
+
     def generate_unique_id(self) -> int:
         if not self._members_by_id:
             return 1

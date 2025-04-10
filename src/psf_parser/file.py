@@ -6,10 +6,10 @@ from psf_parser.registry import NonTypeDeclaration, SweepDeclaration, TraceDecla
 
 
 class Signal:
-    def __init__(self, name: str, data: Any, type: str = "", unit: str = ""):
+    def __init__(self, name: str, data: Any, quantity: str = '', unit: str = ''):
         self.name = name
         self.data = data
-        self.type = type
+        self.quantity = quantity
         self.unit = unit
 
     @classmethod
@@ -17,12 +17,12 @@ class Signal:
         return cls(
             name=decl.name,
             data=decl.data,
-            type=decl.get_type().name,
-            unit=decl.props.get("unit", ""),
+            quantity=decl.get_type().name,
+            unit=decl.get_type().props.get('unit', ''),
             )
 
     def __repr__(self):
-        return f"<Signal {self.name!r} [{self.unit}] len={len(self.data)}>"
+        return f"<Signal(name='{self.name}', len={len(self.data)})>"
 
 
 class PsfFile:

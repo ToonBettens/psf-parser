@@ -115,7 +115,7 @@ class PsfAsciiParser(PsfParser):
         self.tokenizer.goto(start)
         self.tokenizer.next().expect('KW_VALUE')
 
-        if 'SWEEP' in self.toc.keys() and 'TRACE' in self.toc.keys():
+        if 'SWEEP' in self.toc.keys():
             while self.tokenizer.position < stop:
                 name_token = self.tokenizer.next().expect('STRING')
                 decl = self.registry.get_by_name(name_token.value)

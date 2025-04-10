@@ -3,7 +3,7 @@ from psf_parser.parser import PsfParser
 from psf_parser.file import PsfFile
 
 tests_dir = Path.cwd() / "tests"
-path = (tests_dir / "data/sweep/vgs-004_vds.dc")
+path = (tests_dir / "data/sweep/vgs_vds.sweep")
 
 # parser = PsfParser(path)
 # parser.parse()

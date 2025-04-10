@@ -47,6 +47,7 @@ class PsfParser(ABC):
     def _validate_toc(self):
         valid_sequences = [
             ['HEADER', 'TYPE', 'SWEEP', 'TRACE', 'VALUE', 'END'],
+            ['HEADER', 'TYPE', 'SWEEP', 'VALUE', 'END'],
             ['HEADER', 'TYPE', 'VALUE', 'END'],
         ]
         section_order = sorted(self.toc.items(), key=lambda item: item[1])

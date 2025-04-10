@@ -188,7 +188,7 @@ class PsfBinParser(PsfParser):
         cid.validate(self.reader.read_int(), cid.CONTAINER)
         endpos = self.reader.read_int() - 4
 
-        if 'SWEEP' in self.toc.keys() and 'TRACE' in self.toc.keys():
+        if 'SWEEP' in self.toc.keys():
             while self.reader.pos < endpos:
                 cid.validate(self.reader.read_int(), cid.DECLARATION)
                 decl = self.registry.get_by_id(self.reader.read_int())
