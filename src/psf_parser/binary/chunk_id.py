@@ -1,29 +1,47 @@
+from __future__ import annotations
 from collections.abc import Iterable
+from enum import Enum
 
-SECTION_HEADER = 0
-SECTION_TYPE = 1
-SECTION_SWEEP = 2
-SECTION_TRACE = 3
-SECTION_VALUE = 4
+class ChunkId(Enum):
+    SECTION_HEADER = 0
+    SECTION_TYPE = 1
+    SECTION_SWEEP = 2
+    SECTION_TRACE = 3
+    SECTION_VALUE = 4
+    SECTION_END = 15
 
-DECLARATION = 16
+    DECLARATION = 16
+    GROUP_DECLARATION = 17
+    STRUCT_END = 18
 
-CONTAINER_META = 19
-CONTAINER = 21
-CONTAINER_DATA = 22
+    CONTAINER_INDEX = 19
+    CONTAINER_PADDING = 20
+    CONTAINER = 21
+    SUBCONTAINER = 22
 
-PROP_STRING = 33
-PROP_INT = 34
-PROP_FLOAT = 35
+    PROP_STRING = 33
+    PROP_INT = 34
+    PROP_FLOAT = 35
 
-section = {SECTION_HEADER, SECTION_TYPE, SECTION_SWEEP, SECTION_TRACE, SECTION_VALUE}
-property = {PROP_STRING, PROP_INT, PROP_FLOAT}
+    @classmethod
+    def _missing_(cls, value):
+        raise SyntaxError(f'Error: No ChunkId matching {value}.')
 
-def validate(identifier: int, expected: int | Iterable):
-    if isinstance(expected, int):
-        if identifier != expected:
-            raise SyntaxError(f'Invalid identifier: {identifier}. Expected identifier: {expected}')
-    elif isinstance(expected, Iterable):
-        if identifier not in expected:
-            raise SyntaxError(f'Invalid identifier: {identifier}. Expected identifier: {expected}')
-    return identifier
+    @classmethod
+    def sections(cls):
+        return {cls.SECTION_HEADER, cls.SECTION_TYPE, cls.SECTION_SWEEP, cls.SECTION_TRACE, cls.SECTION_VALUE}
+
+    @classmethod
+    def properties(cls):
+        return {cls.PROP_STRING, cls.PROP_INT, cls.PROP_FLOAT}
+
+    def matches(self, ids: Iterable[ChunkId] | ChunkId):
+        if isinstance(ids, Iterable):
+             return self in ids
+        else:
+            return self == ids
+
+    def expect(self, ids: Iterable[ChunkId] | ChunkId):
+        if not self.matches(ids):
+            raise SyntaxError(f'Error: Got {self} but expected {ids}')
+        return self

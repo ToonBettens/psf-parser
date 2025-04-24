@@ -1,7 +1,7 @@
 [project]
 name = "psf-parser"
-version = "0.1.1"
-description = "Pure Python parser for Cadence PSF"
+version = "0.2.0"
+description = "A pure-python parser for Cadence's PSF format."
 authors = [
     {name = "ToonBettens",email = "toon.bettens@outlook.com"}
 ]
@@ -10,6 +10,9 @@ requires-python = ">=3.10"
 
 [tool.poetry]
 packages = [{include = "psf_parser", from = "src"}]
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.1.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

@@ -27,7 +27,7 @@ Here’s an example of how to use the `PsfFile` classes to access PSF file conte
 ```python
 from psf_parser import PsfFile
 
-file = PsfParser("path/to/psf")
+file = PsfFile("path/to/psf")
 print(file.sweeps)
 print(file.traces)
 print(file.values)

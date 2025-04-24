@@ -1,62 +1,41 @@
 from __future__ import annotations
+from typing import Optional, Literal
+from pathlib import Path
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from psf_parser.registry import Registry
 
+PsfFormat = Literal['ascii', 'binary']
+
 class PsfParser(ABC):
 
-    def __new__(cls, path: str, fmt: Optional[str] = None):
+    def __new__(cls, path: str | Path, format: Optional[PsfFormat] = None):
         if cls is PsfParser:  # Only intercept direct calls to PsfParser
-            if not fmt:
-                fmt = PsfParser.detect_format(path)
-            if fmt == 'ascii':
+            if format is None:
+                format = PsfParser.detect_format(path)
+            if format == 'ascii':
                 from psf_parser.ascii.parser import PsfAsciiParser
                 return super().__new__(PsfAsciiParser)
-            elif fmt == 'binary':
+            elif format == 'binary':
                 from psf_parser.binary.parser import PsfBinParser
                 return super().__new__(PsfBinParser)
             else:
-                raise ValueError(f'Unsupported PSF format: {fmt}')
+                raise ValueError(f'Error: Unsupported format - {format}')
         return super().__new__(cls)
 
-
-    def __init__(self, path: str):
+    def __init__(self, path: str | Path):
         self.path = path
-        self.meta = {}
-        self.timing = {}
-        self.toc = {}
+        self.header = {}
         self.registry = Registry()
-
 
     @abstractmethod
     def parse(self) -> PsfParser:
         pass
 
-
     @staticmethod
-    def detect_format(path: str) -> str:
-        """ Very naive format detection """
+    def detect_format(path: str | Path) -> PsfFormat:
         with open(path, 'rb') as f:
-            if f.read(6) == b'HEADER':
+            if f.read(6) == b'HEADER':  # Very naive format detection
                 return 'ascii'
             else:
                 return 'binary'
-
-
-    def _validate_toc(self):
-        valid_sequences = [
-            ['HEADER', 'TYPE', 'SWEEP', 'TRACE', 'VALUE', 'END'],
-            ['HEADER', 'TYPE', 'SWEEP', 'VALUE', 'END'],
-            ['HEADER', 'TYPE', 'VALUE', 'END'],
-        ]
-        section_order = sorted(self.toc.items(), key=lambda item: item[1])
-        seen = [key for key, _ in section_order]
-        if seen not in valid_sequences:
-            raise SyntaxError(f'Invalid section order or combination {seen}.')
-
-
-    def print_timing_report(self):
-        print('\nTiming Report:')
-        for section, duration in self.timing.items():
-            print(f'  {section:>10}: {duration:.6f} seconds')

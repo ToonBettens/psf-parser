@@ -1,59 +1,68 @@
-import os
 import io
 import struct
 from typing import BinaryIO
 
 
 class BinaryReader:
-    '''A buffered binary file reader providing abstractions for simple read operations.'''
 
     def __init__(self, file: BinaryIO):
-        self.file = io.BufferedReader(file)
+        self.buffered = io.BufferedReader(file)
+        self._seekable = file.seekable()
+        self._pos = 0  # Manual position tracking for non-seekable streams
 
+    def is_seekable(self) -> bool:
+        return self._seekable
+
+    def tell(self) -> int:
+        if self.is_seekable():
+            return self.buffered.tell()
+        return self._pos
+
+    def seek(self, offset: int, whence: int = 0):
+        self.buffered.seek(offset, whence)
+        self._pos = self.buffered.tell()
+
+    # === Core Read ===
     def read_bytes(self, n: int) -> bytes:
-        '''Read n bytes from the buffer.'''
-        return self.file.read(n)
+        data = self.buffered.read(n)
+        if len(data) != n:
+            raise EOFError(f'Expected {n} bytes, got {len(data)}.')
+        self._pos += len(data)
+        return data
 
-    def read_int(self, n: int = 4) -> int:
-        '''Read a n-byte integer.'''
-        return struct.unpack('!i', self.read_bytes(n))[0]
+    def _read_struct(self, fmt: str):
+        size = struct.calcsize(fmt)
+        return struct.unpack(fmt, self.read_bytes(size))
 
-    def read_float(self, n: int = 8) -> float:
-        '''Read an n-byte float.'''
-        return struct.unpack('!d', self.read_bytes(n))[0]
+    def read_uint8(self): return self._read_struct('!B')[0]
+    def read_uint16(self): return self._read_struct('!H')[0]
+    def read_uint32(self): return self._read_struct('!I')[0]
+    def read_float64(self): return self._read_struct('!d')[0]
 
-    def read_string(self, encoding: str = 'utf-8') -> str:
-        '''Read a length-prefixed string (4-byte aligned)'''
-        length = self.read_int()
+    def read_string(self, encoding='utf-8') -> str:
+        length = self.read_uint32()
         data = self.read_bytes(length)
-        self.goto(offset=(-length)%4, whence=os.SEEK_CUR)  # pad align to 4
+        padding = (4 - (length % 4)) % 4
+        if padding:
+            self.read_bytes(padding)
         return data.decode(encoding)
 
-    @property
-    def filesize(self) -> int:
-        '''Returns the total number of bytes in the IO object.'''
-        try:
-            # Attempt to query file metadata
-            return os.stat(self.file.name).st_size
-        except (OSError, AttributeError):
-            # Fallback: Use seek operations to determine total size
-            current_pos = self.file.tell()
-            self.file.seek(0, os.SEEK_END)
-            size = self.file.tell()
-            self.file.seek(current_pos, os.SEEK_SET)
-            return size
+    # === Peek Support ===
+    def peek_bytes(self, n: int) -> bytes:
+        data = self.buffered.peek(n)[:n]
+        if len(data) < n:
+            raise EOFError(f'Could only peek {len(data)} bytes (expected {n})')
+        return data
 
-    @property
-    def pos(self) -> int:
-        '''Return the current position in the file.'''
-        return self.file.tell()
+    def peek_uint32(self) -> int:
+        data = self.peek_bytes(4)
+        return struct.unpack('!I', data)[0]
 
-    def goto(self, offset: int, whence: int = os.SEEK_SET):
-        '''Go to a specific position in the file.'''
-        self.file.seek(offset, whence)
+    def skip(self, n: int):
+        if self.is_seekable():
+            self.seek(n, 1)
+        else:
+            _ = self.read_bytes(n)
 
     def close(self):
-        '''Close the underlying file. After this, file-operations result in errors.'''
-        self.file.close()
-
-
+        self.buffered.close()

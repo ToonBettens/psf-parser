@@ -1,138 +1,59 @@
-from __future__ import annotations
-from typing import Optional, Union
-from dataclasses import dataclass, field
-from enum import Enum
-
-dataclass_kw = dataclass(kw_only=True)
-
-class Datatype(Enum):
-    NONE = (0, None)
-    STRING = (2, 'KW_STRING')
-    ARRAY = (3, 'KW_ARRAY')
-    INT = (5, 'KW_INT')
-    FLOAT = (11, 'KW_FLOAT')
-    COMPLEX = (12, 'KW_COMPLEX')
-    STRUCT = (16, 'KW_STRUCT')
-
-    def __init__(self, chunk_id, keyword):
-        self._chunk_id = chunk_id
-        self._keyword = keyword
-
-    @property
-    def chunk_id(self):
-        return self._chunk_id
-
-    @property
-    def keyword(self):
-        return self._keyword
-
-    @classmethod
-    def from_chunk_id(cls, chunk_id: int) -> 'Datatype':
-        for member in cls:
-            if member.chunk_id == chunk_id:
-                return member
-        raise ValueError(f"No Datatype with chunk_id {chunk_id}")
-
-    @classmethod
-    def from_keyword(cls, keyword: str) -> 'Datatype':
-        for member in cls:
-            if member.keyword == keyword:
-                return member
-        raise ValueError(f"No Datatype with keyword {keyword!r}")
-
-
-@dataclass_kw
-class Declaration:
-    id: int
-    name: str
-    props: dict[str, str | int | float] = field(default_factory=dict)
-    _registry: Optional[Registry] = None # set after adding to registry (back-reference)
-
-@dataclass_kw
-class TypeDeclaration(Declaration):
-    datatype: Datatype
-
-@dataclass_kw
-class ArrayTypeDeclaration(TypeDeclaration):
-    arraytype: Datatype
-
-@dataclass_kw
-class StructTypeDeclaration(TypeDeclaration):
-    members: list = field(default_factory=list)
-
-@dataclass_kw
-class NonTypeDeclaration(Declaration):
-    type_id: int
-
-    def get_type(self) -> Optional[TypeDeclaration]:
-        if self._registry:
-            return self._registry.get_by_id(self.type_id)
-        return None
-
-@dataclass_kw
-class SweepDeclaration(NonTypeDeclaration):
-    data: list = field(default_factory=list)
-
-@dataclass_kw
-class TraceDeclaration(NonTypeDeclaration):
-    data: list = field(default_factory=list)
-
-@dataclass_kw
-class ValueDeclaration(NonTypeDeclaration):
-    data: str | int | float | list | dict = None
+from psf_parser.declaration import Section, Declaration, DeclarationId, GroupDeclaration
 
 
 class Registry:
 
     def __init__(self):
-        self._members_by_id: dict[int, Declaration] = {}
-        self._members_by_name: dict[str, Declaration] = {}
+        self.declarations: dict[DeclarationId, Declaration] = {}
+        self._name_map: dict[tuple[Section, tuple[str, ...], str], Declaration] = {}
+        self._next_id: int = 1
 
-    def add(self, member: Declaration):
-        if member.id in self._members_by_id:
-            raise ValueError(f"Duplicate id: {member.id}")
-        if member.name in self._members_by_name:
-            raise ValueError(f"Duplicate name: {member.name}")
-        member._registry = self
-        self._members_by_id[member.id] = member
-        self._members_by_name[member.name] = member
+    def generate_id(self) -> int:
+        decl_id = self._next_id
+        self._next_id += 1
+        return decl_id
 
-    def get_all(self):
-        return list(self._members_by_id.values())
+    def add(self, decl: Declaration, scope: tuple[str, ...] = ()):
+        name_map_key = (decl.section, scope, decl.name)
 
-    def get_by_id(self, id: int) -> Optional[Declaration]:
-        return self._members_by_id.get(id)
+        if decl.id in self.declarations:
+            raise ValueError(f'Error: Duplicate id: {decl.id}')
+        if name_map_key in self._name_map:
+            raise ValueError(f'Error: Duplicate scoped name: {decl.section.name}::{".".join(scope + (decl.name,))}')
 
-    def get_by_name(self, name: str) -> Optional[Declaration]:
-        return self._members_by_name.get(name)
+        self.declarations[decl.id] = decl
+        self._name_map[name_map_key] = decl
 
-    def get_by_group(self, cls) -> list[Declaration]:
-        return [decl for decl in self.get_all() if isinstance(decl, cls)]
+    def get_by_id(self, decl_id: DeclarationId) -> Declaration | None:
+        return self.declarations.get(decl_id)
 
-    def generate_unique_id(self) -> int:
-        if not self._members_by_id:
-            return 1
-        return max(self._members_by_id.keys()) + 1
+    def get_by_name(self, name: str, section: Section, scope: tuple[str, ...] = ()) -> Declaration | None:
+        return self._name_map.get((section, scope, name))
 
-    def __len__(self):
-        return len(self._members_by_id)
+    def get_by_flat_name(self, name: str) -> list[Declaration]:
+        return [decl for scoped, decl in self._name_map.items() if scoped[-1] == name]
 
-    def __iter__(self):
-        return iter(self._members_by_id.values())
+    @property
+    def types(self):
+        return [decl for decl in self.declarations.values() if decl.section is Section.TYPE]
 
-    def __getitem__(self, key: Union[int, str]):
-        if isinstance(key, int):
-            return self._members_by_id[key]
-        elif isinstance(key, str):
-            return self._members_by_name[key]
-        raise KeyError(f"Invalid key type: {key!r}")
+    @property
+    def sweeps(self):
+        return [
+            decl for decl in self.declarations.values()
+            if decl.section is Section.SWEEP and not isinstance (decl, GroupDeclaration)
+        ]
 
-    def __contains__(self, key: Union[int, str]):
-        if isinstance(key, int):
-            return key in self._members_by_id
-        elif isinstance(key, str):
-            return key in self._members_by_name
-        raise KeyError(f"Invalid key type: {key!r}")
+    @property
+    def traces(self):
+        return [
+            decl for decl in self.declarations.values()
+            if decl.section is Section.TRACE and not isinstance (decl, GroupDeclaration)
+        ]
+
+    @property
+    def values(self):
+        return [decl for decl in self.declarations.values() if decl.section is Section.VALUE]
 
     def __repr__(self):
-        return f"<Registry: {len(self)} members>"
+        return f'<Registry: {len(self.types)} types, {len(self.sweeps)} sweeps, {len(self.traces)} traces, {len(self.values)} values>'
