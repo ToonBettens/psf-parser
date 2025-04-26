@@ -1,7 +1,7 @@
 from pathlib import Path
 from psf_parser import PsfFile
 
-data_dir = Path.cwd() / "tests/data/bin/"
+data_dir = Path.cwd() / "tests/data/binary/"
 
 file = PsfFile(data_dir / "logFile")
 assert len(file.sweeps) == 0

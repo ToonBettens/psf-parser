@@ -43,17 +43,17 @@ class PsfAsciiParser(PsfParser):
 
 
     def read_properties(self) -> dict:
-        props = {}
+        properties = {}
         if not self.tokenizer.peek().matches('KW_PROP'):
-            return props
+            return properties
         self.tokenizer.next().expect('KW_PROP')
         self.tokenizer.next().expect('LPAREN')
         while not self.tokenizer.peek().matches('RPAREN'):
             key_token = self.tokenizer.next().expect('STRING')
             value_token = self.tokenizer.next().expect({'STRING', 'INT', 'FLOAT'})
-            props[key_token.value] = value_token.value
+            properties[key_token.value] = value_token.value
         self.tokenizer.next()
-        return props
+        return properties
 
 
     def read_datatype(self) -> Datatype:
@@ -109,7 +109,7 @@ class PsfAsciiParser(PsfParser):
                     self.tokenizer.next().expect('RPAREN')
 
         self.registry.add(decl, scope=tuple(self.scope_stack))
-        decl.props = self.read_properties()
+        decl.properties = self.read_properties()
         return decl_id
 
 
@@ -135,7 +135,7 @@ class PsfAsciiParser(PsfParser):
                 decl.data = []
 
         self.registry.add(decl, scope=tuple(self.scope_stack))
-        decl.props = self.read_properties()
+        decl.properties = self.read_properties()
         return decl_id
 
 

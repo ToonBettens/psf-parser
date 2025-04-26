@@ -1,5 +1,5 @@
 from pathlib import Path
-from psf_parser import PsfAsciiParser
+from psf_parser.ascii.parser import PsfAsciiParser
 
 data_dir = Path.cwd() / "tests/data/ascii/"
 

@@ -1,7 +1,7 @@
 from pathlib import Path
-from psf_parser import PsfBinParser
+from psf_parser.binary.parser import PsfBinParser
 
-data_dir = Path.cwd() / "tests/data/bin/"
+data_dir = Path.cwd() / "tests/data/binary/"
 
 parser = PsfBinParser(data_dir / "myop.dc").parse()
 assert len(parser.registry.sweeps) == 0

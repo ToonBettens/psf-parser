@@ -78,7 +78,7 @@ class PsfBinParser(PsfParser):
             raise ValueError(f"{self.reader.tell()}, {endpos}")
 
     def read_properties(self) -> dict:
-        props = {}
+        properties = {}
         while True:
             chunk_id = ChunkId(self.reader.peek_uint32())
             if not chunk_id.matches(ChunkId.properties()):
@@ -92,8 +92,8 @@ class PsfBinParser(PsfParser):
                     value = self.reader.read_uint32()
                 case ChunkId.PROP_FLOAT:
                     value = self.reader.read_float64()
-            props[key] = value
-        return props
+            properties[key] = value
+        return properties
 
     def read_type_declaration(self) -> int:
         ChunkId(self.reader.read_uint32()).expect(ChunkId.DECLARATION)
@@ -119,7 +119,7 @@ class PsfBinParser(PsfParser):
                         member_id = self.read_type_declaration()
                         decl.members.append(member_id)
                 self.reader.skip(4)
-        decl.props = self.read_properties()
+        decl.properties = self.read_properties()
         self.registry.add(decl, scope=tuple(self.scope_stack))
         return decl_id
 
@@ -143,7 +143,7 @@ class PsfBinParser(PsfParser):
                 else:
                     decl.data = []
         self.registry.add(decl, scope=tuple(self.scope_stack))
-        decl.props = self.read_properties()
+        decl.properties = self.read_properties()
         return decl_id
 
     def read_data(self, type_decl: TypeDeclaration):

@@ -1,47 +1,63 @@
 # psf-parser
 
-A pure-Python parser for Cadence's proprietary PSF format. Supports both ASCII and binary variants. No external dependencies.
+**psf-parser** is a lightweight, dependency-free Python parser for Cadence's proprietary **PSF (Parameter Storage Format)** files.
+It supports both the ASCII (`psfascii`) and binary (`psfbin`) formats.
 
-## Features
+> **Note:**
+> While Spectre uses psfbin as the default output format for most simulations, transient simulations typically use the psfxl format, which this parser does not support. To avoid issues, set the output format explicitly to psfbin.
 
-- ✅ Parses both ASCII and binary PSF files
-- ✅ No dependencies (standard library only)
-- ✅ Provides structured access to signals, traces, sweeps, and values
+---
 
 ## Installation
 
-To install the `psf-parser` package, simply run:
+Install `psf-parser` directly via pip:
 
+```bash
+pip install psf-parser
 ```
-pip install psf_parser
-```
+
+---
 
 ## Usage
 
-The `psf-parser` package provides a straightforward API for parsing and accessing the contents of PSF files. It supports both ASCII and binary formats.
-
-### Example Usage
-
-Here’s an example of how to use the `PsfFile` classes to access PSF file content.
+The `psf-parser` package provides a simple API for parsing and accessing PSF file contents.
+It automatically detects the file format (ASCII or binary), but you can also specify it manually.
 
 ```python
 from psf_parser import PsfFile
 
-file = PsfFile("path/to/psf")
-print(file.sweeps)
-print(file.traces)
-print(file.values)
+psf = PsfFile("path/to/psf")
+print(psf.header)
+print(psf.sweeps)
+print(psf.traces)
+print(psf.values)
 ```
+
+If you prefer lower-level access to the raw registry data, you can work directly with the parser classes:
+
+```python
+from psf_parser import PsfParser
+
+parser = PsfParser("path/to/ascii/psf", format="ascii").parse()
+print(parser.header)
+print(parser.registry.types)
+```
+
+**Notes:**
+- `PsfParser` acts as a factory and dispatches to the correct format-specific parser.
+- `PsfAsciiParser` and `PsfBinParser` handle the ASCII and binary formats respectively (for internal or advanced usage).
+
+---
 
 ## License
 
-This project is licensed under the MIT License – see the [LICENSE](./LICENSE) file for details.
+This project is licensed under the [MIT License](./LICENSE).
+
+---
 
 ## Acknowledgements
 
-This project was made possible thanks to the inspiration and information provided by the following projects:
+This project was made possible by the excellent prior work of:
 
-- [`psf_utils`](https://github.com/kenkundert/psf_utils) – A well-established PSF parser built with PLY, helpful for understanding the PSF ASCII format.
-- [`libpsf`](https://github.com/henjo/libpsf) – The original reverse-engineering project for the binary PSF format, which served as the primary source for this implementation.
-
-Special thanks to the maintainers and contributors of these projects for their open source work.
+- [`psf_utils`](https://github.com/kenkundert/psf_utils) — a psfascii parser built with PLY.
+- [`libpsf`](https://github.com/henjo/libpsf) — the original reverse-engineering project for the binary PSF format.

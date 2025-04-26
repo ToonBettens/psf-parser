@@ -5,14 +5,17 @@ description = "A pure-python parser for Cadence's PSF format."
 authors = [
     {name = "ToonBettens",email = "toon.bettens@outlook.com"}
 ]
+license = { text = "MIT" }
 readme = "README.md"
 requires-python = ">=3.10"
+keywords = [ "parser", "parsing", "cadence", "spectre", "psf", "psfbin", "psfascii" ]
+
+[project.urls]
+homepage = "https://github.com/ToonBettens/psf-parser"
+repository = "https://github.com/ToonBettens/psf-parser"
 
 [tool.poetry]
 packages = [{include = "psf_parser", from = "src"}]
-
-[tool.poetry.group.dev.dependencies]
-black = "^25.1.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
