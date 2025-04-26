@@ -1,6 +1,7 @@
 
 ### General ###
 *.log
+/dist/
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
