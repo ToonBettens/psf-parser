@@ -5,11 +5,10 @@ from abc import ABC, abstractmethod
 
 from psf_parser.registry import Registry
 
-PsfFormat = Literal['ascii', 'binary']
 
 class PsfParser(ABC):
 
-    def __new__(cls, path: str | Path, format: Optional[PsfFormat] = None):
+    def __new__(cls, path: str | Path, format: Optional[Literal['ascii', 'binary']] = None):
         if cls is PsfParser:  # Only intercept direct calls to PsfParser
             if format is None:
                 format = PsfParser.detect_format(path)
@@ -33,7 +32,7 @@ class PsfParser(ABC):
         pass
 
     @staticmethod
-    def detect_format(path: str | Path) -> PsfFormat:
+    def detect_format(path: str | Path) -> Literal['ascii', 'binary']:
         with open(path, 'rb') as f:
             if f.read(6) == b'HEADER':  # Very naive format detection
                 return 'ascii'

@@ -234,9 +234,7 @@ class PsfBinParser(PsfParser):
 
                 sweep_decls = self.registry.sweeps
                 if len(sweep_decls) != 1:
-                    raise SyntaxError(
-                        "Error: Expected exactly one sweep declaration for WINDOWED value section."
-                    )
+                    raise SyntaxError("Error: Expected exactly one sweep declaration for WINDOWED value section.")
 
                 time_decl = sweep_decls[0]
                 data_decls = [time_decl] + self.registry.traces
