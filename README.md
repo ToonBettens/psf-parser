@@ -27,10 +27,7 @@ It automatically detects the file format (ASCII or binary), but you can also spe
 from psf_parser import PsfFile
 
 psf = PsfFile("path/to/psf")
-print(psf.header)
-print(psf.sweeps)
-print(psf.traces)
-print(psf.values)
+print(psf.header, psf.sweeps, psf.traces, psf.values)
 ```
 
 If you prefer lower-level access to the raw registry data, you can work directly with the parser classes:
@@ -61,3 +58,24 @@ This project was made possible by the excellent prior work of:
 
 - [`psf_utils`](https://github.com/kenkundert/psf_utils) — a psfascii parser built with PLY.
 - [`libpsf`](https://github.com/henjo/libpsf) — the original reverse-engineering project for the binary PSF format.
+
+
+## Contributing
+
+This project is still in its early stages. Since Cadence has never published a specification for the PSF format, the parser is built entirely by reverse-engineering test files and observing patterns.
+
+Currently, the parser is verified against output from:
+- Oppoint analyses
+- DC sweeps
+- AC simulations
+- Transient simulations
+- Monte Carlo
+- Nested sweeps
+- Various info analysis statements
+
+If you encounter a PSF or PSFBIN file that fails to parse or produces incorrect output, please contribute by:
+1. Adding the problematic file to the test suite.
+2. Creating a minimal test case that demonstrates the issue.
+
+This way, we can ensure continued support for more variations and edge cases over time.
+PRs, bug reports, and examples are all welcome!
