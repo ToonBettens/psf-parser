@@ -228,10 +228,6 @@ class PsfBinParser(PsfParser):
                     )
 
             case ValueSectionType.WINDOWED:
-                ChunkId(self.reader.read_uint32()).expect(ChunkId.CONTAINER_PADDING)
-                padding_size = self.reader.read_uint32()
-                self.reader.skip(padding_size)
-
                 sweep_decls = self.registry.sweeps
                 if len(sweep_decls) != 1:
                     raise SyntaxError("Error: Expected exactly one sweep declaration for WINDOWED value section.")
@@ -239,7 +235,15 @@ class PsfBinParser(PsfParser):
                 time_decl = sweep_decls[0]
                 data_decls = [time_decl] + self.registry.traces
 
-                while self.reader.tell() < endpos:
+                while True:
+                    while self.reader.tell() < endpos and ChunkId(self.reader.peek_uint32()).matches(ChunkId.CONTAINER_PADDING):
+                        self.reader.skip(4)
+                        padding_size = self.reader.read_uint32()
+                        self.reader.skip(padding_size)
+
+                    if self.reader.tell() >= endpos:
+                        break
+
                     ChunkId(self.reader.read_uint32()).expect(ChunkId.DECLARATION)
                     window_size = self.reader.read_uint16()
                     num_words = self.reader.read_uint16()
