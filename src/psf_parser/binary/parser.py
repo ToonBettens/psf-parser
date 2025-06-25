@@ -1,17 +1,9 @@
-from enum import Enum
 import contextlib
 
 from psf_parser.parser import PsfParser
 from psf_parser.declaration import (Section, Datatype, TypeDeclaration, ArrayTypeDeclaration, StructTypeDeclaration, GroupDeclaration, DataDeclaration)
 from psf_parser.binary.reader import BinaryReader
 from psf_parser.binary.chunk_id import ChunkId
-
-
-class ValueSectionType(Enum):
-    NONE = 0
-    SIMPLE = 512
-    WINDOWED = 1024
-    NON_SWEEP = 1280
 
 
 class PsfBinParser(PsfParser):
@@ -28,7 +20,8 @@ class PsfBinParser(PsfParser):
                 self.validate_signature()
                 self.reader.seek(0)
 
-            self.value_section_type = ValueSectionType(self.reader.read_uint32())
+            self.has_sweep_section = False
+            self.reader.skip(4)
 
             self.parse_header_section()
 
@@ -36,6 +29,7 @@ class PsfBinParser(PsfParser):
                 self.parse_type_section()
 
             if ChunkId(self.reader.peek_uint32()).matches(ChunkId.SECTION_SWEEP):
+                self.has_sweep_section = True
                 self.parse_sweep_section()
 
             if ChunkId(self.reader.peek_uint32()).matches(ChunkId.SECTION_TRACE):
@@ -43,6 +37,8 @@ class PsfBinParser(PsfParser):
 
             if ChunkId(self.reader.peek_uint32()).matches(ChunkId.SECTION_VALUE):
                 self.parse_value_section()
+
+            ChunkId(self.reader.read_uint32()).expect(ChunkId.SECTION_END)
 
             self.reader.close()
 
@@ -209,25 +205,9 @@ class PsfBinParser(PsfParser):
         ChunkId(self.reader.read_uint32()).expect(ChunkId.SECTION_VALUE)
         endpos = self.read_container_preamble(ChunkId.CONTAINER)
 
-        match self.value_section_type:
-            case ValueSectionType.NONE:
-                pass
-            case ValueSectionType.NON_SWEEP:
-                sub_endpos = self.read_container_preamble(ChunkId.SUBCONTAINER)
-                while self.reader.tell() < sub_endpos:
-                    self.read_data_declaration(Section.VALUE)
-                self.read_container_index(bytes_per_id=4)
-
-            case ValueSectionType.SIMPLE:
-                while self.reader.tell() < endpos:
-                    ChunkId(self.reader.read_uint32()).expect(ChunkId.DECLARATION)
-                    decl_id = self.reader.read_uint32()
-                    decl = self.registry.get_by_id(decl_id)
-                    decl.data.append(
-                        self.read_data(self.registry.get_by_id(decl.type_id))
-                    )
-
-            case ValueSectionType.WINDOWED:
+        if self.has_sweep_section:
+            windowed = "PSF window size" in self.header
+            if windowed:
                 sweep_decls = self.registry.sweeps
                 if len(sweep_decls) != 1:
                     raise SyntaxError("Error: Expected exactly one sweep declaration for WINDOWED value section.")
@@ -254,6 +234,28 @@ class PsfBinParser(PsfParser):
                         self.reader.skip((window_size - num_words) * 8)
                         if i < len(data_decls) - 1:
                             self.reader.skip(8)
+            else:
+                while self.reader.tell() < endpos:
+                    chunk_id = ChunkId(self.reader.read_uint32()).expect({ChunkId.DECLARATION, ChunkId.GROUP_DECLARATION})
+                    decl_id = self.reader.read_uint32()
+                    decl = self.registry.get_by_id(decl_id)
+                    match chunk_id:
+                        case ChunkId.DECLARATION:
+                            decl.data.append(
+                                self.read_data(self.registry.get_by_id(decl.type_id))
+                            )
+
+                        case ChunkId.GROUP_DECLARATION:
+                            data = None
+                            for member_id in decl.members:
+                                member_decl = self.registry.get_by_id(member_id)
+                                if data is None:
+                                    data = self.read_data(self.registry.get_by_id(member_decl.type_id))
+                                member_decl.data.append(data)
+        else:
+            sub_endpos = self.read_container_preamble(ChunkId.SUBCONTAINER)
+            while self.reader.tell() < sub_endpos:
+                self.read_data_declaration(Section.VALUE)
+            self.read_container_index(bytes_per_id=4)
 
         self.check_container_end(endpos)
-        ChunkId(self.reader.read_uint32()).expect(ChunkId.SECTION_END)
