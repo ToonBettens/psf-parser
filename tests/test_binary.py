@@ -66,3 +66,9 @@ def test_binary_info_oppoint(psf_test_files):
     file = psf_test_files / "binary/myinfo_Oppoint.info"
     parser = PsfBinParser(file).parse()
     expect(parser, 13, 0, 0, 3)
+
+
+def test_binary_spectre_lx_10signals(psf_test_files):
+    file = psf_test_files / "binary/spectre-lx-10signals.sweep"
+    parser = PsfBinParser(file).parse()
+    expect(parser, 15, 1, 10, 0)
