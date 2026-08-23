@@ -11,9 +11,29 @@ __pycache__/
 # C extensions
 *.so
 
-# Unit test / coverage reports
-.cache
-.pytest_cache
+# Packaging / build artifacts
+*.egg-info/
+build/
 
-# pyenv
-.python-version
+# Virtual environments
+.venv/
+venv/
+
+# Unit test / coverage reports
+.cache/
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# Tooling caches
+.ruff_cache/
+.ty_cache/
+
+# Deliberately NOT ignored (uv needs both committed):
+#   uv.lock         - reproducible dev/CI installs; does not constrain consumers
+#   .python-version - pins contributors to the 3.11 floor, catching 3.12+ syntax locally
+
+### Local scratch ###
+TODO.md
