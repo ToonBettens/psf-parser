@@ -157,6 +157,10 @@ class PsfAsciiParser(PsfParser):
                 self.tokenizer.next().expect("RPAREN")
                 return result
 
+    def read_float(self) -> float:
+        """Read one float, which may be tokenised as an INT."""
+        return float(self.tokenizer.next().expect({"FLOAT", "INT"}).value)
+
     def read_data_for_datatype(self, datatype: Datatype):
         match datatype:
             case Datatype.INT8:
@@ -166,11 +170,11 @@ class PsfAsciiParser(PsfParser):
             case Datatype.INT32:
                 return self.tokenizer.next().expect("INT").value
             case Datatype.FLOAT64:
-                return self.tokenizer.next().expect("FLOAT").value
+                return self.read_float()
             case Datatype.COMPLEX:
                 self.tokenizer.next().expect("LPAREN")
-                real = self.tokenizer.next().expect("FLOAT").value
-                imag = self.tokenizer.next().expect("FLOAT").value
+                real = self.read_float()
+                imag = self.read_float()
                 self.tokenizer.next().expect("RPAREN")
                 return complex(real, imag)
 
