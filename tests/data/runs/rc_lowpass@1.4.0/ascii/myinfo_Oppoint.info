@@ -2,16 +2,16 @@ HEADER
 "PSFversion" "1.00"
 "simulator" "spectre"
 "version" "23.1.0.242.isr1"
-"date" "4:42:23 PM, Sun Aug 23, 2026"
+"date" "5:00:23 PM, Sun Aug 23, 2026"
 "design" "// RC Low-Pass Filter"
 "analysis type" "info"
 "analysis name" "myinfo_Oppoint"
 "analysis description" "Circuit Information"
 "xVecSorted" "unknown"
-"tolerance.relative" 1.000000000000000e-03
+"tolerance.relative" 0.001
 "AnalysisName" "info"
 "AnalysisType" "myinfo_Oppoint"
-"OpPointTemp.Value" 2.700000000000000e+01
+"OpPointTemp.Value" 27
 "OpPointTemp.Units" "C"
 TYPE
 "capacitor" STRUCT(
@@ -69,23 +69,23 @@ TYPE
 VALUE
 "C1" "capacitor" (
 nan
-1.000000000000000e-06
+9.9999999999999995e-07
 ) PROP(
 "model" "capacitor"
 )
 "R1" "resistor" (
 nan
-0.000000000000000e+00
-0.000000000000000e+00
-1.000000000000000e+03
-0.000000000000000e+00
+0
+0
+1000
+0
 ) PROP(
 "model" "resistor"
 )
 "Vin" "vsource" (
-1.000000000000000e+00
-0.000000000000000e+00
-0.000000000000000e+00
+1
+0
+0
 ) PROP(
 "model" "vsource"
 )
