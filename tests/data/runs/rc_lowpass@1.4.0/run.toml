@@ -1,0 +1,4 @@
+netlist    = "rc_lowpass.scs"
+psfversion = "1.4.0"
+command    = "spectre rc_lowpass.scs -format {format} -raw {outdir}"
+formats    = ["ascii", "binary"]
