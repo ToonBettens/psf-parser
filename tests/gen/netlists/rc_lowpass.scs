@@ -13,6 +13,9 @@ Vin (in  0)   vsource dc=1 mag=1 type=pulse val0=0 val1=1 delay=1m rise=1u fall=
 R1  (in  out) resistor r=rval
 C1  (out 0)   capacitor c=cval
 
+// --- Deliberately fix the precision --- //
+psfopts options precision="%.17g"
+
 // --- info statements ---
 myinfo_Oppoint info what=oppoint where=rawfile
 myinfo_Models  info what=models  where=rawfile
@@ -42,9 +45,6 @@ statistics {
     }
 }
 
-// savefamilyplots=yes writes a separate data file per iteration
-// (mymonte-001_dc2.dc, -002, -003). Without it all three iterations
-// overwrite a single file and the per-iteration structure is lost.
 mymonte montecarlo numruns=3 seed=1 variations=process donominal=no savefamilyplots=yes {
     dc2   dc   dev=Vin param=dc start=0 stop=2
     tran1 tran stop=5m

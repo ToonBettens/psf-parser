@@ -47,9 +47,9 @@ def run_spectre(spectre, netlist, fmt, outdir):
     return outdir
 
 
-def read_psfversion(raw_dir):
-    """Read the PSF format version from the run's logFile."""
-    log_path = os.path.join(raw_dir, "logFile")
+def read_psfversion(fmt_dir):
+    """Read the PSF format version from a format directory's logFile."""
+    log_path = os.path.join(fmt_dir, "logFile")
     if not os.path.isfile(log_path):
         return "unknown"
     with open(log_path) as handle:
@@ -122,10 +122,9 @@ def main():
         if os.path.exists(run_dir):
             raise SystemExit(f"{run_dir} already exists.\nRuns are never overwritten so that versions can coexist -- remove it first, or use --outdir.")
 
-        raw_dir = os.path.join(run_dir, "raw")
-        os.makedirs(raw_dir)
+        os.makedirs(run_dir)
         for fmt in formats:
-            shutil.copytree(produced[fmt], os.path.join(raw_dir, FORMATS[fmt]))
+            shutil.copytree(produced[fmt], os.path.join(run_dir, FORMATS[fmt]))
 
         write_run_toml(
             os.path.join(run_dir, "run.toml"),
@@ -138,10 +137,10 @@ def main():
         print("")
         print(f"Wrote {run_dir}")
         for fmt in formats:
-            target = os.path.join(raw_dir, FORMATS[fmt])
+            target = os.path.join(run_dir, FORMATS[fmt])
             count = len(os.listdir(target))
             has_log = "logFile" in os.listdir(target)
-            print("  raw/{:<8} {:3d} files{}".format(FORMATS[fmt], count, "" if has_log else "  (no logFile!)"))
+            print("  {:<8} {:3d} files{}".format(FORMATS[fmt], count, "" if has_log else "  (no logFile!)"))
         print("")
         print(f"psfversion {psfversion}")
         print(f"Next: copy {run_name} into tests/data/runs/")
