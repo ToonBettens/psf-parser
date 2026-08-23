@@ -1,11 +1,11 @@
 HEADER
 "PSFversion" "1.00"
 "Log Generator" "drlLog rev. 1.0"
-"Log Time Stamp" "Sun Aug 23 16:20:53 2026"
+"Log Time Stamp" "Sun Aug 23 16:42:24 2026"
 "psfversion" "1.4.0"
 "simulator" "spectre"
 "version" "23.1.0.242.isr1"
-"date" "4:20:53 PM, Sun Aug 23, 2026"
+"date" "4:42:24 PM, Sun Aug 23, 2026"
 "design" "// RC Low-Pass Filter"
 "signalNameType" "spectre"
 "simMode" "Spectre"
@@ -22,6 +22,39 @@ TYPE
 "description" STRING *
 )
 VALUE
+"myinfo_Oppoint-info" "analysisInst" (
+"info"
+"myinfo_Oppoint.info"
+"PSF"
+""
+()
+"Circuit Information"
+) PROP(
+"data_type" "struct"
+)
+
+"myinfo_Models-info" "analysisInst" (
+"info"
+"myinfo_Models.info"
+"PSF"
+""
+()
+"Circuit Information"
+) PROP(
+"data_type" "struct"
+)
+
+"myinfo_all-info" "analysisInst" (
+"info"
+"myinfo_all.info"
+"PSF"
+""
+()
+"Circuit Information"
+) PROP(
+"data_type" "struct"
+)
+
 "myop-dc" "analysisInst" (
 "dc"
 "myop.dc"
@@ -346,78 +379,78 @@ VALUE
 ("iteration")
 "Monte Carlo parent"
 )
-"mymonte_dc2-dc" "analysisInst" (
+"mymonte-001_dc2-dc" "analysisInst" (
 "dc"
-"mymonte_dc2.dc"
+"mymonte-001_dc2.dc"
 "PSF"
 "mymonte_dc2-montecarlo"
 ("dc")
-"DC Analysis `mymonte_dc2': Vin:dc = (0 V -> 2 V)"
+"DC Analysis `mymonte-001_dc2': Vin:dc = (0 V -> 2 V)"
 ) PROP(
 "data_type" "scalar"
 "sweep_tree_type" "leafNode"
-"iteration" 3.00000
+"iteration" 1.00000
 )
 
-"mymonte_tran1-tran" "analysisInst" (
+"mymonte-001_tran1-tran" "analysisInst" (
 "tran"
-"mymonte_tran1.tran.tran"
+"mymonte-001_tran1.tran.tran"
 "PSF"
 "mymonte_tran1-montecarlo"
 ("time")
-"Transient Analysis `mymonte_tran1': time = (0 s -> 5 ms)"
+"Transient Analysis `mymonte-001_tran1': time = (0 s -> 5 ms)"
 ) PROP(
 "data_type" "swept_scalar"
 "sweep_tree_type" "leafNode"
-"iteration" 3.00000
+"iteration" 1.00000
 )
 
-"mymonte_dc2-dc" "analysisInst" (
+"mymonte-002_dc2-dc" "analysisInst" (
 "dc"
-"mymonte_dc2.dc"
+"mymonte-002_dc2.dc"
 "PSF"
 "mymonte_dc2-montecarlo"
 ("dc")
-"DC Analysis `mymonte_dc2': Vin:dc = (0 V -> 2 V)"
+"DC Analysis `mymonte-002_dc2': Vin:dc = (0 V -> 2 V)"
 ) PROP(
 "data_type" "scalar"
 "sweep_tree_type" "leafNode"
-"iteration" 3.00000
+"iteration" 2.00000
 )
 
-"mymonte_tran1-tran" "analysisInst" (
+"mymonte-002_tran1-tran" "analysisInst" (
 "tran"
-"mymonte_tran1.tran.tran"
+"mymonte-002_tran1.tran.tran"
 "PSF"
 "mymonte_tran1-montecarlo"
 ("time")
-"Transient Analysis `mymonte_tran1': time = (0 s -> 5 ms)"
+"Transient Analysis `mymonte-002_tran1': time = (0 s -> 5 ms)"
 ) PROP(
 "data_type" "swept_scalar"
 "sweep_tree_type" "leafNode"
-"iteration" 3.00000
+"iteration" 2.00000
 )
 
-"mymonte_dc2-dc" "analysisInst" (
+"mymonte-003_dc2-dc" "analysisInst" (
 "dc"
-"mymonte_dc2.dc"
+"mymonte-003_dc2.dc"
 "PSF"
 "mymonte_dc2-montecarlo"
 ("dc")
-"DC Analysis `mymonte_dc2': Vin:dc = (0 V -> 2 V)"
+"DC Analysis `mymonte-003_dc2': Vin:dc = (0 V -> 2 V)"
 ) PROP(
 "data_type" "scalar"
 "sweep_tree_type" "leafNode"
 "iteration" 3.00000
 )
 
-"mymonte_tran1-tran" "analysisInst" (
+"mymonte-003_tran1-tran" "analysisInst" (
 "tran"
-"mymonte_tran1.tran.tran"
+"mymonte-003_tran1.tran.tran"
 "PSF"
 "mymonte_tran1-montecarlo"
 ("time")
-"Transient Analysis `mymonte_tran1': time = (0 s -> 5 ms)"
+"Transient Analysis `mymonte-003_tran1': time = (0 s -> 5 ms)"
 ) PROP(
 "data_type" "swept_scalar"
 "sweep_tree_type" "leafNode"

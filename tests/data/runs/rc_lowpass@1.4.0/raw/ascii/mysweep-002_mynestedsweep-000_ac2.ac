@@ -2,7 +2,7 @@ HEADER
 "PSFversion" "1.00"
 "simulator" "spectre"
 "version" "23.1.0.242.isr1"
-"date" "4:20:52 PM, Sun Aug 23, 2026"
+"date" "4:42:23 PM, Sun Aug 23, 2026"
 "design" "// RC Low-Pass Filter"
 "analysis type" "ac"
 "analysis name" "mysweep-002_mynestedsweep-000_ac2"

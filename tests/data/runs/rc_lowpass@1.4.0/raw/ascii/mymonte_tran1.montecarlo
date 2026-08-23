@@ -2,7 +2,7 @@ HEADER
 "PSFversion" "1.00"
 "simulator" "spectre"
 "version" "23.1.0.242.isr1"
-"date" "4:20:52 PM, Sun Aug 23, 2026"
+"date" "4:42:23 PM, Sun Aug 23, 2026"
 "design" "// RC Low-Pass Filter"
 "analysis type" "montecarlo"
 "analysis name" "mymonte_tran1"
@@ -81,5 +81,7 @@ SWEEP
 "grid" 1
 )
 VALUE
+"iteration" 1.000000000000000e+00
+"iteration" 2.000000000000000e+00
 "iteration" 3.000000000000000e+00
 END
