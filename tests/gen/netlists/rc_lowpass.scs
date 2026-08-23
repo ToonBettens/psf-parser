@@ -1,0 +1,48 @@
+// RC Low-Pass Filter
+//
+// The point of this netlist is coverage of PSF *structure*, not circuit
+// interest: an oppoint, swept scalars, complex values, a windowed transient,
+// nested sweeps, Monte Carlo, and the info statements.
+
+simulator lang=spectre
+global 0
+
+parameters rval=1k cval=1u  // tau = R*C = 1ms
+
+Vin (in  0)   vsource dc=1 mag=1 type=pulse val0=0 val1=1 delay=1m rise=1u fall=1u width=50m period=100m
+R1  (in  out) resistor r=rval
+C1  (out 0)   capacitor c=cval
+
+// --- info statements ---
+myinfo_Oppoint info what=oppoint
+myinfo_Models  info what=models
+myinfo_all     info what=all
+
+// --- scalar values ---
+myop dc
+
+// --- swept scalars ---
+mydc dc dev=Vin param=dc start=0 stop=2
+myac ac start=1 stop=1M dec=10
+mytran tran stop=500m maxstep=1m
+
+// --- sweep parents and nested sweeps ---
+mysweep sweep dev=R1 param=r values=[1k 2k 3k] {
+    dc1 dc dev=Vin param=dc start=0 stop=2
+    ac1 ac start=1 stop=1M dec=10
+    mynestedsweep sweep dev=C1 param=c values=[1u 2u 3u] {
+        ac2 ac start=1 stop=1M dec=10
+    }
+}
+
+// --- Monte Carlo: iteration-swept parent with per-run children ---
+statistics {
+    process {
+        vary rval dist=gauss std=10 percent=yes
+    }
+}
+
+mymonte montecarlo numruns=3 seed=1 variations=process donominal=no {
+    dc2   dc   dev=Vin param=dc start=0 stop=2
+    tran1 tran stop=5m
+}
