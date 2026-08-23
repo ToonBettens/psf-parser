@@ -18,6 +18,9 @@ FORMATS = {
 # We can scan the spectre version from the logFile
 VERSION_RE = re.compile(r'"version"\s+"([^"]+)"')
 
+# Anything outside this set is replaced when building a directory name.
+UNSAFE_RE = re.compile(r"[^A-Za-z0-9._-]+")
+
 
 def run_spectre(spectre, netlist, fmt, outdir):
     """Run Spectre once, writing a raw directory in the requested format."""
@@ -51,10 +54,16 @@ def read_version(raw_dir):
     return match.group(1) if match else "unknown"
 
 
+def safe_name(text):
+    """Make `text` safe to use unquoted in a directory name. """
+    return UNSAFE_RE.sub("-", text.strip()).strip("-.") or "unknown"
+
+
 def short_version(version):
     """23.1.0.242.isr1 -> 23.1 — enough to distinguish runs, short enough to read."""
     parts = version.split(".")
-    return ".".join(parts[:2]) if len(parts) >= 2 else version
+    short = ".".join(parts[:2]) if len(parts) >= 2 else version
+    return safe_name(short)
 
 
 def write_run_toml(path, netlist, version, formats, command):
@@ -98,7 +107,7 @@ def main():
             "(e.g. `module load spectre`) or pass --spectre /path/to/spectre."
         )
 
-    stem = os.path.basename(args.netlist).split(".")[0]
+    stem = safe_name(os.path.basename(args.netlist).split(".")[0])
     staging = tempfile.mkdtemp(prefix="psf-generate-")
     produced = {}
 
