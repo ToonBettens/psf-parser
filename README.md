@@ -62,20 +62,10 @@ This project was made possible by the excellent prior work of:
 
 ## Contributing
 
-This project is still in its early stages. Since Cadence has never published a specification for the PSF format, the parser is built entirely by reverse-engineering test files and observing patterns.
+Cadence has never published a PSF specification, so this parser is built by
+reverse-engineering simulator output. Its coverage is bounded by the files it has been
+tested against, so if you have one that fails to parse, that is the most useful thing you
+can contribute.
 
-Currently, the parser is verified against output from:
-- Oppoint analyses
-- DC sweeps
-- AC simulations
-- Transient simulations
-- Monte Carlo
-- Nested sweeps
-- Various info analysis statements
-
-If you encounter a PSF or PSFBIN file that fails to parse or produces incorrect output, please contribute by:
-1. Adding the problematic file to the test suite.
-2. Creating a minimal test case that demonstrates the issue.
-
-This way, we can ensure continued support for more variations and edge cases over time.
-PRs, bug reports, and examples are all welcome!
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for development setup and how to report a
+problematic file. Release history lives in [Releases](https://github.com/ToonBettens/psf-parser/releases).
