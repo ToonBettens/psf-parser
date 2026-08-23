@@ -1,6 +1,8 @@
 from __future__ import annotations
+
 from collections.abc import Iterable
 from enum import Enum
+
 
 class ChunkId(Enum):
     SECTION_HEADER = 0
@@ -38,8 +40,7 @@ class ChunkId(Enum):
     def matches(self, ids: Iterable[ChunkId] | ChunkId):
         if isinstance(ids, Iterable):
              return self in ids
-        else:
-            return self == ids
+        return self == ids
 
     def expect(self, ids: Iterable[ChunkId] | ChunkId):
         if not self.matches(ids):

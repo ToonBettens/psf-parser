@@ -1,5 +1,6 @@
 from psf_parser import PsfFile, PsfParser
 
+
 def test_psf_file(psf_test_files):
     file = psf_test_files / "binary/mydc.dc"
     parser = PsfParser(file).parse()

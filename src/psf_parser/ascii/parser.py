@@ -1,9 +1,9 @@
 import contextlib
 from pathlib import Path
 
-from psf_parser.parser import PsfParser
-from psf_parser.declaration import (Section, Datatype, TypeDeclaration, ArrayTypeDeclaration, StructTypeDeclaration, GroupDeclaration, DataDeclaration)
 from psf_parser.ascii.token import Tokenizer
+from psf_parser.declaration import ArrayTypeDeclaration, DataDeclaration, Datatype, GroupDeclaration, Section, StructTypeDeclaration, TypeDeclaration
+from psf_parser.parser import PsfParser
 
 
 class PsfAsciiParser(PsfParser):
@@ -76,12 +76,11 @@ class PsfAsciiParser(PsfParser):
         entry = type_map.get(type_kw)
         if isinstance(entry, Datatype):
             return entry
-        else:
-            subtype_kw = self.tokenizer.next().expect({'KW_DOUBLE', 'KW_LONG', 'KW_BYTE'}).kind
-            try:
-                return entry[subtype_kw]
-            except KeyError:
-                raise SyntaxError(f"Unknown subtype for {type_kw}: {subtype_kw!r}")
+        subtype_kw = self.tokenizer.next().expect({'KW_DOUBLE', 'KW_LONG', 'KW_BYTE'}).kind
+        try:
+            return entry[subtype_kw]
+        except KeyError:
+            raise SyntaxError(f"Unknown subtype for {type_kw}: {subtype_kw!r}") from None
 
 
     def read_type_declaration(self, section: Section):

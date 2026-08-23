@@ -1,20 +1,16 @@
 from __future__ import annotations
+
 from abc import ABC
+from collections.abc import Mapping, Sequence
 from enum import Enum
-from collections.abc import Sequence, Mapping
-from typing import Optional, Union
 
 DeclarationId = int
 """Unique identifiers for a declaration."""
 
-DataUnit = Union[int, float, complex, str]
+DataUnit = int | float | complex | str
 """Smallest unit of data."""
 
-Data = Union[
-    DataUnit,
-    Sequence[DataUnit],
-    Mapping[str, DataUnit],
-]
+Data = DataUnit | Sequence[DataUnit] | Mapping[str, DataUnit]
 """Data belonging to a DataDeclaration."""
 
 Properties = Mapping[str, DataUnit]
@@ -42,7 +38,7 @@ class Datatype(Enum):
     STRUCT = 16
 
 
-class Declaration(ABC):
+class Declaration(ABC):  # noqa: B024  (TODO: ABC is decorative; revisit with identity rework)
     """Abstract base class defining common declaration properties.
 
     Attributes:
@@ -57,7 +53,7 @@ class Declaration(ABC):
         id: DeclarationId,
         name: str,
         section: Section,
-        properties: Optional[Properties] = None
+        properties: Properties | None = None
     ):
         self.id = id
         self.name = name
@@ -84,7 +80,7 @@ class GroupDeclaration(Declaration):
         id: DeclarationId,
         name: str,
         section: Section,
-        members: Optional[Sequence[DeclarationId]] = None,
+        members: Sequence[DeclarationId] | None = None,
         properties: Properties = None
     ):
         super().__init__(id, name, section, properties=properties)
@@ -108,7 +104,7 @@ class TypeDeclaration(Declaration):
         name: str,
         section: Section,
         datatype: Datatype,
-        properties: Optional[Properties] = None
+        properties: Properties | None = None
     ):
         super().__init__(id, name, section, properties=properties)
         self.datatype = datatype
@@ -133,7 +129,7 @@ class ArrayTypeDeclaration(TypeDeclaration):
         section: Section,
         datatype: Datatype,
         arraytype: Datatype,
-        properties: Optional[Properties] = None
+        properties: Properties | None = None
     ):
         super().__init__(id, name, section, datatype, properties=properties)
         self.arraytype = arraytype
@@ -157,8 +153,8 @@ class StructTypeDeclaration(TypeDeclaration):
         name: str,
         section: Section,
         datatype: Datatype,
-        members: Optional[Sequence[DeclarationId]] = None,
-        properties: Optional[Properties] = None
+        members: Sequence[DeclarationId] | None = None,
+        properties: Properties | None = None
     ):
         super().__init__(id, name, section, datatype, properties=properties)
         self.members = members if members is not None else []
@@ -182,8 +178,8 @@ class DataDeclaration(Declaration):
         name: str,
         section: Section,
         type_id: DeclarationId,
-        data: Optional[Data] = None,
-        properties: Optional[Properties] = None
+        data: Data | None = None,
+        properties: Properties | None = None
     ):
         super().__init__(id, name, section, properties=properties)
         self.type_id = type_id

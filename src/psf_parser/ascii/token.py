@@ -1,8 +1,8 @@
 from __future__ import annotations
+
 import re
+from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
-from typing import Iterator, Optional, Union
-from collections.abc import Iterable
 
 SECTION_KEYWORDS = { 'HEADER', 'TYPE', 'SWEEP', 'TRACE', 'VALUE', 'END' }
 TYPE_KEYWORDS = { 'STRING', 'INT', 'FLOAT', 'COMPLEX', 'ARRAY', 'STRUCT' }
@@ -28,7 +28,7 @@ TOKEN_REGEX = re.compile('|'.join(f'(?P<{name}>{pattern})' for name, pattern in 
 @dataclass(frozen=True, slots=True)
 class Token:
     kind: str
-    value: Union[str, int, float]
+    value: str | int | float
     row: int
     column: int
 
@@ -86,10 +86,10 @@ class Tokenizer:
     def has_next(self, n: int = 1) -> bool:
         return self.position + n <= len(self.tokens)
 
-    def peek(self) -> Optional[Token]:
+    def peek(self) -> Token | None:
         return self.tokens[self.position] if self.position < len(self.tokens) else None
 
-    def next(self) -> Optional[Token]:
+    def next(self) -> Token | None:
         token = self.peek()
         self.position += 1
         return token

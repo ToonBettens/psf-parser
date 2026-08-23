@@ -1,7 +1,8 @@
 from __future__ import annotations
-from typing import Optional, Literal
-from pathlib import Path
+
 from abc import ABC, abstractmethod
+from pathlib import Path
+from typing import Literal
 
 from psf_parser.registry import Registry
 
@@ -24,7 +25,7 @@ class PsfParser(ABC):
         self.header: dict = {}  # Placeholder for header information
         self.registry = Registry()
 
-    def __new__(cls, path: str | Path, format: Optional[Literal['ascii', 'binary']] = None) -> PsfParser:
+    def __new__(cls, path: str | Path, format: Literal['ascii', 'binary'] | None = None) -> PsfParser:
         """
         Factory method that creates an instance of a specific parser subclass based on the file format.
 
@@ -44,11 +45,10 @@ class PsfParser(ABC):
             if format == 'ascii':
                 from psf_parser.ascii.parser import PsfAsciiParser
                 return super().__new__(PsfAsciiParser)
-            elif format == 'binary':
+            if format == 'binary':
                 from psf_parser.binary.parser import PsfBinParser
                 return super().__new__(PsfBinParser)
-            else:
-                raise ValueError(f'Error: Unsupported format - {format}')
+            raise ValueError(f'Error: Unsupported format - {format}')
         return super().__new__(cls)
 
     @abstractmethod
@@ -78,5 +78,4 @@ class PsfParser(ABC):
         with open(path, 'rb') as file:
             if file.read(6) == b'HEADER':  # Simple header-based format detection
                 return 'ascii'
-            else:
-                return 'binary'
+            return 'binary'

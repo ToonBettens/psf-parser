@@ -1,5 +1,6 @@
 from __future__ import annotations
-from psf_parser.declaration import Section, Declaration, DeclarationId, GroupDeclaration
+
+from psf_parser.declaration import Declaration, DeclarationId, GroupDeclaration, Section
 
 
 class Registry:
@@ -17,8 +18,8 @@ class Registry:
 
     def __init__(self):
         """Initialize an empty registry."""
-        self.declarations: dict[DeclarationId, Declaration] = dict()
-        self._name_map: dict[tuple[Section, tuple[str, ...], str], Declaration] = dict()
+        self.declarations: dict[DeclarationId, Declaration] = {}
+        self._name_map: dict[tuple[Section, tuple[str, ...], str], Declaration] = {}
         self._next_id: int = 1
 
     def generate_id(self) -> int:
@@ -46,7 +47,7 @@ class Registry:
         if decl.id in self.declarations:
             raise ValueError(f'Error: Duplicate id: {decl.id}')
         if name_map_key in self._name_map:
-            scoped_name = "::".join((decl.section.name,) + scope + (decl.name,))
+            scoped_name = "::".join((decl.section.name, *scope, decl.name))
             raise ValueError(f'Error: Duplicate scoped name: {scoped_name}')
 
         self.declarations[decl.id] = decl

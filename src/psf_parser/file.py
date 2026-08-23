@@ -1,5 +1,7 @@
 from pathlib import Path
+
 from psf_parser.parser import PsfParser
+
 
 class PsfFile:
     """Class representing a parsed PSF (Parameter Storage Format) file.

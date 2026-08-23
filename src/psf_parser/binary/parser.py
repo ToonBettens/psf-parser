@@ -1,10 +1,10 @@
-from enum import Enum
 import contextlib
+from enum import Enum
 
-from psf_parser.parser import PsfParser
-from psf_parser.declaration import (Section, Datatype, TypeDeclaration, ArrayTypeDeclaration, StructTypeDeclaration, GroupDeclaration, DataDeclaration)
-from psf_parser.binary.reader import BinaryReader
 from psf_parser.binary.chunk_id import ChunkId
+from psf_parser.binary.reader import BinaryReader
+from psf_parser.declaration import ArrayTypeDeclaration, DataDeclaration, Datatype, GroupDeclaration, Section, StructTypeDeclaration, TypeDeclaration
+from psf_parser.parser import PsfParser
 
 
 class ValueSectionType(Enum):
@@ -233,7 +233,7 @@ class PsfBinParser(PsfParser):
                     raise SyntaxError("Error: Expected exactly one sweep declaration for WINDOWED value section.")
 
                 time_decl = sweep_decls[0]
-                data_decls = [time_decl] + self.registry.traces
+                data_decls = [time_decl, *self.registry.traces]
 
                 while True:
                     while self.reader.tell() < endpos and ChunkId(self.reader.peek_uint32()).matches(ChunkId.CONTAINER_PADDING):
