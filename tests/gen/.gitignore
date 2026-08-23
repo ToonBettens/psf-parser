@@ -1,3 +1,6 @@
+# ignore spectre-generated log files
+*.log
+
 # local setup for spectre (module loads, licence server)
 .envrc
 

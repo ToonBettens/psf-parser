@@ -15,8 +15,11 @@ FORMATS = {
     "psfbin": "binary",
 }
 
-# We can scan the spectre version from the logFile
-VERSION_RE = re.compile(r'"version"\s+"([^"]+)"')
+# The PSF format version, from the run's logFile (always psfascii, whatever
+# -format was requested, so it reads without parsing any binary). This is the
+# axis the parser needs coverage across. The simulator version is not tracked
+# separately -- every generated file carries it in its own header already.
+PSFVERSION_RE = re.compile(r'"psfversion"\s+"([^"]+)"')
 
 # Anything outside this set is replaced when building a directory name.
 UNSAFE_RE = re.compile(r"[^A-Za-z0-9._-]+")
@@ -44,34 +47,27 @@ def run_spectre(spectre, netlist, fmt, outdir):
     return outdir
 
 
-def read_version(raw_dir):
-    """Extract the simulator version from the run's logFile."""
+def read_psfversion(raw_dir):
+    """Read the PSF format version from the run's logFile."""
     log_path = os.path.join(raw_dir, "logFile")
     if not os.path.isfile(log_path):
         return "unknown"
     with open(log_path) as handle:
-        match = VERSION_RE.search(handle.read())
+        match = PSFVERSION_RE.search(handle.read())
     return match.group(1) if match else "unknown"
 
 
 def safe_name(text):
-    """Make `text` safe to use unquoted in a directory name. """
+    """Make `text` safe to use unquoted in a directory name."""
     return UNSAFE_RE.sub("-", text.strip()).strip("-.") or "unknown"
 
 
-def short_version(version):
-    """23.1.0.242.isr1 -> 23.1 — enough to distinguish runs, short enough to read."""
-    parts = version.split(".")
-    short = ".".join(parts[:2]) if len(parts) >= 2 else version
-    return safe_name(short)
-
-
-def write_run_toml(path, netlist, version, formats, command):
+def write_run_toml(path, netlist, psfversion, formats, command):
     lines = [
-        f'netlist  = "{os.path.basename(netlist)}"',
-        f'spectre  = "{version}"',
-        f'command  = "{command}"',
-        "formats  = [{}]".format(", ".join(f'"{f}"' for f in formats)),
+        f'netlist    = "{os.path.basename(netlist)}"',
+        f'psfversion = "{psfversion}"',
+        f'command    = "{command}"',
+        "formats    = [{}]".format(", ".join(f'"{f}"' for f in formats)),
     ]
     with open(path, "w") as handle:
         handle.write("\n".join(lines) + "\n")
@@ -116,8 +112,11 @@ def main():
             print(f"[{fmt}]")
             produced[fmt] = run_spectre(args.spectre, args.netlist, fmt, os.path.join(staging, FORMATS[fmt]))
 
-        version = read_version(next(iter(produced.values())))
-        run_name = f"{stem}@{short_version(version)}"
+        psfversion = read_psfversion(next(iter(produced.values())))
+        # Named after psfversion, not the simulator: the parser needs coverage
+        # across PSF format versions, and two Spectre releases writing the same
+        # psfversion produce structurally identical files.
+        run_name = f"{stem}@{safe_name(psfversion)}"
         run_dir = os.path.join(args.outdir, run_name)
 
         if os.path.exists(run_dir):
@@ -131,7 +130,7 @@ def main():
         write_run_toml(
             os.path.join(run_dir, "run.toml"),
             args.netlist,
-            version,
+            psfversion,
             [FORMATS[f] for f in formats],
             f"{os.path.basename(args.spectre)} {os.path.basename(args.netlist)} -format {{format}} -raw {{outdir}}",
         )
@@ -144,7 +143,7 @@ def main():
             has_log = "logFile" in os.listdir(target)
             print("  raw/{:<8} {:3d} files{}".format(FORMATS[fmt], count, "" if has_log else "  (no logFile!)"))
         print("")
-        print(f"Spectre version: {version}")
+        print(f"psfversion {psfversion}")
         print(f"Next: copy {run_name} into tests/data/runs/")
     finally:
         shutil.rmtree(staging, ignore_errors=True)
