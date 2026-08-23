@@ -36,6 +36,9 @@ class BinaryReader:
     def read_uint8(self):
         return self._read_struct("!B")[0]
 
+    def read_int8(self):
+        return self._read_struct("!b")[0]
+
     def read_uint16(self):
         return self._read_struct("!H")[0]
 

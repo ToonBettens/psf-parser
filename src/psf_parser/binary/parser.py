@@ -148,9 +148,8 @@ class PsfBinParser(PsfParser):
     def read_data(self, type_decl: TypeDeclaration):
         match type_decl.datatype:
             case Datatype.INT8:
-                val = self.reader.read_uint8()
                 self.reader.skip(3)
-                return val
+                return self.reader.read_int8()
             case Datatype.STRING:
                 return self.reader.read_string()
             case Datatype.INT32:
