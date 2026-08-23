@@ -25,7 +25,7 @@ class PsfParser(ABC):
         self.header: dict = {}  # Placeholder for header information
         self.registry = Registry()
 
-    def __new__(cls, path: str | Path, format: Literal['ascii', 'binary'] | None = None) -> PsfParser:
+    def __new__(cls, path: str | Path, format: Literal["ascii", "binary"] | None = None) -> PsfParser:
         """
         Factory method that creates an instance of a specific parser subclass based on the file format.
 
@@ -42,13 +42,15 @@ class PsfParser(ABC):
         if cls is PsfParser:  # Only intercept direct calls to PsfParser
             if format is None:
                 format = PsfParser.detect_format(path)
-            if format == 'ascii':
+            if format == "ascii":
                 from psf_parser.ascii.parser import PsfAsciiParser
+
                 return super().__new__(PsfAsciiParser)
-            if format == 'binary':
+            if format == "binary":
                 from psf_parser.binary.parser import PsfBinParser
+
                 return super().__new__(PsfBinParser)
-            raise ValueError(f'Error: Unsupported format - {format}')
+            raise ValueError(f"Error: Unsupported format - {format}")
         return super().__new__(cls)
 
     @abstractmethod
@@ -62,7 +64,7 @@ class PsfParser(ABC):
         pass
 
     @staticmethod
-    def detect_format(path: str | Path) -> Literal['ascii', 'binary']:
+    def detect_format(path: str | Path) -> Literal["ascii", "binary"]:
         """
         Detect the format of the PSF file based on its contents.
 
@@ -75,7 +77,7 @@ class PsfParser(ABC):
         Notes:
             This method uses a very simple and naive check for the file header.
         """
-        with open(path, 'rb') as file:
-            if file.read(6) == b'HEADER':  # Simple header-based format detection
-                return 'ascii'
-            return 'binary'
+        with open(path, "rb") as file:
+            if file.read(6) == b"HEADER":  # Simple header-based format detection
+                return "ascii"
+            return "binary"

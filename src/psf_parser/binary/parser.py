@@ -15,7 +15,6 @@ class ValueSectionType(Enum):
 
 
 class PsfBinParser(PsfParser):
-
     def __init__(self, path: str):
         super().__init__(path)
         self.scope_stack: list[str] = []
@@ -223,9 +222,7 @@ class PsfBinParser(PsfParser):
                     ChunkId(self.reader.read_uint32()).expect(ChunkId.DECLARATION)
                     decl_id = self.reader.read_uint32()
                     decl = self.registry.get_by_id(decl_id)
-                    decl.data.append(
-                        self.read_data(self.registry.get_by_id(decl.type_id))
-                    )
+                    decl.data.append(self.read_data(self.registry.get_by_id(decl.type_id)))
 
             case ValueSectionType.WINDOWED:
                 sweep_decls = self.registry.sweeps

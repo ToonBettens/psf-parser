@@ -3,10 +3,10 @@ from psf_parser.ascii.parser import PsfAsciiParser
 
 def expect(
     parser,
-    num_types = 0,
-    num_sweeps = 0,
-    num_traces = 0,
-    num_values = 0,
+    num_types=0,
+    num_sweeps=0,
+    num_traces=0,
+    num_values=0,
 ):
     assert len(parser.registry.types) == num_types
     assert len(parser.registry.sweeps) == num_sweeps

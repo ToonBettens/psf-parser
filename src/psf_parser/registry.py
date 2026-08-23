@@ -45,10 +45,10 @@ class Registry:
         name_map_key = (decl.section, scope, decl.name)
 
         if decl.id in self.declarations:
-            raise ValueError(f'Error: Duplicate id: {decl.id}')
+            raise ValueError(f"Error: Duplicate id: {decl.id}")
         if name_map_key in self._name_map:
             scoped_name = "::".join((decl.section.name, *scope, decl.name))
-            raise ValueError(f'Error: Duplicate scoped name: {scoped_name}')
+            raise ValueError(f"Error: Duplicate scoped name: {scoped_name}")
 
         self.declarations[decl.id] = decl
         self._name_map[name_map_key] = decl
@@ -96,18 +96,12 @@ class Registry:
     @property
     def sweeps(self) -> list[Declaration]:
         """List all declarations belonging to the SWEEP section, excluding GroupDeclarations."""
-        return [
-            decl for decl in self.declarations.values()
-            if decl.section is Section.SWEEP and not isinstance(decl, GroupDeclaration)
-        ]
+        return [decl for decl in self.declarations.values() if decl.section is Section.SWEEP and not isinstance(decl, GroupDeclaration)]
 
     @property
     def traces(self) -> list[Declaration]:
         """List all declarations belonging to the TRACE section, excluding GroupDeclarations."""
-        return [
-            decl for decl in self.declarations.values()
-            if decl.section is Section.TRACE and not isinstance(decl, GroupDeclaration)
-        ]
+        return [decl for decl in self.declarations.values() if decl.section is Section.TRACE and not isinstance(decl, GroupDeclaration)]
 
     @property
     def values(self) -> list[Declaration]:
@@ -115,8 +109,4 @@ class Registry:
         return [decl for decl in self.declarations.values() if decl.section is Section.VALUE]
 
     def __repr__(self) -> str:
-        return (
-            f'<Registry: {len(self.types)} types, {len(self.sweeps)} sweeps, '
-            f'{len(self.traces)} traces, {len(self.values)} values>'
-        )
-
+        return f"<Registry: {len(self.types)} types, {len(self.sweeps)} sweeps, {len(self.traces)} traces, {len(self.values)} values>"

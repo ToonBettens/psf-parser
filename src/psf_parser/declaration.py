@@ -19,15 +19,17 @@ Properties = Mapping[str, DataUnit]
 
 class Section(Enum):
     """Describes sections in a file."""
-    HEADER = 'header'
-    TYPE = 'type'
-    SWEEP = 'sweep'
-    TRACE = 'trace'
-    VALUE = 'value'
+
+    HEADER = "header"
+    TYPE = "type"
+    SWEEP = "sweep"
+    TRACE = "trace"
+    VALUE = "value"
 
 
 class Datatype(Enum):
     """Describes datatypes for DataDeclarations."""
+
     NONE = 0
     INT8 = 1
     STRING = 2
@@ -48,13 +50,7 @@ class Declaration(ABC):  # noqa: B024  (TODO: ABC is decorative; revisit with id
         properties: Additional properties.
     """
 
-    def __init__(
-        self,
-        id: DeclarationId,
-        name: str,
-        section: Section,
-        properties: Properties | None = None
-    ):
+    def __init__(self, id: DeclarationId, name: str, section: Section, properties: Properties | None = None):
         self.id = id
         self.name = name
         self.section = section
@@ -75,14 +71,7 @@ class GroupDeclaration(Declaration):
         properties: Additional properties.
     """
 
-    def __init__(
-        self,
-        id: DeclarationId,
-        name: str,
-        section: Section,
-        members: Sequence[DeclarationId] | None = None,
-        properties: Properties = None
-    ):
+    def __init__(self, id: DeclarationId, name: str, section: Section, members: Sequence[DeclarationId] | None = None, properties: Properties = None):
         super().__init__(id, name, section, properties=properties)
         self.members = members if members is not None else []
 
@@ -98,14 +87,7 @@ class TypeDeclaration(Declaration):
         properties: Additional properties.
     """
 
-    def __init__(
-        self,
-        id: DeclarationId,
-        name: str,
-        section: Section,
-        datatype: Datatype,
-        properties: Properties | None = None
-    ):
+    def __init__(self, id: DeclarationId, name: str, section: Section, datatype: Datatype, properties: Properties | None = None):
         super().__init__(id, name, section, properties=properties)
         self.datatype = datatype
 
@@ -122,15 +104,7 @@ class ArrayTypeDeclaration(TypeDeclaration):
         properties: Additional properties.
     """
 
-    def __init__(
-        self,
-        id: DeclarationId,
-        name: str,
-        section: Section,
-        datatype: Datatype,
-        arraytype: Datatype,
-        properties: Properties | None = None
-    ):
+    def __init__(self, id: DeclarationId, name: str, section: Section, datatype: Datatype, arraytype: Datatype, properties: Properties | None = None):
         super().__init__(id, name, section, datatype, properties=properties)
         self.arraytype = arraytype
 
@@ -154,7 +128,7 @@ class StructTypeDeclaration(TypeDeclaration):
         section: Section,
         datatype: Datatype,
         members: Sequence[DeclarationId] | None = None,
-        properties: Properties | None = None
+        properties: Properties | None = None,
     ):
         super().__init__(id, name, section, datatype, properties=properties)
         self.members = members if members is not None else []
@@ -172,15 +146,7 @@ class DataDeclaration(Declaration):
         properties: Additional properties.
     """
 
-    def __init__(
-        self,
-        id: DeclarationId,
-        name: str,
-        section: Section,
-        type_id: DeclarationId,
-        data: Data | None = None,
-        properties: Properties | None = None
-    ):
+    def __init__(self, id: DeclarationId, name: str, section: Section, type_id: DeclarationId, data: Data | None = None, properties: Properties | None = None):
         super().__init__(id, name, section, properties=properties)
         self.type_id = type_id
         self.data = data

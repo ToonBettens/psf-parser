@@ -27,7 +27,7 @@ class ChunkId(Enum):
 
     @classmethod
     def _missing_(cls, value):
-        raise SyntaxError(f'Error: No ChunkId matching {value}.')
+        raise SyntaxError(f"Error: No ChunkId matching {value}.")
 
     @classmethod
     def sections(cls):
@@ -39,10 +39,10 @@ class ChunkId(Enum):
 
     def matches(self, ids: Iterable[ChunkId] | ChunkId):
         if isinstance(ids, Iterable):
-             return self in ids
+            return self in ids
         return self == ids
 
     def expect(self, ids: Iterable[ChunkId] | ChunkId):
         if not self.matches(ids):
-            raise SyntaxError(f'Error: Got {self} but expected {ids}')
+            raise SyntaxError(f"Error: Got {self} but expected {ids}")
         return self

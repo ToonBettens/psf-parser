@@ -4,25 +4,25 @@ import re
 from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
 
-SECTION_KEYWORDS = { 'HEADER', 'TYPE', 'SWEEP', 'TRACE', 'VALUE', 'END' }
-TYPE_KEYWORDS = { 'STRING', 'INT', 'FLOAT', 'COMPLEX', 'ARRAY', 'STRUCT' }
-SUBTYPE_KEYWORDS = { 'DOUBLE', 'LONG', 'BYTE' }
-MISC_KEYWORDS = { 'GROUP', 'PROP' }
+SECTION_KEYWORDS = {"HEADER", "TYPE", "SWEEP", "TRACE", "VALUE", "END"}
+TYPE_KEYWORDS = {"STRING", "INT", "FLOAT", "COMPLEX", "ARRAY", "STRUCT"}
+SUBTYPE_KEYWORDS = {"DOUBLE", "LONG", "BYTE"}
+MISC_KEYWORDS = {"GROUP", "PROP"}
 KEYWORDS = SECTION_KEYWORDS | TYPE_KEYWORDS | SUBTYPE_KEYWORDS | MISC_KEYWORDS
 
 
 TOKEN_SPECIFICATION = [
-    ('STRING', r'"(?:\\.|[^"\\])*"'),
-    ('FLOAT', r'[+-]?(?:\d+\.\d*|\.\d+)(?:[eE][+-]?\d+)?|[+-]?\d+[eE][+-]?\d+|[+-]?(?:inf|nan)'),
-    ('INT', r'[+-]?[0-9]+'),
-    ('KW', r'[A-Z]+'),
-    ('LPAREN', r'\('),
-    ('RPAREN', r'\)'),
-    ('SKIP', r'[\s*]+'),
-    ('MISMATCH', r'.'),
+    ("STRING", r'"(?:\\.|[^"\\])*"'),
+    ("FLOAT", r"[+-]?(?:\d+\.\d*|\.\d+)(?:[eE][+-]?\d+)?|[+-]?\d+[eE][+-]?\d+|[+-]?(?:inf|nan)"),
+    ("INT", r"[+-]?[0-9]+"),
+    ("KW", r"[A-Z]+"),
+    ("LPAREN", r"\("),
+    ("RPAREN", r"\)"),
+    ("SKIP", r"[\s*]+"),
+    ("MISMATCH", r"."),
 ]
 
-TOKEN_REGEX = re.compile('|'.join(f'(?P<{name}>{pattern})' for name, pattern in TOKEN_SPECIFICATION))
+TOKEN_REGEX = re.compile("|".join(f"(?P<{name}>{pattern})" for name, pattern in TOKEN_SPECIFICATION))
 
 
 @dataclass(frozen=True, slots=True)
@@ -37,7 +37,7 @@ class Token:
 
     def expect(self, kinds: str | Iterable[str]) -> Token:
         if not self.matches(kinds):
-            raise SyntaxError(f'Expected {kinds}, got {self}')
+            raise SyntaxError(f"Expected {kinds}, got {self}")
         return self
 
 
@@ -55,27 +55,27 @@ class Tokenizer:
             token_len = len(value)
 
             match kind:
-                case 'SKIP':
+                case "SKIP":
                     for char in value:
-                        if char == '\n':
+                        if char == "\n":
                             row += 1
                             col = 1
                         else:
                             col += 1
                     continue
-                case 'MISMATCH':
+                case "MISMATCH":
                     raise SyntaxError(f"Unexpected character {value!r} at ({row}, {col})")
-                case 'STRING':
+                case "STRING":
                     value = value[1:-1]
-                case 'FLOAT':
+                case "FLOAT":
                     value = float(value)
-                case 'INT':
+                case "INT":
                     value = int(value)
-                case 'NAN':
-                    kind = 'FLOAT'
+                case "NAN":
+                    kind = "FLOAT"
                     value = float(value)
-                case 'KW':
-                    kind = 'KW_' + value
+                case "KW":
+                    kind = "KW_" + value
 
             yield Token(kind, value, row, col)
             col += token_len
