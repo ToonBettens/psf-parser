@@ -14,9 +14,9 @@ R1  (in  out) resistor r=rval
 C1  (out 0)   capacitor c=cval
 
 // --- info statements ---
-myinfo_Oppoint info what=oppoint
-myinfo_Models  info what=models
-myinfo_all     info what=all
+myinfo_Oppoint info what=oppoint where=rawfile
+myinfo_Models  info what=models  where=rawfile
+myinfo_all     info what=all     where=rawfile
 
 // --- scalar values ---
 myop dc
@@ -42,7 +42,10 @@ statistics {
     }
 }
 
-mymonte montecarlo numruns=3 seed=1 variations=process donominal=no {
+// savefamilyplots=yes writes a separate data file per iteration
+// (mymonte-001_dc2.dc, -002, -003). Without it all three iterations
+// overwrite a single file and the per-iteration structure is lost.
+mymonte montecarlo numruns=3 seed=1 variations=process donominal=no savefamilyplots=yes {
     dc2   dc   dev=Vin param=dc start=0 stop=2
     tran1 tran stop=5m
 }
