@@ -101,6 +101,10 @@ def pytest_generate_tests(metafunc):
         samples = all_samples()
         metafunc.parametrize("sample", samples, ids=[s.id for s in samples])
 
+    if "ascii_sample" in metafunc.fixturenames:
+        samples = [s for s in all_samples() if s.format == "ascii"]
+        metafunc.parametrize("ascii_sample", samples, ids=[s.id for s in samples])
+
     if "run" in metafunc.fixturenames:
         runs = all_runs()
         metafunc.parametrize("run", runs, ids=[r.name for r in runs])
