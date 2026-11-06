@@ -73,10 +73,8 @@ def all_samples() -> tuple[Sample, ...]:
 def all_pairs() -> tuple[tuple[Sample, Sample], ...]:
     """Every file present in both ascii and binary form, as (ascii, binary).
 
-    Unused for now: it exists for differential testing, which is deferred until
-    the parser's public objects settle. psfascii is textual and readable by eye,
-    so it is the only available oracle for a binary format Cadence has never
-    specified.
+    psfascii is textual and readable by eye, so it is the only available oracle
+    for a binary format Cadence has never specified.
     """
     pairs = []
     for run in all_runs():
@@ -88,6 +86,12 @@ def all_pairs() -> tuple[tuple[Sample, Sample], ...]:
             if binary_sample is not None:
                 pairs.append((ascii_sample, binary_sample))
     return tuple(pairs)
+
+
+@lru_cache(maxsize=1)
+def all_legacy_files() -> tuple[Path, ...]:
+    """The pre-rewrite corpus, which holds the largest windowed file so far."""
+    return tuple(p for fmt in ("ascii", "binary") for p in sorted((DATA_DIR / "legacy" / fmt).iterdir()))
 
 
 @pytest.fixture
@@ -104,6 +108,14 @@ def pytest_generate_tests(metafunc):
     if "ascii_sample" in metafunc.fixturenames:
         samples = [s for s in all_samples() if s.format == "ascii"]
         metafunc.parametrize("ascii_sample", samples, ids=[s.id for s in samples])
+
+    if "pair" in metafunc.fixturenames:
+        pairs = all_pairs()
+        metafunc.parametrize("pair", pairs, ids=[a.id for a, _ in pairs])
+
+    if "legacy_file" in metafunc.fixturenames:
+        files = all_legacy_files()
+        metafunc.parametrize("legacy_file", files, ids=[f"{p.parent.name}/{p.name}" for p in files])
 
     if "run" in metafunc.fixturenames:
         runs = all_runs()

@@ -194,7 +194,7 @@ class BinaryParser:
         inner = self._open_container(ChunkId.SUBCONTAINER)
         while self.reader.tell() < inner:
             self.builder.add_type(self._read_type())
-        self._skip_index(bytes_per_entry=4)
+        self._skip_index(bytes_per_entry=8)
         self._close_container(end)
 
     def _parse_sweeps(self) -> None:
@@ -208,7 +208,7 @@ class BinaryParser:
         inner = self._open_container(ChunkId.SUBCONTAINER)
         while self.reader.tell() < inner:
             self._read_variable(Role.TRACE)
-        self._skip_index(bytes_per_entry=12)
+        self._skip_index(bytes_per_entry=16)
         self._close_container(end)
 
     def _parse_values(self) -> None:
@@ -235,7 +235,7 @@ class BinaryParser:
             name = self.reader.read_string()
             type_ = self.types_by_id[self.reader.read_uint32()]
             self.builder.add_value(name, type_, self._read_value(type_), self._read_properties())
-        self._skip_index(bytes_per_entry=4)
+        self._skip_index(bytes_per_entry=8)
 
     def _parse_tagged_values(self, end: int) -> None:
         while self.reader.tell() < end:

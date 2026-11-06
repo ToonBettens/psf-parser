@@ -243,7 +243,7 @@ appears at the start of the table itself, so a robust reader should skip leading
 
 ### 3.8 Container indexes
 
-`TYPE` and `TRACE` containers end with a `CONTAINER_INDEX`: a chunk id, a `uint32` byte
+`TYPE`, `TRACE` and some `VALUE` containers end with a `CONTAINER_INDEX`: a chunk id, a `uint32` byte
 length, then fixed-size entries. Entries are stored in an order that is neither
 declaration order nor sorted.
 
@@ -264,8 +264,11 @@ becomes `Vin:`), not an identifier. Then a per-file sequence number. The third w
 `0` in `TAGGED` files and `0x130` in the windowed one; its meaning is unknown. The fourth
 is `-1` for a plain trace and, for a group, its **member count**.
 
-Nothing in either index is needed to parse the file. Skipping both by byte length is
-safe and is what the current parser does.
+**VALUE**, 8-byte entries, in the `ENTRIES` layout only. Observed from the sizes alone
+(`8 x number of entries` in all 6 such files); the contents have not been decoded.
+
+Nothing in any index is needed to parse the file. Skipping each by byte length is safe
+and is what the current parser does.
 
 ### 3.9 Group declarations
 
@@ -325,7 +328,8 @@ Cadence's documented `psfversion` *option* is described as psfxl-specific yet re
 - psfbin files containing `STRING` or `ARRAY` values; Spectre has not been made to
   produce one.
 - psfascii group declarations.
-- psfxl entirely. It is Spectre's default (`rawfmt=psfxl`) and is not supported.
+- psfxl entirely. It is Spectre's transient simulation default (`rawfmt=psfxl`)
+  and is not supported.
 
 ---
 
