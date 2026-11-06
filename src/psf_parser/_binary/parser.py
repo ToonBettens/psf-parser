@@ -10,7 +10,7 @@ import numpy as np
 from psf_parser._binary.chunk import ChunkId
 from psf_parser._binary.reader import BinaryReader
 from psf_parser._check import add_type, add_variable
-from psf_parser._columns import as_column, defer_columns, file_stamp
+from psf_parser._columns import as_column, defer_columns, defer_each_column, file_stamp
 from psf_parser.errors import PsfParseError
 from psf_parser.model import Kind, PsfFile, PsfType, Role, Scalar, Variable
 
@@ -49,6 +49,8 @@ class BinaryParser:
         self.variables_by_id: dict[int, Variable] = {}
         self.values_at = 0
         self.stamp = None
+        self.windowed: list[Variable] = []
+        self.blocks: list[tuple[int, int, int]] | None = None
 
     def read_schema(self) -> PsfFile:
         self.stamp = file_stamp(self.path)
@@ -66,17 +68,26 @@ class BinaryParser:
         return self.file
 
     def read_columns(self) -> dict[str, Any]:
+        """Every column of a tagged file."""
         with open(self.path, "rb") as handle:
             self.reader = BinaryReader(handle)
             self.reader.seek(self.values_at)
             end = self._open_container(ChunkId.CONTAINER)
-            if self.value_section is ValueSection.TAGGED:
-                columns = self._read_tagged_values(end)
-            else:
-                columns = self._read_windowed_values(end)
+            columns = self._read_tagged_values(end)
             self._close_container(end)
             self._expect(ChunkId.SECTION_END)
         return columns
+
+    def read_column(self, variable: Variable) -> np.ndarray | list[float]:
+        """One column of a windowed file, from each block in turn."""
+        index = self.windowed.index(variable)
+        with open(self.path, "rb") as handle:
+            self.reader = BinaryReader(handle)
+            parts = []
+            for start, window, count in self._window_blocks():
+                self.reader.seek(start + index * (window + 1) * 8)
+                parts.append(np.frombuffer(self.reader.read_bytes(count * 8), dtype=">f8"))
+        return np.concatenate(parts) if parts else []
 
     def _validate_signature(self) -> None:
         try:
@@ -233,9 +244,14 @@ class BinaryParser:
         self._close_container(end)
 
     def _parse_values(self) -> None:
-        if self.value_section in (ValueSection.TAGGED, ValueSection.WINDOWED):
+        if self.value_section is ValueSection.TAGGED:
             self.values_at = self.reader.tell()
             defer_columns(self.file, self.path, self.stamp, self.read_columns)
+            return
+        if self.value_section is ValueSection.WINDOWED:
+            self.values_at = self.reader.tell()
+            self.windowed = self._windowed_columns()
+            defer_each_column(self.file, self.path, self.stamp, self.read_column)
             return
         end = self._open_container(ChunkId.CONTAINER)
         if self.value_section is ValueSection.ENTRIES:
@@ -300,28 +316,32 @@ class BinaryParser:
             columns[variable.name].append(self._read_value(variable.type))
         return columns
 
-    def _read_windowed_values(self, end: int) -> dict[str, np.ndarray]:
+    def _windowed_columns(self) -> list[Variable]:
         sweeps = [v for v in self.file if v.role is Role.SWEEP]
         if len(sweeps) != 1:
             raise PsfParseError(f"windowed layout needs exactly one sweep, found {len(sweeps)}")
-        variables = sweeps + self.file.traces
-        for variable in variables:
+        columns = sweeps + self.file.traces
+        for variable in columns:
             if variable.type.kind is not Kind.FLOAT64:
                 raise PsfParseError(f"windowed column {variable.name!r} is {variable.type.kind.value}, not float64")
+        return columns
 
-        blocks: defaultdict[str, list[np.ndarray]] = defaultdict(list)
-        while True:
-            self._skip_padding(end)
-            if self.reader.tell() >= end:
-                break
-
-            self._expect(ChunkId.DECLARATION)
-            window = self.reader.read_uint16()
-            count = self.reader.read_uint16()
-
-            for index, variable in enumerate(variables):
-                blocks[variable.name].append(np.frombuffer(self.reader.read_bytes(count * 8), dtype=">f8"))
-                self.reader.skip((window - count) * 8)
-                if index < len(variables) - 1:
-                    self.reader.skip(8)
-        return {name: np.concatenate(parts) for name, parts in blocks.items()}
+    def _window_blocks(self) -> list[tuple[int, int, int]]:
+        """Where each block's data starts, with its window and count, scanned once (format-notes 3.6)."""
+        if self.blocks is None:
+            self.reader.seek(self.values_at)
+            end = self._open_container(ChunkId.CONTAINER)
+            blocks = []
+            while True:
+                self._skip_padding(end)
+                if self.reader.tell() >= end:
+                    break
+                self._expect(ChunkId.DECLARATION)
+                window = self.reader.read_uint16()
+                count = self.reader.read_uint16()
+                blocks.append((self.reader.tell(), window, count))
+                self.reader.skip((len(self.windowed) * (window + 1) - 1) * 8)
+            self._close_container(end)
+            self._expect(ChunkId.SECTION_END)
+            self.blocks = blocks
+        return self.blocks

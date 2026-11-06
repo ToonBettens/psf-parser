@@ -101,8 +101,8 @@ Parsers work in two phases, at the point where the file itself splits: declarati
 | Arrangement | First phase, at `load` | Second phase, on first access |
 |---|---|---|
 | Named entries | Reads everything, because declarations sit among the values | Nothing left to do |
-| Tagged psfbin | Stops at the value section | One array over the rows, then one field per column |
-| Windowed psfbin | Stops at the value section | Block headers, then the column's run from each block |
+| Tagged psfbin | Stops at the value section | One array over the rows, keeping every column |
+| Windowed psfbin | Stops at the value section | Block headers, then only that column's run from each block |
 | Swept psfascii | Stops at `VALUE` | Tokenizes the rest, whatever was asked for |
 
 ### Laziness
@@ -113,8 +113,9 @@ Two kinds exist, and both are used.
 for all 37 binary files and 66 ms for all 37 ascii files in the test run.
 
 **Value-level:** `load` reads declarations only, so browsing names and units stays cheap. The larger gain is reading one
-column from a binary file without touching the others. Reading a whole file on first access would not give that, because
-asking for one signal would still read every column.
+column from a windowed psfbin file without touching the others, because the values there sit in separate runs per column.
+Tagged rows and ascii text interleave their columns, so the first read goes through all of them and keeps them. Reading
+one and dropping the rest would save no peak memory, and would cost a full read per column in a loop over all traces.
 
 `load` is always lazy, with no flag, so there is one code path.
 
