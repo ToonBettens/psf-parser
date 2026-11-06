@@ -6,9 +6,9 @@ from typing import Any
 
 from psf_parser._binary.chunk import ChunkId
 from psf_parser._binary.reader import BinaryReader
-from psf_parser.builder import PsfBuilder
+from psf_parser._check import add_type, add_variable, check
 from psf_parser.errors import PsfParseError
-from psf_parser.model import Kind, PsfFile, PsfType, Role, Scalar
+from psf_parser.model import Kind, PsfFile, PsfType, Role, Scalar, Variable
 
 KINDS = {
     1: Kind.INT8,
@@ -37,9 +37,9 @@ class BinaryParser:
 
     def __init__(self, path: str | Path):
         self.path = Path(path)
-        self.builder = PsfBuilder(str(self.path))
+        self.file = PsfFile(path=str(self.path))
         self.types_by_id: dict[int, PsfType] = {}
-        self.names_by_id: dict[int, str] = {}
+        self.variables_by_id: dict[int, Variable] = {}
 
     def parse(self) -> PsfFile:
         with open(self.path, "rb") as handle:
@@ -55,7 +55,8 @@ class BinaryParser:
             self._parse_if(ChunkId.SECTION_VALUE, self._parse_values)
             self.reader.close()
 
-        return self.builder.build()
+        check(self.file)
+        return self.file
 
     def _validate_signature(self) -> None:
         try:
@@ -153,8 +154,9 @@ class BinaryParser:
         variable_id = self.reader.read_uint32()
         name = self.reader.read_string()
         type_ = self.types_by_id[self.reader.read_uint32()]
-        self.names_by_id[variable_id] = name
-        self.builder.declare(name, type_, role, self._read_properties())
+        self.variables_by_id[variable_id] = add_variable(
+            self.file, Variable(name, type_, role, self._read_properties())
+        )
 
     def _read_group(self, role: Role) -> None:
         self.reader.skip(4)  # group id
@@ -185,15 +187,14 @@ class BinaryParser:
 
     def _parse_header(self) -> None:
         end = self._open_container(ChunkId.CONTAINER)
-        for key, value in self._read_properties().items():
-            self.builder.add_header(key, value)
+        self.file.header.update(self._read_properties())
         self._close_container(end)
 
     def _parse_types(self) -> None:
         end = self._open_container(ChunkId.CONTAINER)
         inner = self._open_container(ChunkId.SUBCONTAINER)
         while self.reader.tell() < inner:
-            self.builder.add_type(self._read_type())
+            add_type(self.file, self._read_type())
         self._skip_index(bytes_per_entry=8)
         self._close_container(end)
 
@@ -234,21 +235,21 @@ class BinaryParser:
             self.reader.skip(4)
             name = self.reader.read_string()
             type_ = self.types_by_id[self.reader.read_uint32()]
-            self.builder.add_value(name, type_, self._read_value(type_), self._read_properties())
+            value = self._read_value(type_)
+            add_variable(self.file, Variable(name, type_, Role.ENTRY, self._read_properties(), [value]))
         self._skip_index(bytes_per_entry=8)
 
     def _parse_tagged_values(self, end: int) -> None:
         while self.reader.tell() < end:
             self._expect(ChunkId.DECLARATION)
-            name = self.names_by_id[self.reader.read_uint32()]
-            variable = self.builder.variable_named(name)
-            self.builder.append(name, self._read_value(variable.type))
+            variable = self.variables_by_id[self.reader.read_uint32()]
+            variable.values.append(self._read_value(variable.type))
 
     def _parse_windowed_values(self, end: int) -> None:
-        sweeps = [s for s in self.builder.variables.values() if s.role is Role.SWEEP]
+        sweeps = [v for v in self.file if v.role is Role.SWEEP]
         if len(sweeps) != 1:
             raise PsfParseError(f"windowed layout needs exactly one sweep, found {len(sweeps)}")
-        columns = sweeps + [s for s in self.builder.variables.values() if s.role is Role.TRACE]
+        columns = sweeps + self.file.traces
 
         while True:
             self._skip_padding(end)
@@ -260,7 +261,7 @@ class BinaryParser:
             count = self.reader.read_uint16()
 
             for index, variable in enumerate(columns):
-                self.builder.extend(variable.name, [self.reader.read_float64() for _ in range(count)])
+                variable.values.extend(self.reader.read_float64() for _ in range(count))
                 self.reader.skip((window - count) * 8)
                 if index < len(columns) - 1:
                     self.reader.skip(8)

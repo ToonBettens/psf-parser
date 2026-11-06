@@ -5,8 +5,8 @@ from pathlib import Path
 from typing import Any
 
 from psf_parser._ascii.tokenizer import Tokenizer
-from psf_parser.builder import PsfBuilder
-from psf_parser.errors import PsfParseError
+from psf_parser._check import add_type, add_variable, check
+from psf_parser.errors import PsfParseError, PsfStructureError
 from psf_parser.model import Kind, PsfFile, PsfType, Role, Scalar, Variable
 
 SCALAR_KINDS = {
@@ -26,7 +26,7 @@ class AsciiParser:
     def __init__(self, path: str | Path):
         self.path = Path(path)
         self.tokenizer = Tokenizer(self.path.read_text())
-        self.builder = PsfBuilder(str(self.path))
+        self.file = PsfFile(path=str(self.path))
 
     def parse(self) -> PsfFile:
         self._parse_header()
@@ -38,7 +38,8 @@ class AsciiParser:
             self._parse_section("KW_TRACE", lambda: self._read_variable(Role.TRACE))
         if self.tokenizer.at("KW_VALUE"):
             self._parse_values()
-        return self.builder.build()
+        check(self.file)
+        return self.file
 
     # --- sections -----------------------------------------------------------
 
@@ -47,7 +48,7 @@ class AsciiParser:
         while not self.tokenizer.at(SECTIONS):
             key = str(self.tokenizer.expect("STRING").value)
             value = self.tokenizer.expect({"STRING", "INT", "FLOAT"}).value
-            self.builder.add_header(key, value)
+            self.file.header[key] = value
 
     def _parse_section(self, keyword: str, read_one: Callable[[], Any]) -> None:
         self.tokenizer.expect(keyword)
@@ -56,21 +57,32 @@ class AsciiParser:
 
     def _parse_values(self) -> None:
         self.tokenizer.expect("KW_VALUE")
-        swept = any(s.role is Role.SWEEP for s in self.builder.variables.values())
+        swept = self.file.sweep is not None
         while not self.tokenizer.at("KW_END"):
             if swept:
                 name = str(self.tokenizer.expect("STRING").value)
-                variable = self.builder.variable_named(name)
-                self.builder.append(name, self._read_value(variable.type))
+                variable = self._variable_named(name)
+                variable.values.append(self._read_value(variable.type))
             else:
                 name = str(self.tokenizer.expect("STRING").value)
-                type_ = self.builder.type_named(str(self.tokenizer.expect("STRING").value))
-                self.builder.add_value(name, type_, self._read_value(type_), self._read_properties())
+                type_ = self._type_named(str(self.tokenizer.expect("STRING").value))
+                value = self._read_value(type_)
+                add_variable(self.file, Variable(name, type_, Role.ENTRY, self._read_properties(), [value]))
 
     # --- declarations -------------------------------------------------------
 
-    def _read_type_declaration(self) -> PsfType:
-        return self.builder.add_type(self._read_type())
+    def _read_type_declaration(self) -> None:
+        add_type(self.file, self._read_type())
+
+    def _type_named(self, name: str) -> PsfType:
+        if name not in self.file.types:
+            raise PsfStructureError(f"undeclared type {name!r} referenced by a declaration")
+        return self.file.types[name]
+
+    def _variable_named(self, name: str) -> Variable:
+        if name not in self.file.variables:
+            raise PsfStructureError(f"value for undeclared variable {name!r}")
+        return self.file.variables[name]
 
     def _read_type(self) -> PsfType:
         name = str(self.tokenizer.expect("STRING").value)
@@ -110,8 +122,8 @@ class AsciiParser:
 
     def _read_variable(self, role: Role) -> Variable:
         name = str(self.tokenizer.expect("STRING").value)
-        type_ = self.builder.type_named(str(self.tokenizer.expect("STRING").value))
-        return self.builder.declare(name, type_, role, self._read_properties())
+        type_ = self._type_named(str(self.tokenizer.expect("STRING").value))
+        return add_variable(self.file, Variable(name, type_, role, self._read_properties()))
 
     # --- values -------------------------------------------------------------
 

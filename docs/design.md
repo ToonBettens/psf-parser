@@ -2,8 +2,8 @@
 
 How the library is layered, and why. `format-notes.md` describes the file format itself.
 
-**Status:** this is the design for v1.0, and the code is moving to it. The file layer exists but still has
-`PsfBuilder`, `Layout` and eagerly read Python lists. The Database is not built, and its API is not designed yet.
+**Status:** this is the design for v1.0, and the code is moving to it. The file layer exists but still reads every file
+eagerly into Python lists. The Database is not built, and its API is not designed yet.
 
 ---
 
@@ -42,19 +42,19 @@ result looks wrong, you want to look at the one file behind it.
 ```python
 f = psf_parser.load("raw/myac.ac")
 
-f.header          # dict
-f.types           # dict[str, PsfType], the catalogue, kept whole
-f.variables       # dict[str, Variable], in file order
-f["out"]          # a Variable
-f.sweep           # the innermost axis, or None
-f.traces          # list[Variable]
-f.entries         # list[Variable], standalone values in a file with no sweep
+f.header  # dict
+f.types  # dict[str, PsfType], the catalogue, kept whole
+f.variables  # dict[str, Variable], in file order
+f["out"]  # a Variable
+f.sweep  # the innermost axis, or None
+f.traces  # list[Variable]
+f.entries  # list[Variable], standalone values in a file with no sweep
 
 v = f["out"]
 v.name, v.type, v.role, v.properties
-v.units           # the declaration's, or else the type's
-v.values          # the data, read on first access
-v.value           # the single value, when there is exactly one
+v.units  # the declaration's, or else the type's
+v.values  # the data, read on first access
+v.value  # the single value, when there is exactly one
 ```
 
 **One `Variable` type at any length.** A 653-point transient trace and a DC operating point differ only in how many
@@ -189,6 +189,7 @@ src/psf_parser/
   errors.py       PsfParserError -> PsfParseError, PsfStructureError
   model.py        Kind, Role, PsfType, Variable, PsfFile
   database.py     the Database layer
+  _check.py       the rules every parsed file must meet
   _ascii/         tokenizer.py, parser.py
   _binary/        reader.py, chunk.py, parser.py
 ```
