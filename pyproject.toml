@@ -9,6 +9,9 @@ license = "MIT"
 license-files = ["LICENSE"]
 readme = "README.md"
 requires-python = ">=3.11"
+dependencies = [
+    "numpy>=2.0",
+]
 keywords = [ "parser", "parsing", "cadence", "spectre", "psf", "psfbin", "psfascii" ]
 classifiers = [
     "Development Status :: 4 - Beta",

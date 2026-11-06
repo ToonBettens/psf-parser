@@ -3,7 +3,7 @@
 How the library is layered, and why. `format-notes.md` describes the file format itself.
 
 **Status:** this is the design for v1.0, and the code is moving to it. The file layer exists but still reads every file
-eagerly into Python lists. The Database is not built, and its API is not designed yet.
+eagerly. The Database is not built, and its API is not designed yet.
 
 ---
 

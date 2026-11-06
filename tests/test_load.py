@@ -6,6 +6,8 @@ import math
 import struct
 from typing import Any
 
+import numpy as np
+
 import psf_parser
 from psf_parser._binary.parser import ValueSection
 
@@ -14,6 +16,8 @@ def _same(a: Any, b: Any) -> bool:
     """Exact equality, except that NaN equals NaN and a value's type has to match too."""
     if type(a) is not type(b):
         return False
+    if isinstance(a, np.ndarray):
+        return a.dtype == b.dtype and np.array_equal(a, b, equal_nan=True)
     if isinstance(a, float):
         return a == b or (math.isnan(a) and math.isnan(b))
     if isinstance(a, complex):

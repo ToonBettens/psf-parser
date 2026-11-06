@@ -5,6 +5,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
+import numpy as np
+
 Scalar = int | float | complex | str
 Properties = Mapping[str, Scalar]
 
@@ -63,7 +65,7 @@ class PsfType:
         return f"<PsfType {self.name}: {self.kind.value}{detail}>"
 
 
-@dataclass
+@dataclass(eq=False)
 class Variable:
     """One named quantity within a file, with the type that describes it.
 
@@ -72,14 +74,14 @@ class Variable:
         type: The type this variable was declared with.
         role: Part this variable plays in its file.
         properties: Annotations on the declaration itself, verbatim.
-        values: The data, in file order.
+        values: The data, in file order. A read-only array for numeric kinds, and a list for any other.
     """
 
     name: str
     type: PsfType
     role: Role
     properties: Properties = field(default_factory=dict)
-    values: list[Any] = field(default_factory=list)
+    values: np.ndarray | list[Any] = field(default_factory=list)
 
     @property
     def units(self) -> str | None:
@@ -90,14 +92,15 @@ class Variable:
     def value(self) -> Any:
         if len(self.values) != 1:
             raise ValueError(f"{self.name!r} holds {len(self.values)} values; use .values")
-        return self.values[0]
+        value = self.values[0]
+        return value.item() if isinstance(value, np.generic) else value
 
     def __repr__(self) -> str:
         units = f" [{self.units}]" if self.units else ""
         return f"<Variable {self.name}{units}: {len(self.values)}x {self.type.kind.value}>"
 
 
-@dataclass
+@dataclass(eq=False)
 class PsfFile:
     """A parsed PSF file.
 

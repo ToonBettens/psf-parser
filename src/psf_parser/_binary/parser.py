@@ -1,12 +1,16 @@
 from __future__ import annotations
 
+from collections import defaultdict
 from enum import Enum
 from pathlib import Path
 from typing import Any
 
+import numpy as np
+
 from psf_parser._binary.chunk import ChunkId
 from psf_parser._binary.reader import BinaryReader
 from psf_parser._check import add_type, add_variable, check
+from psf_parser._columns import as_column, assign_columns
 from psf_parser.errors import PsfParseError
 from psf_parser.model import Kind, PsfFile, PsfType, Role, Scalar, Variable
 
@@ -21,6 +25,9 @@ KINDS = {
 }
 
 MAGIC = b"Clarissa"
+
+# Big-endian dtypes of the kinds a tagged row can hold at a fixed size (format-notes 3.5).
+FIXED_SIZE_DTYPES = {Kind.FLOAT64: ">f8", Kind.COMPLEX: ">c16"}
 
 
 class ValueSection(Enum):
@@ -235,33 +242,76 @@ class BinaryParser:
             self.reader.skip(4)
             name = self.reader.read_string()
             type_ = self.types_by_id[self.reader.read_uint32()]
-            value = self._read_value(type_)
-            add_variable(self.file, Variable(name, type_, Role.ENTRY, self._read_properties(), [value]))
+            value = as_column(type_.kind, [self._read_value(type_)])
+            add_variable(self.file, Variable(name, type_, Role.ENTRY, self._read_properties(), value))
         self._skip_index(bytes_per_entry=8)
 
     def _parse_tagged_values(self, end: int) -> None:
+        start = self.reader.tell()
+        columns = self._read_fixed_rows(end)
+        if columns is None:
+            self.reader.seek(start)
+            columns = self._walk_tagged_values(end)
+        assign_columns(self.file, columns)
+
+    def _read_fixed_rows(self, end: int) -> dict[str, np.ndarray] | None:
+        """Decode the rows as one array, or return None if they are not all the same shape."""
+        start = self.reader.tell()
+        names = []
+        fields: list[tuple[str, str]] = []
+        for index in range(len(self.variables_by_id)):
+            if self.reader.tell() >= end or self.reader.read_uint32() != ChunkId.DECLARATION.value:
+                return None
+            variable = self.variables_by_id.get(self.reader.read_uint32())
+            dtype = FIXED_SIZE_DTYPES.get(variable.type.kind) if variable else None
+            if variable is None or dtype is None or variable.name in names:
+                return None
+            names.append(variable.name)
+            fields += [(f"tag{index}", ">u4"), (f"id{index}", ">u4"), (f"value{index}", dtype)]
+            self.reader.skip(np.dtype(dtype).itemsize)
+
+        row = np.dtype(fields)
+        size = end - start
+        if not names or size % row.itemsize != 0:
+            return None
+        self.reader.seek(start)
+        rows = np.frombuffer(self.reader.read_bytes(size), dtype=row)
+        for index, column in enumerate(rows[0][f"id{i}"] for i in range(len(names))):
+            if (rows[f"tag{index}"] != ChunkId.DECLARATION.value).any() or (rows[f"id{index}"] != column).any():
+                return None
+        return {name: rows[f"value{index}"] for index, name in enumerate(names)}
+
+    def _walk_tagged_values(self, end: int) -> dict[str, list[Any]]:
+        """Read the rows value by value, which works whatever their sizes and order."""
+        columns: defaultdict[str, list[Any]] = defaultdict(list)
         while self.reader.tell() < end:
             self._expect(ChunkId.DECLARATION)
             variable = self.variables_by_id[self.reader.read_uint32()]
-            variable.values.append(self._read_value(variable.type))
+            columns[variable.name].append(self._read_value(variable.type))
+        return columns
 
     def _parse_windowed_values(self, end: int) -> None:
         sweeps = [v for v in self.file if v.role is Role.SWEEP]
         if len(sweeps) != 1:
             raise PsfParseError(f"windowed layout needs exactly one sweep, found {len(sweeps)}")
-        columns = sweeps + self.file.traces
+        variables = sweeps + self.file.traces
+        for variable in variables:
+            if variable.type.kind is not Kind.FLOAT64:
+                raise PsfParseError(f"windowed column {variable.name!r} is {variable.type.kind.value}, not float64")
 
+        blocks: defaultdict[str, list[np.ndarray]] = defaultdict(list)
         while True:
             self._skip_padding(end)
             if self.reader.tell() >= end:
-                return
+                break
 
             self._expect(ChunkId.DECLARATION)
             window = self.reader.read_uint16()
             count = self.reader.read_uint16()
 
-            for index, variable in enumerate(columns):
-                variable.values.extend(self.reader.read_float64() for _ in range(count))
+            for index, variable in enumerate(variables):
+                blocks[variable.name].append(np.frombuffer(self.reader.read_bytes(count * 8), dtype=">f8"))
                 self.reader.skip((window - count) * 8)
-                if index < len(columns) - 1:
+                if index < len(variables) - 1:
                     self.reader.skip(8)
+        assign_columns(self.file, {name: np.concatenate(parts) for name, parts in blocks.items()})

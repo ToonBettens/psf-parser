@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+from collections import defaultdict
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
 from psf_parser._ascii.tokenizer import Tokenizer
 from psf_parser._check import add_type, add_variable, check
+from psf_parser._columns import as_column, assign_columns
 from psf_parser.errors import PsfParseError, PsfStructureError
 from psf_parser.model import Kind, PsfFile, PsfType, Role, Scalar, Variable
 
@@ -58,16 +60,18 @@ class AsciiParser:
     def _parse_values(self) -> None:
         self.tokenizer.expect("KW_VALUE")
         swept = self.file.sweep is not None
+        columns: defaultdict[str, list[Any]] = defaultdict(list)
         while not self.tokenizer.at("KW_END"):
             if swept:
                 name = str(self.tokenizer.expect("STRING").value)
                 variable = self._variable_named(name)
-                variable.values.append(self._read_value(variable.type))
+                columns[name].append(self._read_value(variable.type))
             else:
                 name = str(self.tokenizer.expect("STRING").value)
                 type_ = self._type_named(str(self.tokenizer.expect("STRING").value))
-                value = self._read_value(type_)
-                add_variable(self.file, Variable(name, type_, Role.ENTRY, self._read_properties(), [value]))
+                value = as_column(type_.kind, [self._read_value(type_)])
+                add_variable(self.file, Variable(name, type_, Role.ENTRY, self._read_properties(), value))
+        assign_columns(self.file, columns)
 
     # --- declarations -------------------------------------------------------
 
