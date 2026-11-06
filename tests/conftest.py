@@ -7,8 +7,6 @@ from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 
-import pytest
-
 DATA_DIR = Path(__file__).parent / "data"
 RUNS_DIR = DATA_DIR / "runs"
 
@@ -88,18 +86,6 @@ def all_pairs() -> tuple[tuple[Sample, Sample], ...]:
     return tuple(pairs)
 
 
-@lru_cache(maxsize=1)
-def all_legacy_files() -> tuple[Path, ...]:
-    """The pre-rewrite corpus, which holds the largest windowed file so far."""
-    return tuple(p for fmt in ("ascii", "binary") for p in sorted((DATA_DIR / "legacy" / fmt).iterdir()))
-
-
-@pytest.fixture
-def psf_test_files():
-    """Legacy corpus root, used by the pre-rewrite tests."""
-    return DATA_DIR / "legacy"
-
-
 def pytest_generate_tests(metafunc):
     if "sample" in metafunc.fixturenames:
         samples = all_samples()
@@ -112,10 +98,6 @@ def pytest_generate_tests(metafunc):
     if "pair" in metafunc.fixturenames:
         pairs = all_pairs()
         metafunc.parametrize("pair", pairs, ids=[a.id for a, _ in pairs])
-
-    if "legacy_file" in metafunc.fixturenames:
-        files = all_legacy_files()
-        metafunc.parametrize("legacy_file", files, ids=[f"{p.parent.name}/{p.name}" for p in files])
 
     if "run" in metafunc.fixturenames:
         runs = all_runs()

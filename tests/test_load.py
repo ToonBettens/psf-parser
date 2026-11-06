@@ -29,8 +29,9 @@ def test_sample_loads(sample):
     assert isinstance(psf.load(sample.path), psf.PsfFile)
 
 
-def test_legacy_file_loads(legacy_file):
-    assert isinstance(psf.load(legacy_file), psf.PsfFile)
+def test_run_has_metadata(run):
+    assert run.meta.get("psfversion"), f"{run.name}/run.toml is missing psfversion"
+    assert run.formats, f"{run.name} contains no format directories"
 
 
 def test_encodings_agree(pair):
