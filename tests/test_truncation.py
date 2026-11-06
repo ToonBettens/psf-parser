@@ -13,8 +13,8 @@ from __future__ import annotations
 
 import pytest
 
-import psf
-from psf.errors import PsfParseError
+import psf_parser
+from psf_parser.errors import PsfParseError
 
 
 def test_missing_end_raises(ascii_sample, tmp_path):
@@ -31,7 +31,7 @@ def test_missing_end_raises(ascii_sample, tmp_path):
     truncated.write_text(text[: text.rindex("\nEND")])
 
     with pytest.raises(PsfParseError):
-        psf.load(truncated)
+        psf_parser.load(truncated)
 
 
 def test_cut_in_half_raises(ascii_sample, tmp_path):
@@ -41,9 +41,9 @@ def test_cut_in_half_raises(ascii_sample, tmp_path):
     truncated.write_text(text[: len(text) // 2])
 
     with pytest.raises(PsfParseError):
-        psf.load(truncated)
+        psf_parser.load(truncated)
 
 
 def test_intact_file_still_parses(ascii_sample):
     """The other half of the property: nothing above rejects a whole file."""
-    assert psf.load(ascii_sample.path) is not None
+    assert psf_parser.load(ascii_sample.path) is not None

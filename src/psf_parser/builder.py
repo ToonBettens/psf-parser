@@ -11,8 +11,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from psf.errors import PsfStructureError
-from psf.model import Layout, Properties, PsfFile, PsfType, Role, Scalar, Variable
+from psf_parser.errors import PsfStructureError
+from psf_parser.model import Layout, Properties, PsfFile, PsfType, Role, Scalar, Variable
 
 
 class PsfBuilder:

@@ -2,10 +2,10 @@
 
 from pathlib import Path
 
-from psf.ascii.parser import AsciiParser
-from psf.binary.parser import BinaryParser
-from psf.errors import PsfParseError, PsfParserError, PsfStructureError
-from psf.model import Kind, Layout, PsfFile, PsfType, Role, Variable
+from psf_parser._ascii.parser import AsciiParser
+from psf_parser._binary.parser import BinaryParser
+from psf_parser.errors import PsfParseError, PsfParserError, PsfStructureError
+from psf_parser.model import Kind, Layout, PsfFile, PsfType, Role, Variable
 
 __all__ = [
     "Kind",

@@ -1,7 +1,7 @@
 import io
 import struct
 
-from psf.errors import PsfParseError
+from psf_parser.errors import PsfParseError
 
 
 class BinaryReader:

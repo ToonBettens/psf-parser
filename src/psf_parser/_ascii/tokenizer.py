@@ -4,7 +4,7 @@ import re
 from collections.abc import Collection, Iterator
 from dataclasses import dataclass
 
-from psf.errors import PsfParseError
+from psf_parser.errors import PsfParseError
 
 TOKEN_SPECIFICATION = [
     ("STRING", r'"(?:\\.|[^"\\])*"'),

@@ -56,6 +56,21 @@ The minimum supported Python is 3.11. `.python-version` pins local development t
 floor, so syntax that requires a newer interpreter fails on your machine rather than in
 review.
 
+## Docstrings and comments
+
+Keep them short, factual and in the present tense. Say what the code does, without history,
+first person or judgement. Reasoning and alternatives belong in `docs/design.md`.
+
+- **Public names** get a docstring with full `Args:`, `Returns:` and `Raises:` sections. Each
+  entry says more than the name does, including units and array shapes where relevant.
+- **Private names**, anything under a leading underscore, get a one-line docstring when the
+  name is not enough.
+- **Comments** say why, not what. A fact about the format is one line pointing to its evidence:
+  `# A signed byte in a four-byte big-endian slot (format-notes 3.4).`
+- **The format has no specification**, so a claim about it says how we know it. "Observed"
+  means seen in test files but not specified.
+- **Tests** say what they check in their name. A docstring adds only what the name cannot.
+
 ## Pull requests
 
 - Add a test alongside any parser change. New PSF files belong in `tests/data/`.

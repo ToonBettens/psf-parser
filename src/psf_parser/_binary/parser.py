@@ -4,11 +4,11 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
-from psf.binary.chunk import ChunkId
-from psf.binary.reader import BinaryReader
-from psf.builder import PsfBuilder
-from psf.errors import PsfParseError
-from psf.model import Kind, PsfFile, PsfType, Role, Scalar
+from psf_parser._binary.chunk import ChunkId
+from psf_parser._binary.reader import BinaryReader
+from psf_parser.builder import PsfBuilder
+from psf_parser.errors import PsfParseError
+from psf_parser.model import Kind, PsfFile, PsfType, Role, Scalar
 
 KINDS = {
     1: Kind.INT8,

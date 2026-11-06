@@ -4,8 +4,8 @@ Everything raised about a *file* derives from `PsfParserError`, so a caller
 walking a directory can write one `except` and not track our internals:
 
     try:
-        psf.load(path)
-    except psf.PsfParserError:
+        psf_parser.load(path)
+    except psf_parser.PsfParserError:
         ...
 
 Errors about how the API was *used* -- a missing variable name, `.value` on a

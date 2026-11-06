@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Collection
 from enum import Enum
 
-from psf.errors import PsfParseError
+from psf_parser.errors import PsfParseError
 
 
 class ChunkId(Enum):

@@ -4,10 +4,10 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from psf.ascii.tokenizer import Tokenizer
-from psf.builder import PsfBuilder
-from psf.errors import PsfParseError
-from psf.model import Kind, PsfFile, PsfType, Role, Scalar, Variable
+from psf_parser._ascii.tokenizer import Tokenizer
+from psf_parser.builder import PsfBuilder
+from psf_parser.errors import PsfParseError
+from psf_parser.model import Kind, PsfFile, PsfType, Role, Scalar, Variable
 
 SCALAR_KINDS = {
     "KW_STRING": Kind.STRING,

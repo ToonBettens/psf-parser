@@ -1,4 +1,4 @@
-"""Every file in the corpus loads through `psf`, and both encodings of a simulation agree."""
+"""Every file in the corpus loads through `psf_parser`, and both encodings of a simulation agree."""
 
 from __future__ import annotations
 
@@ -6,8 +6,8 @@ import math
 import struct
 from typing import Any
 
-import psf
-from psf.binary.parser import ValueSection
+import psf_parser
+from psf_parser._binary.parser import ValueSection
 
 
 def _same(a: Any, b: Any) -> bool:
@@ -26,7 +26,7 @@ def _same(a: Any, b: Any) -> bool:
 
 
 def test_sample_loads(sample):
-    assert isinstance(psf.load(sample.path), psf.PsfFile)
+    assert isinstance(psf_parser.load(sample.path), psf_parser.PsfFile)
 
 
 def test_run_has_metadata(run):
@@ -36,7 +36,7 @@ def test_run_has_metadata(run):
 
 def test_encodings_agree(pair):
     ascii_sample, binary_sample = pair
-    from_ascii, from_binary = psf.load(ascii_sample.path), psf.load(binary_sample.path)
+    from_ascii, from_binary = psf_parser.load(ascii_sample.path), psf_parser.load(binary_sample.path)
 
     assert list(from_ascii.variables) == list(from_binary.variables)
     assert set(from_ascii.types) == set(from_binary.types)
