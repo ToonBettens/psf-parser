@@ -39,6 +39,9 @@ class BinaryReader:
     def read_uint32(self) -> int:
         return self._read_struct("!I")[0]
 
+    def read_int32(self) -> int:
+        return self._read_struct("!i")[0]
+
     def read_float64(self) -> float:
         return self._read_struct("!d")[0]
 
@@ -48,7 +51,10 @@ class BinaryReader:
         padding = (4 - (length % 4)) % 4
         if padding:
             self.read_bytes(padding)
-        return data.decode(encoding)
+        try:
+            return data.decode(encoding)
+        except UnicodeDecodeError:
+            raise PsfParseError(f"undecodable string before offset {self.tell()}") from None
 
     # === Peek Support ===
     def peek_bytes(self, n: int) -> bytes:

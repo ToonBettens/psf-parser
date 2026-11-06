@@ -38,6 +38,10 @@ class ValueSection(Enum):
     WINDOWED = 1024
     ENTRIES = 1280
 
+    @classmethod
+    def _missing_(cls, value: object) -> None:
+        raise PsfParseError(f"unknown value section layout {value}")
+
 
 class BinaryParser:
     """Parses one psfbin file: its declarations at once, and the columns of a table when asked."""
@@ -95,7 +99,9 @@ class BinaryParser:
         except OSError:
             raise PsfParseError(f"{self.path} is too short to be a psfbin file") from None
         if self.reader.read_bytes(8) != MAGIC:
-            raise PsfParseError(f"{self.path} is not a psfbin file (magic missing)")
+            raise PsfParseError(
+                f"{self.path} is not a psfascii or psfbin file, or is truncated (psfxl is not supported)"
+            )
 
     def _at(self, ids: ChunkId | set[ChunkId]) -> bool:
         """True if the next chunk id is one of `ids`, without consuming it."""
@@ -152,18 +158,29 @@ class BinaryParser:
                 case ChunkId.PROP_STRING:
                     properties[key] = self.reader.read_string()
                 case ChunkId.PROP_INT:
-                    properties[key] = self.reader.read_uint32()
+                    properties[key] = self.reader.read_int32()
                 case ChunkId.PROP_FLOAT:
                     properties[key] = self.reader.read_float64()
+
+    def _kind(self, code: int) -> Kind:
+        if code not in KINDS:
+            raise PsfParseError(f"unknown type code {code} before offset {self.reader.tell()}")
+        return KINDS[code]
+
+    def _type_by_id(self) -> PsfType:
+        type_id = self.reader.read_uint32()
+        if type_id not in self.types_by_id:
+            raise PsfParseError(f"unknown type id {type_id} before offset {self.reader.tell()}")
+        return self.types_by_id[type_id]
 
     def _read_type(self) -> PsfType:
         self._expect(ChunkId.DECLARATION)
         type_id = self.reader.read_uint32()
         name = self.reader.read_string()
         element_code = self.reader.read_uint32()
-        kind = KINDS[self.reader.read_uint32()]
+        kind = self._kind(self.reader.read_uint32())
 
-        element = PsfType(name, KINDS[element_code]) if kind is Kind.ARRAY else None
+        element = PsfType(name, self._kind(element_code)) if kind is Kind.ARRAY else None
         fields: tuple[PsfType, ...] = ()
         if kind is Kind.STRUCT:
             members = []
@@ -184,7 +201,7 @@ class BinaryParser:
 
         variable_id = self.reader.read_uint32()
         name = self.reader.read_string()
-        type_ = self.types_by_id[self.reader.read_uint32()]
+        type_ = self._type_by_id()
         self.variables_by_id[variable_id] = add_variable(
             self.file, Variable(name, type_, role, self._read_properties())
         )
@@ -202,7 +219,7 @@ class BinaryParser:
                 self.reader.skip(3)
                 return self.reader.read_int8()
             case Kind.INT32:
-                return self.reader.read_uint32()
+                return self.reader.read_int32()
             case Kind.FLOAT64:
                 return self.reader.read_float64()
             case Kind.COMPLEX:
@@ -267,7 +284,7 @@ class BinaryParser:
             self._expect(ChunkId.DECLARATION)
             self.reader.skip(4)
             name = self.reader.read_string()
-            type_ = self.types_by_id[self.reader.read_uint32()]
+            type_ = self._type_by_id()
             value = as_column(type_.kind, [self._read_value(type_)])
             add_variable(self.file, Variable(name, type_, Role.ENTRY, self._read_properties(), value))
         self._skip_index(bytes_per_entry=8)
@@ -312,7 +329,10 @@ class BinaryParser:
         columns: defaultdict[str, list[Any]] = defaultdict(list)
         while self.reader.tell() < end:
             self._expect(ChunkId.DECLARATION)
-            variable = self.variables_by_id[self.reader.read_uint32()]
+            variable_id = self.reader.read_uint32()
+            if variable_id not in self.variables_by_id:
+                raise PsfParseError(f"unknown column id {variable_id} before offset {self.reader.tell()}")
+            variable = self.variables_by_id[variable_id]
             columns[variable.name].append(self._read_value(variable.type))
         return columns
 
@@ -339,6 +359,10 @@ class BinaryParser:
                 self._expect(ChunkId.DECLARATION)
                 window = self.reader.read_uint16()
                 count = self.reader.read_uint16()
+                if count > window:
+                    raise PsfParseError(
+                        f"block before offset {self.reader.tell()} holds {count} values in {window} slots"
+                    )
                 blocks.append((self.reader.tell(), window, count))
                 self.reader.skip((len(self.windowed) * (window + 1) - 1) * 8)
             self._close_container(end)

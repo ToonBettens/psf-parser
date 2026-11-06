@@ -10,7 +10,7 @@ from typing import Any
 
 import numpy as np
 
-from psf_parser._check import check
+from psf_parser._check import check, check_row_count
 from psf_parser.errors import PsfParseError, PsfStructureError
 from psf_parser.model import Kind, PsfFile, Role, Variable
 
@@ -27,7 +27,10 @@ def as_column(kind: Kind, values: Any) -> np.ndarray | list[Any]:
     dtype = NUMERIC_DTYPES.get(kind)
     if dtype is None:
         return list(values)
-    column = np.asarray(values, dtype=dtype)
+    try:
+        column = np.asarray(values, dtype=dtype)
+    except (OverflowError, TypeError, ValueError) as error:
+        raise PsfParseError(f"a {kind.value} column holds a value that does not fit: {error}") from None
     column.setflags(write=False)
     return column
 
@@ -75,7 +78,9 @@ def defer_each_column(
 
     def load(variable: Variable) -> None:
         _check_unchanged(path, stamp)
-        variable._values = as_column(variable.type.kind, read_column(variable))
+        column = as_column(variable.type.kind, read_column(variable))
+        check_row_count(file, variable, len(column))
+        variable._values = column
 
     for variable in file:
         if variable.role is not Role.ENTRY:

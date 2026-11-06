@@ -130,7 +130,8 @@ Laziness moves some errors later, and these rules keep the cost small:
 - **Truncation fails at `load`,** because a whole file ends in `Clarissa` or `END`.
 - **A file that changed since `load` fails on the next read,** comparing size and modification time. Otherwise values from a
   new run could sit under the old declarations.
-- **Damage inside the values fails on access,** when those values are read.
+- **Damage inside the values fails on access,** when those values are read, as far as it can be seen at all. A
+  changed byte inside a number gives a different number, and PSF has no checksum, so that cannot be detected.
 
 ### Errors
 

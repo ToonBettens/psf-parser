@@ -371,7 +371,8 @@ option is described as psfxl-specific, yet the key reports `1.4.0` for a psfbin 
 ## 6. Known unknowns
 
 - Whether `PROP_INT` and `INT32` are signed. No value in the corpus has the high bit set, so the two readings
-  cannot be told apart. `INT8` turned out to be signed.
+  cannot be told apart. They are read as signed (inferred), because `INT8` turned out to be signed and psfascii
+  can write negative integers.
 - What `PSF style = 7` means.
 - What `0x130` means in a windowed trace index entry.
 - Datatype codes 4, 6-10 and 13-15.

@@ -49,7 +49,7 @@ class AsciiParser:
                 if self.tokenizer.peek() is not None:
                     raise PsfParseError(f"{self.path}: VALUE is not on a line of its own")
                 if self.file.sweep is None:
-                    self.tokenizer = Tokenizer(handle.read().decode(), self.values_row)
+                    self.tokenizer = Tokenizer(self._decode(handle.read()), self.values_row)
                     self._parse_entries()
                 else:
                     defer_columns(self.file, self.path, stamp, self.read_columns)
@@ -58,7 +58,7 @@ class AsciiParser:
     def read_columns(self) -> dict[str, list[Any]]:
         with open(self.path, "rb") as handle:
             handle.seek(self.values_at)
-            self.tokenizer = Tokenizer(handle.read().decode(), self.values_row)
+            self.tokenizer = Tokenizer(self._decode(handle.read()), self.values_row)
         columns: defaultdict[str, list[Any]] = defaultdict(list)
         while not self.tokenizer.at("KW_END"):
             name = str(self.tokenizer.expect("STRING").value)
@@ -80,7 +80,13 @@ class AsciiParser:
             self.values_row += 1
             if line.strip() == b"VALUE":
                 break
-        return b"".join(lines).decode()
+        return self._decode(b"".join(lines))
+
+    def _decode(self, data: bytes) -> str:
+        try:
+            return data.decode()
+        except UnicodeDecodeError:
+            raise PsfParseError(f"{self.path} is not valid text") from None
 
     # --- sections -----------------------------------------------------------
 
