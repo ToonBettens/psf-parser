@@ -120,7 +120,9 @@ def main():
         run_dir = os.path.join(args.outdir, run_name)
 
         if os.path.exists(run_dir):
-            raise SystemExit(f"{run_dir} already exists.\nRuns are never overwritten so that versions can coexist -- remove it first, or use --outdir.")
+            raise SystemExit(
+                f"{run_dir} already exists.\nRuns are never overwritten so that versions can coexist -- remove it first, or use --outdir."
+            )
 
         os.makedirs(run_dir)
         for fmt in formats:

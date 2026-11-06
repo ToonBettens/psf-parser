@@ -49,7 +49,7 @@ Then run the checks:
 uv run pytest          # tests
 uv run ruff check .    # lint
 uv run ruff format .   # format
-uv run ty check        # type check (advisory — not currently clean)
+uv run ty check        # type check
 ```
 
 The minimum supported Python is 3.11. `.python-version` pins local development to that

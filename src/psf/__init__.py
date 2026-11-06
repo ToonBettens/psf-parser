@@ -2,6 +2,8 @@
 
 from pathlib import Path
 
+from psf.ascii.parser import AsciiParser
+from psf.binary.parser import BinaryParser
 from psf.errors import PsfParseError, PsfParserError, PsfStructureError
 from psf.model import Kind, Layout, PsfFile, PsfType, Role, Variable
 
@@ -28,10 +30,5 @@ def load(path: str | Path) -> PsfFile:
         is_ascii = handle.read(len(ASCII_MAGIC)) == ASCII_MAGIC
 
     if is_ascii:
-        from psf.ascii.parser import AsciiParser
-
         return AsciiParser(path).parse()
-
-    from psf.binary.parser import BinaryParser
-
     return BinaryParser(path).parse()
