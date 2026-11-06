@@ -36,14 +36,14 @@ class Token:
 
 
 class Tokenizer:
-    """A rewindable stream of tokens over psfascii text."""
+    """A stream of tokens over psfascii text, scanned as they are asked for."""
 
-    def __init__(self, text: str):
-        self.tokens: list[Token] = list(self._scan(text))
-        self.position = 0
+    def __init__(self, text: str, first_row: int = 1):
+        self.tokens = self._scan(text, first_row)
+        self.upcoming = next(self.tokens, None)
 
-    def _scan(self, text: str) -> Iterator[Token]:
-        row, column = 1, 1
+    def _scan(self, text: str, first_row: int) -> Iterator[Token]:
+        row, column = first_row, 1
         for match in TOKEN_REGEX.finditer(text):
             kind = match.lastgroup
             assert kind is not None, "every alternative in TOKEN_REGEX is a named group"
@@ -71,7 +71,7 @@ class Tokenizer:
 
     def peek(self) -> Token | None:
         """The next token without consuming it."""
-        return self.tokens[self.position] if self.position < len(self.tokens) else None
+        return self.upcoming
 
     def at(self, kinds: str | Collection[str]) -> bool:
         """True if the next token is one of `kinds`, without consuming it."""
@@ -83,7 +83,7 @@ class Tokenizer:
         token = self.peek()
         if token is None:
             raise PsfParseError("unexpected end of file")
-        self.position += 1
+        self.upcoming = next(self.tokens, None)
         return token
 
     def expect(self, kinds: str | Collection[str]) -> Token:

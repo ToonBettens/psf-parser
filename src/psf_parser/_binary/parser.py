@@ -9,8 +9,8 @@ import numpy as np
 
 from psf_parser._binary.chunk import ChunkId
 from psf_parser._binary.reader import BinaryReader
-from psf_parser._check import add_type, add_variable, check
-from psf_parser._columns import as_column, assign_columns
+from psf_parser._check import add_type, add_variable
+from psf_parser._columns import as_column, defer_columns, file_stamp
 from psf_parser.errors import PsfParseError
 from psf_parser.model import Kind, PsfFile, PsfType, Role, Scalar, Variable
 
@@ -40,15 +40,18 @@ class ValueSection(Enum):
 
 
 class BinaryParser:
-    """Parses one psfbin file into a `PsfFile`."""
+    """Parses one psfbin file: its declarations at once, and the columns of a table when asked."""
 
     def __init__(self, path: str | Path):
         self.path = Path(path)
         self.file = PsfFile(path=str(self.path))
         self.types_by_id: dict[int, PsfType] = {}
         self.variables_by_id: dict[int, Variable] = {}
+        self.values_at = 0
+        self.stamp = None
 
-    def parse(self) -> PsfFile:
+    def read_schema(self) -> PsfFile:
+        self.stamp = file_stamp(self.path)
         with open(self.path, "rb") as handle:
             self.reader = BinaryReader(handle)
             self._validate_signature()
@@ -60,10 +63,20 @@ class BinaryParser:
             self._parse_if(ChunkId.SECTION_SWEEP, self._parse_sweeps)
             self._parse_if(ChunkId.SECTION_TRACE, self._parse_traces)
             self._parse_if(ChunkId.SECTION_VALUE, self._parse_values)
-            self.reader.close()
-
-        check(self.file)
         return self.file
+
+    def read_columns(self) -> dict[str, Any]:
+        with open(self.path, "rb") as handle:
+            self.reader = BinaryReader(handle)
+            self.reader.seek(self.values_at)
+            end = self._open_container(ChunkId.CONTAINER)
+            if self.value_section is ValueSection.TAGGED:
+                columns = self._read_tagged_values(end)
+            else:
+                columns = self._read_windowed_values(end)
+            self._close_container(end)
+            self._expect(ChunkId.SECTION_END)
+        return columns
 
     def _validate_signature(self) -> None:
         try:
@@ -220,16 +233,13 @@ class BinaryParser:
         self._close_container(end)
 
     def _parse_values(self) -> None:
+        if self.value_section in (ValueSection.TAGGED, ValueSection.WINDOWED):
+            self.values_at = self.reader.tell()
+            defer_columns(self.file, self.path, self.stamp, self.read_columns)
+            return
         end = self._open_container(ChunkId.CONTAINER)
-        match self.value_section:
-            case ValueSection.NONE:
-                pass
-            case ValueSection.ENTRIES:
-                self._parse_entry_values()
-            case ValueSection.TAGGED:
-                self._parse_tagged_values(end)
-            case ValueSection.WINDOWED:
-                self._parse_windowed_values(end)
+        if self.value_section is ValueSection.ENTRIES:
+            self._parse_entry_values()
         self._close_container(end)
         self._expect(ChunkId.SECTION_END)
 
@@ -246,13 +256,13 @@ class BinaryParser:
             add_variable(self.file, Variable(name, type_, Role.ENTRY, self._read_properties(), value))
         self._skip_index(bytes_per_entry=8)
 
-    def _parse_tagged_values(self, end: int) -> None:
+    def _read_tagged_values(self, end: int) -> dict[str, Any]:
         start = self.reader.tell()
         columns = self._read_fixed_rows(end)
         if columns is None:
             self.reader.seek(start)
             columns = self._walk_tagged_values(end)
-        assign_columns(self.file, columns)
+        return columns
 
     def _read_fixed_rows(self, end: int) -> dict[str, np.ndarray] | None:
         """Decode the rows as one array, or return None if they are not all the same shape."""
@@ -290,7 +300,7 @@ class BinaryParser:
             columns[variable.name].append(self._read_value(variable.type))
         return columns
 
-    def _parse_windowed_values(self, end: int) -> None:
+    def _read_windowed_values(self, end: int) -> dict[str, np.ndarray]:
         sweeps = [v for v in self.file if v.role is Role.SWEEP]
         if len(sweeps) != 1:
             raise PsfParseError(f"windowed layout needs exactly one sweep, found {len(sweeps)}")
@@ -314,4 +324,4 @@ class BinaryParser:
                 self.reader.skip((window - count) * 8)
                 if index < len(variables) - 1:
                     self.reader.skip(8)
-        assign_columns(self.file, {name: np.concatenate(parts) for name, parts in blocks.items()})
+        return {name: np.concatenate(parts) for name, parts in blocks.items()}

@@ -60,8 +60,9 @@ def test_load_raises_on_a_missing_value(run, tmp_path):
     damaged = text[:value] + re.sub(r'"out" \(.*\)\n', "", text[value:], count=1)
     path = tmp_path / "myac.ac"
     path.write_text(damaged)
+    file = psf_parser.load(path)
     with pytest.raises(PsfStructureError):
-        psf_parser.load(path)
+        _ = file["out"].values
 
 
 def test_load_raises_on_a_value_for_an_undeclared_variable(run, tmp_path):
@@ -69,5 +70,6 @@ def test_load_raises_on_a_value_for_an_undeclared_variable(run, tmp_path):
     value = text.index("\nVALUE\n")
     path = tmp_path / "myac.ac"
     path.write_text(text[:value] + text[value:].replace('"out" (', '"nope" (', 1))
+    file = psf_parser.load(path)
     with pytest.raises(PsfStructureError):
-        psf_parser.load(path)
+        _ = file["out"].values

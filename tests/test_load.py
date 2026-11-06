@@ -30,7 +30,10 @@ def _same(a: Any, b: Any) -> bool:
 
 
 def test_sample_loads(sample):
-    assert isinstance(psf_parser.load(sample.path), psf_parser.PsfFile)
+    file = psf_parser.load(sample.path)
+    assert isinstance(file, psf_parser.PsfFile)
+    for variable in file:
+        assert len(variable.values) > 0
 
 
 def test_run_has_metadata(run):

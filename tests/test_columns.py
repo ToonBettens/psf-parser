@@ -101,7 +101,7 @@ def test_a_damaged_row_tag_raises(tmp_path):
     path = tmp_path / "myac.ac"
     path.write_bytes(data)
     with pytest.raises(PsfParseError):
-        psf_parser.load(path)
+        _ = psf_parser.load(path)["out"].values
 
 
 def test_a_windowed_column_of_another_type_raises(tmp_path):
@@ -112,4 +112,4 @@ def test_a_windowed_column_of_another_type_raises(tmp_path):
     path = tmp_path / "mytran.tran.tran"
     path.write_bytes(data.replace(float_type, struct.pack("!I4sII", 1, b"V", 0, 12)))
     with pytest.raises(PsfParseError, match="windowed column"):
-        psf_parser.load(path)
+        _ = psf_parser.load(path)["out"].values

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Iterator, Mapping
+from collections.abc import Callable, Iterator, Mapping
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
@@ -65,7 +65,6 @@ class PsfType:
         return f"<PsfType {self.name}: {self.kind.value}{detail}>"
 
 
-@dataclass(eq=False)
 class Variable:
     """One named quantity within a file, with the type that describes it.
 
@@ -74,14 +73,39 @@ class Variable:
         type: The type this variable was declared with.
         role: Part this variable plays in its file.
         properties: Annotations on the declaration itself, verbatim.
-        values: The data, in file order. A read-only array for numeric kinds, and a list for any other.
     """
 
-    name: str
-    type: PsfType
-    role: Role
-    properties: Properties = field(default_factory=dict)
-    values: np.ndarray | list[Any] = field(default_factory=list)
+    def __init__(
+        self,
+        name: str,
+        type: PsfType,
+        role: Role,
+        properties: Properties | None = None,
+        values: np.ndarray | list[Any] | None = None,
+    ):
+        self.name = name
+        self.type = type
+        self.role = role
+        self.properties = properties if properties is not None else {}
+        self._values = values
+        self._source: Callable[[], None] | None = None
+
+    @property
+    def values(self) -> np.ndarray | list[Any]:
+        """The data in file order, read from disk on first access.
+
+        Returns:
+            A read-only array in native byte order for numeric kinds, and a list for any other.
+
+        Raises:
+            PsfParseError: The value section is damaged, or the file changed after it was loaded.
+            PsfStructureError: The columns came out with unequal lengths.
+        """
+        if self._values is None:
+            if self._source is None:
+                return []
+            self._source()
+        return self._values if self._values is not None else []
 
     @property
     def units(self) -> str | None:
@@ -97,7 +121,8 @@ class Variable:
 
     def __repr__(self) -> str:
         units = f" [{self.units}]" if self.units else ""
-        return f"<Variable {self.name}{units}: {len(self.values)}x {self.type.kind.value}>"
+        count = f"{len(self._values)}x " if self._values is not None else ""
+        return f"<Variable {self.name}{units}: {count}{self.type.kind.value}>"
 
 
 @dataclass(eq=False)

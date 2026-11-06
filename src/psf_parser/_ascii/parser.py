@@ -3,11 +3,11 @@ from __future__ import annotations
 from collections import defaultdict
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any
+from typing import Any, BinaryIO
 
 from psf_parser._ascii.tokenizer import Tokenizer
-from psf_parser._check import add_type, add_variable, check
-from psf_parser._columns import as_column, assign_columns
+from psf_parser._check import add_type, add_variable
+from psf_parser._columns import as_column, defer_columns, file_stamp
 from psf_parser.errors import PsfParseError, PsfStructureError
 from psf_parser.model import Kind, PsfFile, PsfType, Role, Scalar, Variable
 
@@ -23,25 +23,64 @@ SECTIONS = {"KW_TYPE", "KW_SWEEP", "KW_TRACE", "KW_VALUE", "KW_END"}
 
 
 class AsciiParser:
-    """Parses one psfascii file into a `PsfFile`."""
+    """Parses one psfascii file: its declarations at once, and the columns of a table when asked."""
 
     def __init__(self, path: str | Path):
         self.path = Path(path)
-        self.tokenizer = Tokenizer(self.path.read_text())
         self.file = PsfFile(path=str(self.path))
+        self.values_at = 0
+        self.values_row = 1
 
-    def parse(self) -> PsfFile:
-        self._parse_header()
-        if self.tokenizer.at("KW_TYPE"):
-            self._parse_section("KW_TYPE", self._read_type_declaration)
-        if self.tokenizer.at("KW_SWEEP"):
-            self._parse_section("KW_SWEEP", lambda: self._read_variable(Role.SWEEP))
-        if self.tokenizer.at("KW_TRACE"):
-            self._parse_section("KW_TRACE", lambda: self._read_variable(Role.TRACE))
-        if self.tokenizer.at("KW_VALUE"):
-            self._parse_values()
-        check(self.file)
+    def read_schema(self) -> PsfFile:
+        stamp = file_stamp(self.path)
+        with open(self.path, "rb") as handle:
+            self._check_complete(handle)
+            handle.seek(0)
+            self.tokenizer = Tokenizer(self._read_up_to_values(handle))
+            self._parse_header()
+            if self.tokenizer.at("KW_TYPE"):
+                self._parse_section("KW_TYPE", self._read_type_declaration)
+            if self.tokenizer.at("KW_SWEEP"):
+                self._parse_section("KW_SWEEP", lambda: self._read_variable(Role.SWEEP))
+            if self.tokenizer.at("KW_TRACE"):
+                self._parse_section("KW_TRACE", lambda: self._read_variable(Role.TRACE))
+            if self.tokenizer.at("KW_VALUE"):
+                self.tokenizer.expect("KW_VALUE")
+                if self.tokenizer.peek() is not None:
+                    raise PsfParseError(f"{self.path}: VALUE is not on a line of its own")
+                if self.file.sweep is None:
+                    self.tokenizer = Tokenizer(handle.read().decode(), self.values_row)
+                    self._parse_entries()
+                else:
+                    defer_columns(self.file, self.path, stamp, self.read_columns)
         return self.file
+
+    def read_columns(self) -> dict[str, list[Any]]:
+        with open(self.path, "rb") as handle:
+            handle.seek(self.values_at)
+            self.tokenizer = Tokenizer(handle.read().decode(), self.values_row)
+        columns: defaultdict[str, list[Any]] = defaultdict(list)
+        while not self.tokenizer.at("KW_END"):
+            name = str(self.tokenizer.expect("STRING").value)
+            columns[name].append(self._read_value(self._variable_named(name).type))
+        return columns
+
+    def _check_complete(self, handle: BinaryIO) -> None:
+        handle.seek(0, 2)
+        handle.seek(max(handle.tell() - 16, 0))
+        if not handle.read().rstrip().endswith(b"END"):
+            raise PsfParseError(f"{self.path} is truncated: it does not end in END")
+
+    def _read_up_to_values(self, handle: BinaryIO) -> str:
+        """The text up to and including the VALUE line, or all of it if there is no such line."""
+        lines = []
+        for line in handle:
+            lines.append(line)
+            self.values_at += len(line)
+            self.values_row += 1
+            if line.strip() == b"VALUE":
+                break
+        return b"".join(lines).decode()
 
     # --- sections -----------------------------------------------------------
 
@@ -57,21 +96,12 @@ class AsciiParser:
         while not self.tokenizer.at(SECTIONS):
             read_one()
 
-    def _parse_values(self) -> None:
-        self.tokenizer.expect("KW_VALUE")
-        swept = self.file.sweep is not None
-        columns: defaultdict[str, list[Any]] = defaultdict(list)
+    def _parse_entries(self) -> None:
         while not self.tokenizer.at("KW_END"):
-            if swept:
-                name = str(self.tokenizer.expect("STRING").value)
-                variable = self._variable_named(name)
-                columns[name].append(self._read_value(variable.type))
-            else:
-                name = str(self.tokenizer.expect("STRING").value)
-                type_ = self._type_named(str(self.tokenizer.expect("STRING").value))
-                value = as_column(type_.kind, [self._read_value(type_)])
-                add_variable(self.file, Variable(name, type_, Role.ENTRY, self._read_properties(), value))
-        assign_columns(self.file, columns)
+            name = str(self.tokenizer.expect("STRING").value)
+            type_ = self._type_named(str(self.tokenizer.expect("STRING").value))
+            value = as_column(type_.kind, [self._read_value(type_)])
+            add_variable(self.file, Variable(name, type_, Role.ENTRY, self._read_properties(), value))
 
     # --- declarations -------------------------------------------------------
 

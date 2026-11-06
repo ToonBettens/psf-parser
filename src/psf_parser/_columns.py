@@ -1,12 +1,16 @@
-"""Conversion of parsed values into what `Variable.values` holds."""
+"""Conversion of parsed values into what `Variable.values` holds, and reading them on first access."""
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+import os
+from collections.abc import Callable, Mapping
+from pathlib import Path
 from typing import Any
 
 import numpy as np
 
+from psf_parser._check import check
+from psf_parser.errors import PsfParseError, PsfStructureError
 from psf_parser.model import Kind, PsfFile, Role
 
 NUMERIC_DTYPES = {
@@ -27,8 +31,33 @@ def as_column(kind: Kind, values: Any) -> np.ndarray | list[Any]:
     return column
 
 
-def assign_columns(file: PsfFile, columns: Mapping[str, Any]) -> None:
-    """Give every sweep and trace its column, which is empty when no values were read."""
-    for variable in file:
-        if variable.role is not Role.ENTRY:
-            variable.values = as_column(variable.type.kind, columns.get(variable.name, []))
+def file_stamp(path: Path) -> tuple[int, int] | None:
+    """The file's size and modification time, or None if it is gone."""
+    try:
+        status = os.stat(path)
+    except OSError:
+        return None
+    return status.st_size, status.st_mtime_ns
+
+
+def defer_columns(
+    file: PsfFile, path: Path, stamp: tuple[int, int] | None, read_columns: Callable[[], Mapping[str, Any]]
+) -> None:
+    """Arrange for the sweep and trace columns to be read when one of them is first asked for."""
+    columns = [variable for variable in file if variable.role is not Role.ENTRY]
+
+    def load() -> None:
+        if file_stamp(path) != stamp:
+            raise PsfParseError(f"{path} changed after it was loaded")
+        read = read_columns()
+        for variable in columns:
+            variable._values = as_column(variable.type.kind, read.get(variable.name, []))
+        try:
+            check(file)
+        except PsfStructureError:
+            for variable in columns:
+                variable._values = None
+            raise
+
+    for variable in columns:
+        variable._source = load
