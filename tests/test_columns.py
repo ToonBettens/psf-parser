@@ -11,7 +11,7 @@ import pytest
 import psf_parser
 from psf_parser.errors import PsfParseError
 
-RUN = Path(__file__).parent / "data" / "runs" / "rc_lowpass@1.4.0"
+RUN = Path(__file__).parent / "data" / "runs" / "rc_lowpass@23.1"
 ENCODINGS = ["ascii", "binary"]
 
 

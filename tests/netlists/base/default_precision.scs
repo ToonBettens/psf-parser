@@ -1,0 +1,15 @@
+// Spectre's default six digits in psfascii, which is what most real files have.
+//
+// Floats written without a decimal point arrive here, and the two encodings agree only to a tolerance.
+
+simulator lang=spectre
+global 0
+
+Vin (in 0)   vsource dc=1 mag=1 type=pulse val0=0 val1=1 delay=1m rise=1u fall=1u width=50m period=100m
+R1  (in out) resistor r=1k
+C1  (out 0)  capacitor c=1u
+
+myop dc
+mydc dc dev=Vin param=dc start=0 stop=2
+myac ac start=1 stop=1M dec=10
+mytran tran stop=20m maxstep=1m

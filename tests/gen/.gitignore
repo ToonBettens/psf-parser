@@ -1,8 +1,0 @@
-# ignore spectre-generated log files
-*.log
-
-# local setup for spectre (module loads, licence server)
-.envrc
-
-# generated run directories -- copied into ../data/runs/ once curated
-runs/

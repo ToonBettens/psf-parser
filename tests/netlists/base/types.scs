@@ -1,0 +1,35 @@
+// Value types that the other netlists do not reach, written into both encodings for comparison.
+//
+// The negative integer tests whether binary integers are signed: cfbe is an integer flag
+// that only takes -1 or -2. The fundamental name aims at a string value in psfbin.
+
+simulator lang=spectre
+global 0
+
+parameters rval=1k
+
+psfopts options precision="%.17g"
+
+subckt divider (a b)
+    parameters ratio=2
+    R1 (a b) resistor r=rval*ratio
+ends divider
+
+model qn bht cfbe=-2
+
+Vn (in 0)  vsource type=sine freq=1k ampl=1 fundname="tone"
+Q1 (out in 0) qn
+X1 (in out) divider ratio=3
+R2 (out 0) resistor r=rval
+
+opts   info what=options       where=rawfile
+pars   info what=parameters    where=rawfile
+allp   info what=allparameters where=rawfile
+insts  info what=inst          where=rawfile
+nodes  info what=nodes         where=rawfile
+terms  info what=terminals     where=rawfile
+subs   info what=subckts       where=rawfile
+prims  info what=primitives    where=rawfile
+every  info what=all           where=rawfile
+
+myop dc

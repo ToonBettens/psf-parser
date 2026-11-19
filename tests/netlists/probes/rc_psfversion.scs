@@ -1,0 +1,16 @@
+// Whether the psfversion option changes psfascii or psfbin files.
+//
+// The option is documented for psfxl only, yet the logFile reports a psfversion for every format.
+
+simulator lang=spectre
+global 0
+
+psfopts options precision="%.17g" psfversion="1.0"
+
+Vin (in 0)   vsource dc=1 mag=1
+R1  (in out) resistor r=1k
+C1  (out 0)  capacitor c=1u
+
+myop dc
+myac ac start=1 stop=1M dec=10
+mytran tran stop=5m

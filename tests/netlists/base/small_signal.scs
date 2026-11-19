@@ -1,0 +1,35 @@
+// Small-signal analyses on linear circuits: noise, xf, pz, sp and stb.
+
+simulator lang=spectre
+global 0
+
+psfopts options precision="%.17g"
+
+// --- a filter and a gain stage, for noise, xf and pz ---
+Vin (in 0)   vsource dc=0 mag=1
+R1  (in mid) resistor r=1k
+C1  (mid 0)  capacitor c=1n
+E1  (out 0 mid 0) vcvs gain=10
+R2  (out 0)  resistor r=1k
+
+// --- a two-port between 50 ohm ports, for sp ---
+P1 (a 0)  port num=1 r=50
+R3 (a b)  resistor r=50
+C3 (b 0)  capacitor c=1p
+P2 (b 0)  port num=2 r=50
+
+// --- a feedback loop broken by a probe, for stb ---
+E2 (loopout 0 0 fb) vcvs gain=1k
+Ro (loopout buf)    resistor r=1k
+Co (buf 0)          capacitor c=1n
+Ip (buf fb)         iprobe
+Cf (fb 0)           capacitor c=1p
+
+mynoise (out 0) noise start=1 stop=1G dec=2 iprobe=Vin
+myxf    (out 0) xf    start=1 stop=1G dec=2
+mypz    (out 0) pz    iprobe=Vin
+
+mysp      sp start=1M stop=1G dec=2 ports=[P1 P2]
+myspnoise sp start=1M stop=1G dec=2 ports=[P1 P2] donoise=yes oprobe=P2 iprobe=P1
+
+mystb stb start=1 stop=1G dec=2 probe=Ip

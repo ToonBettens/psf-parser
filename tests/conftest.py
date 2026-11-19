@@ -7,6 +7,8 @@ from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 
+import pytest
+
 DATA_DIR = Path(__file__).parent / "data"
 RUNS_DIR = DATA_DIR / "runs"
 
@@ -84,6 +86,11 @@ def all_pairs() -> tuple[tuple[Sample, Sample], ...]:
             if binary_sample is not None:
                 pairs.append((ascii_sample, binary_sample))
     return tuple(pairs)
+
+
+@pytest.fixture
+def every_sample() -> tuple[Sample, ...]:
+    return all_samples()
 
 
 def pytest_generate_tests(metafunc):

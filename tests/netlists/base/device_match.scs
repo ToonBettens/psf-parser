@@ -1,0 +1,34 @@
+// Result tables from dcmatch and sens, on a common-source stage with a hand-written model card.
+//
+// mos1 has no standard matching model, so dcmatch uses method=statistics.
+
+simulator lang=spectre
+global 0
+
+parameters vtn=0.5 rload=10k
+
+psfopts options precision="%.17g"
+
+model nch mos1 vto=vtn kp=100u
+
+Vdd (vdd 0) vsource dc=1.8
+Vg  (g 0)   vsource dc=0.8 mag=1
+Rd  (vdd d) resistor r=rload
+M1  (d g 0 0) nch w=10u l=1u
+
+statistics {
+    mismatch {
+        vary vtn   dist=gauss std=10m
+        vary rload dist=gauss std=1 percent=yes
+    }
+}
+
+myop dc
+myac ac start=1 stop=1G dec=2
+
+sens (d) to (Rd:r M1:w) for (myop myac)
+
+mymatch d 0 dcmatch mth=1e-3 where=rawfile method=statistics variations=mismatch
+mytemp sweep param=temp values=[25 50 75] {
+    myswept d 0 dcmatch mth=1e-3 where=rawfile method=statistics variations=mismatch
+}

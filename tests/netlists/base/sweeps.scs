@@ -1,0 +1,52 @@
+// Sweep tree shapes that rc_lowpass does not have.
+
+simulator lang=spectre
+global 0
+
+parameters rval=1k cval=1u
+
+psfopts options precision="%.17g"
+
+Vin (in 0)   vsource dc=1 mag=1
+R1  (in out) resistor r=rval
+C1  (out 0)  capacitor c=cval
+
+statistics {
+    process {
+        vary rval dist=gauss std=10 percent=yes
+    }
+}
+
+// --- several parameters swept together, a node with more than one axis ---
+pairs paramset {
+    rval cval
+    1k   1u
+    2k   2u
+    3k   3u
+}
+
+mypairs sweep paramset=pairs {
+    ac1 ac start=1 stop=1M dec=2
+}
+
+// --- temperature as an axis, with a sweep over a transient ---
+mytemp sweep param=temp values=[-40 27 125] {
+    dc1 dc
+    tr1 tran stop=2m
+}
+
+// --- a sweep inside Monte Carlo, because Spectre refuses it the other way round ---
+mymonte montecarlo numruns=2 seed=1 variations=process donominal=no savefamilyplots=yes {
+    myinner sweep param=cval values=[1u 2u] {
+        dc2 dc
+    }
+}
+
+// --- the same analysis before and after an altergroup ---
+before ac start=1 stop=1M dec=2
+
+corner altergroup {
+    parameters rval=5k
+}
+
+after ac start=1 stop=1M dec=2

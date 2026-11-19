@@ -16,7 +16,7 @@ from psf_parser._columns import as_column
 from psf_parser.errors import PsfParseError, PsfStructureError
 from psf_parser.model import Kind, PsfType
 
-RUN = Path(__file__).parent / "data" / "runs" / "rc_lowpass@1.4.0"
+RUN = Path(__file__).parent / "data" / "runs" / "rc_lowpass@23.1"
 ROUNDS = 300
 
 
@@ -104,3 +104,28 @@ def test_int_properties_are_signed(tmp_path):
     path = tmp_path / "myac.ac"
     path.write_bytes(data.replace(entry, entry[:-4] + struct.pack("!i", -1)))
     assert psf_parser.load(path).header["PSF traces"] == -1
+
+
+def test_padding_after_the_magic_is_accepted(tmp_path):
+    """Spectre 25.1 pads windowed files past their table of contents."""
+    data = (RUN / "binary" / "mytran.tran.tran").read_bytes()
+    path = tmp_path / "mytran.tran.tran"
+    path.write_bytes(data + b"\xff\xff\xff\xff\x7f\xff\xff\xff" * 2048)
+    assert len(psf_parser.load(path)["out"].values) == 653
+
+
+def test_the_magic_is_only_searched_for_near_the_end(tmp_path):
+    data = (RUN / "binary" / "mytran.tran.tran").read_bytes()
+    path = tmp_path / "mytran.tran.tran"
+    path.write_bytes(data + bytes(2 << 20))
+    with pytest.raises(PsfParseError, match="truncated"):
+        psf_parser.load(path)
+
+
+def test_a_string_type_with_code_14_has_one_extra_word():
+    name = b"state\0\0\0"
+    declaration = struct.pack("!III", 16, 7, 5) + name + struct.pack("!III", 0, 14, 0)
+    parser = BinaryParser("unused")
+    parser.reader = _reader(declaration + struct.pack("!I", 19))
+    assert parser._read_type().kind is Kind.STRING
+    assert parser.reader.read_uint32() == 19

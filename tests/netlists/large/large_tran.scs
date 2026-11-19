@@ -1,0 +1,28 @@
+// long_tran stretched to about 1.2 M points of 11 columns, around 100 MB in psfbin.
+//
+// Used once to measure speed on a real large file. Not committed.
+
+simulator lang=spectre
+global 0
+
+psfopts options precision="%.17g"
+
+Vin (n0 0) vsource type=sine freq=1k ampl=1
+R0 (n0 n1) resistor r=100
+C0 (n1 0) capacitor c=1n
+R1 (n1 n2) resistor r=100
+C1 (n2 0) capacitor c=1n
+R2 (n2 n3) resistor r=100
+C2 (n3 0) capacitor c=1n
+R3 (n3 n4) resistor r=100
+C3 (n4 0) capacitor c=1n
+R4 (n4 n5) resistor r=100
+C4 (n5 0) capacitor c=1n
+R5 (n5 n6) resistor r=100
+C5 (n6 0) capacitor c=1n
+R6 (n6 n7) resistor r=100
+C6 (n7 0) capacitor c=1n
+R7 (n7 n8) resistor r=100
+C7 (n8 0) capacitor c=1n
+
+mytran tran stop=1.2 maxstep=1u

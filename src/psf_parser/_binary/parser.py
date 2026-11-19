@@ -21,10 +21,14 @@ KINDS = {
     5: Kind.INT32,
     11: Kind.FLOAT64,
     12: Kind.COMPLEX,
+    14: Kind.STRING,  # Declared with one extra word (format-notes 3.4).
     16: Kind.STRUCT,
 }
 
+STRING_WITH_EXTRA_WORD = 14
 MAGIC = b"Clarissa"
+# Spectre 25.1 pads up to 45 KB after the magic (format-notes 3.1), so 1 MiB leaves a wide margin.
+SIGNATURE_SEARCH_LIMIT = 1 << 20
 
 # Big-endian dtypes of the kinds a tagged row can hold at a fixed size (format-notes 3.5).
 FIXED_SIZE_DTYPES = {Kind.FLOAT64: ">f8", Kind.COMPLEX: ">c16"}
@@ -94,14 +98,12 @@ class BinaryParser:
         return np.concatenate(parts) if parts else []
 
     def _validate_signature(self) -> None:
-        try:
-            self.reader.seek(-12, 2)
-        except OSError:
-            raise PsfParseError(f"{self.path} is too short to be a psfbin file") from None
-        if self.reader.read_bytes(8) != MAGIC:
-            raise PsfParseError(
-                f"{self.path} is not a psfascii or psfbin file, or is truncated (psfxl is not supported)"
-            )
+        """Find the magic near the end, where padding can follow it (format-notes 3.1)."""
+        self.reader.seek(0, 2)
+        self.reader.seek(max(self.reader.tell() - SIGNATURE_SEARCH_LIMIT, 0))
+        if MAGIC in self.reader.fp.read():
+            return
+        raise PsfParseError(f"{self.path} is not a psfascii or psfbin file, or is truncated (psfxl is not supported)")
 
     def _at(self, ids: ChunkId | set[ChunkId]) -> bool:
         """True if the next chunk id is one of `ids`, without consuming it."""
@@ -178,7 +180,10 @@ class BinaryParser:
         type_id = self.reader.read_uint32()
         name = self.reader.read_string()
         element_code = self.reader.read_uint32()
-        kind = self._kind(self.reader.read_uint32())
+        code = self.reader.read_uint32()
+        kind = self._kind(code)
+        if code == STRING_WITH_EXTRA_WORD:
+            self.reader.skip(4)
 
         element = PsfType(name, self._kind(element_code)) if kind is Kind.ARRAY else None
         fields: tuple[PsfType, ...] = ()

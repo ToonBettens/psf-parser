@@ -1,0 +1,37 @@
+// Periodic analyses on a driven diode: pss and the small-signal analyses around it.
+
+simulator lang=spectre
+global 0
+
+parameters cval=100p
+
+psfopts options precision="%.17g"
+
+model d1 diode is=1e-14
+
+// --- a driven rectifier between two ports ---
+P1 (in 0)   port num=1 r=50 type=sine freq=1M ampl=1 pacmag=1
+D1 (in out) d1
+R1 (out 0)  resistor r=1k
+C1 (out 0)  capacitor c=cval
+P2 (out 0)  port num=2 r=50
+
+// --- a feedback loop broken by a probe, for pstb ---
+E2 (loopout 0 0 fb) vcvs gain=100
+Ro (loopout buf)    resistor r=1k
+Co (buf 0)          capacitor c=1n
+Ip (buf fb)         iprobe
+Cf (fb 0)           capacitor c=1p
+
+mypss pss fund=1M harms=5 errpreset=conservative
+
+mypac    pac start=1k stop=100k dec=2 maxsideband=2
+mypxf    (out 0) pxf start=1k stop=100k dec=2 maxsideband=2
+mypnoise (out 0) pnoise start=1k stop=100k dec=2 maxsideband=2
+mypsp    psp start=1k stop=100k dec=2 ports=[P1 P2] portharmsvec=[0 0] maxsideband=2
+mypstb   pstb start=1k stop=100k dec=2 probe=Ip
+
+mysweep sweep param=cval values=[100p 200p] {
+    pss2 pss fund=1M harms=5 errpreset=conservative
+    pac2 pac start=1k stop=100k dec=2 maxsideband=2
+}

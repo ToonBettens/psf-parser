@@ -5,7 +5,7 @@ files that Spectre produced, and by cross-checking the two encodings of the same
 All of it is observed, not specified. Where something is only inferred, it says so.
 
 Corpus behind these notes: one Spectre 23.1 run of an RC low-pass filter, `psfversion 1.4.0`,
-written as both psfascii and psfbin (`tests/data/runs/rc_lowpass@1.4.0`). Each encoding has 37
+written as both psfascii and psfbin (`tests/data/runs/rc_lowpass@23.1`). Each encoding has 37
 files: 36 data files and a logFile. Counts below refer to this run.
 
 ---
@@ -86,7 +86,15 @@ significant digits. Formats in the `%g` family drop the decimal point for integr
 
 `precision="%.17g"` round-trips float64 exactly, and the test corpus uses it. At the default of six
 digits the text cannot represent the value the binary holds (`0.24` versus
-`0.24000000000000002`), so the two encodings can only be compared to a tolerance.
+`0.24000000000000002`), so the two encodings can only be compared to a tolerance. qpss frequency index files
+(`*.fi.qpss`) have six digits whatever `precision` says.
+
+### 2.2 A repeated row without its sweep value
+
+An envelope analysis (`myenv.td.envlp`, Spectre 25.1) writes one row twice in psfascii, the second time without its
+`time` value. psfbin has the row once. So in an envelope file (`analysis type` ending in `envlp`), a value that
+arrives with no sweep value for it, and equals that column's previous value, is a repeat. Anything else in that
+position, and any such row in another analysis, is a damaged file.
 
 ---
 
@@ -117,7 +125,10 @@ appears as a key in the table of contents.
 `SECTION_HEADER` and the `NONE` layout share the value `0`, so the first word of a header-only file
 is `0` for the layout reason, not the section reason.
 
-The `Clarissa` magic near the end of the file also shows that the file was written to completion.
+The `Clarissa` magic also shows that the file was written to completion. It is not always at the end:
+Spectre 25.1 follows it with 16 to 45 KB of padding in windowed files, and adds the header keys
+`PsfTrailerFileNumber`, `PsfTrailerStart` and `PsfEndTableFileNumber`. Both versions report `psfversion 1.4.0`, so
+that version alone does not pin down the layout of a file.
 
 ### 3.2 Chunk ids
 
@@ -166,7 +177,8 @@ not a type. It means "no element type".
 16 STRUCT    members follow until STRUCT_END (18)
 ```
 
-Codes 4, 6-10 and 13-15 have never been observed. `STRING` and `ARRAY` have never been observed in
+Code 14 appears once, on the `stbstate` type of a stability margin file. Its declaration has one extra `uint32`
+(`0`) after the kind, its value is written like a string, and psfascii declares that type `STRING`. Codes 4, 6-10, 13 and 15 have never been observed. `STRING` and `ARRAY` have never been observed in
 psfbin, only in psfascii, so reading them from psfbin is untested. `INT8` and `INT32` appear only as
 struct members.
 
@@ -375,7 +387,7 @@ option is described as psfxl-specific, yet the key reports `1.4.0` for a psfbin 
   can write negative integers.
 - What `PSF style = 7` means.
 - What `0x130` means in a windowed trace index entry.
-- Datatype codes 4, 6-10 and 13-15.
+- Datatype codes 4, 6-10, 13 and 15, and what the extra word of code 14 means.
 - psfbin files containing `STRING` or `ARRAY` values.
 - Windowed columns of any type other than `FLOAT64`.
 - psfascii group declarations, and nested groups in either encoding.

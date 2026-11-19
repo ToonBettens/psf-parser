@@ -13,7 +13,7 @@ import psf_parser
 from psf_parser._binary.reader import BinaryReader
 from psf_parser.errors import PsfParseError, PsfStructureError
 
-RUN = Path(__file__).parent / "data" / "runs" / "rc_lowpass@1.4.0"
+RUN = Path(__file__).parent / "data" / "runs" / "rc_lowpass@23.1"
 TABLES = [("ascii", "myac.ac"), ("binary", "myac.ac"), ("ascii", "mytran.tran.tran"), ("binary", "mytran.tran.tran")]
 
 
@@ -162,3 +162,38 @@ def test_tagged_and_ascii_reads_keep_every_column(encoding, name):
     file = psf_parser.load(RUN / encoding / name)
     _ = file["out"].values
     assert all(variable._values is not None for variable in file)
+
+
+def _repeat_first_row(path: Path, analysis_type: str) -> None:
+    """Write the first row twice, the second time without its sweep value."""
+    text = path.read_text().replace('"analysis type" "ac"', f'"analysis type" "{analysis_type}"', 1)
+    at = text.index("\nVALUE\n") + 7
+    lines = text[at:].splitlines(keepends=True)
+    row, repeat = lines[:4], lines[1:4]
+    path.write_text(text[:at] + "".join(row + repeat) + "".join(lines[4:]))
+
+
+def test_a_repeated_ascii_row_in_an_envelope_file_is_dropped(tmp_path):
+    path = _copy("ascii", "myac.ac", tmp_path)
+    expected = psf_parser.load(path)["out"].values
+    _repeat_first_row(path, "td.envlp")
+    assert np.array_equal(psf_parser.load(path)["out"].values, expected)
+
+
+def test_a_repeated_ascii_row_in_another_analysis_raises(tmp_path):
+    path = _copy("ascii", "myac.ac", tmp_path)
+    _repeat_first_row(path, "ac")
+    file = psf_parser.load(path)
+    with pytest.raises(PsfStructureError):
+        _ = file["out"].values
+
+
+def test_a_different_ascii_row_without_its_sweep_value_raises(tmp_path):
+    path = _copy("ascii", "myac.ac", tmp_path)
+    text = path.read_text().replace('"analysis type" "ac"', '"analysis type" "td.envlp"', 1)
+    path.write_text(
+        text.replace("\nVALUE\n", '\nVALUE\n"freq" 1\n"in" (1 0)\n"out" (1 0)\n"Vin:p" (0 0)\n"out" (7 7)\n', 1)
+    )
+    file = psf_parser.load(path)
+    with pytest.raises(PsfStructureError):
+        _ = file["out"].values

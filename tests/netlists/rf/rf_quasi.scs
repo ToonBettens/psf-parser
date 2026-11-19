@@ -1,0 +1,26 @@
+// Multi-tone analyses on a diode mixer: qpss, hb and envlp.
+//
+// Separate from rf_periodic, because these are the most likely to fail on a given setup.
+
+simulator lang=spectre
+global 0
+
+psfopts options precision="%.17g"
+
+model d1 diode is=1e-14
+
+Vlo (lo 0)  vsource type=sine freq=1M   ampl=0.5 fundname="lo"
+Vrf (rf lo) vsource type=sine freq=1.1M ampl=10m fundname="rf" pacmag=1
+D1  (rf out) d1
+R1  (out 0)  resistor r=1k
+C1  (out 0)  capacitor c=100p
+
+myqpss qpss funds=["lo" "rf"] maxharms=[3 1] errpreset=conservative
+
+myqpac   qpac start=1k stop=100k dec=2
+myqpnoise (out 0) qpnoise start=1k stop=100k dec=2
+
+myhb   hb funds=["lo" "rf"] maxharms=[3 1]
+myhbac hbac start=1k stop=100k dec=2
+
+myenv envlp clockname="lo" stop=5u

@@ -60,9 +60,18 @@ class AsciiParser:
             handle.seek(self.values_at)
             self.tokenizer = Tokenizer(self._decode(handle.read()), self.values_row)
         columns: defaultdict[str, list[Any]] = defaultdict(list)
+        assert self.file.sweep is not None, "only a table defers its columns"
+        rows = columns[self.file.sweep.name]
+        # Envelope analysis repeats a row without its sweep value (format-notes 2.2).
+        envelope = str(self.file.header.get("analysis type", "")).endswith("envlp")
         while not self.tokenizer.at("KW_END"):
             name = str(self.tokenizer.expect("STRING").value)
-            columns[name].append(self._read_value(self._variable_named(name).type))
+            value = self._read_value(self._variable_named(name).type)
+            column = columns[name]
+            repeat = column is not rows and len(column) == len(rows) and column and column[-1] == value
+            if envelope and repeat:
+                continue
+            column.append(value)
         return columns
 
     def _check_complete(self, handle: BinaryIO) -> None:
