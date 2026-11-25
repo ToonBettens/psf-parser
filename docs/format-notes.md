@@ -395,7 +395,39 @@ back together.
 
 A Monte Carlo run has the same structure, with `iteration` as the swept parameter.
 
-`sweepVariable` is an array, but it holds at most one name in this corpus.
+`sweepVariable` holds one name, except for a paramset sweep, which lists every parameter it varies
+(`("rval" "cval")`). Each child then carries all of them as properties.
+
+### 4.3 Entry names
+
+A root's entry name is `<name>-<analysisType>`, and the names inside a tree add each level's index:
+`mysweep-001_mynestedsweep-002_ac2-ac`. This is observed, not documented, and not regular:
+
+- A nested sweep's root skips the middle level: `mysweep_ac2-sweep`, not `mysweep_mynestedsweep_ac2-sweep`.
+- A swept pss adds the kind to its roots, `mysweep_pss2_td-sweep` and `mysweep_pss2_fd-sweep`, while its leaves are
+  `mysweep-000_pss2-td.pss`.
+- pac and pxf sidebands are a level of their own (`sweepVariable` `harmonic`), whose leaves add the sideband after a
+  dot: `mypac.-2-pac`.
+
+One analysis can give several roots: qpss gives `myqpss-fi.qpss` and `myqpss-fd.qpss`, stb gives `mystb-stb` and
+`mystb-margin.stb`.
+
+### 4.4 Not every result is linked
+
+A dcmatch inside a sweep gives the sweep root `mytemp_myswept-sweep` and, separately, three roots
+`mytemp-000_myswept-dcmatch` to `-002` with an empty `parent` and no `temp` property. Only the index in their names
+ties them to the sweep's points.
+
+### 4.5 Parent sweep files
+
+A sweep's own data file (`mysweep_ac2.sweep`) has the swept parameter as its sweep column, with units (`Ohm`, `F`,
+`C`), and declares no traces. Its values match the children's properties for most levels, but not all:
+
+- A `harmonic` level of pac, pxf or envelope analysis repeats the sidebands: 25 values for 5 sidebands, 10 for 2.
+- A paramset level's sweep column is an index 1, 2, 3, named after the paramset in 25.1 (`pairs`) and
+  `iteration_mypairs` in 21.1. Its declared traces `rval` and `cval` have no values (1.2).
+
+So the logFile is the reliable source of a level's values.
 
 ---
 

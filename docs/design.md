@@ -2,7 +2,7 @@
 
 How the library is layered, and why. `format-notes.md` describes the file format itself.
 
-**Status:** this is the design for v1.0, and the code is moving to it. The file layer is in place. The Database is not built, and its API is not designed yet.
+**Status:** this is the design for v1.0. The file layer is in place. The Database is designed here and not built yet.
 
 ---
 
@@ -160,25 +160,98 @@ They share what they deliver, the model and the `check`, and all format knowledg
 
 ## The Database layer
 
-Not built yet, and its API is open. What is settled is the idea: open a Spectre raw folder as a database, and get signals out of it.
-The rest comes from the format (`format-notes.md` section 4).
+A Spectre raw folder opens as a `Database`. Its logFile lists every result and how they nest, so the Database
+reads only the logFile at first and parses a data file when its values are asked for.
 
-Reading a signal walks to the leaves, loads each file and stacks the innermost columns into an N-dimensional array, with the
-coordinates collected from the parent chain. Files not reached are never parsed.
+```python
+db = psf_parser.Database("raw/")
+print(db)                                # every analysis: path, axes, signals
+a = db["mysweep/mynestedsweep/ac2"]      # an Analysis
+s = a["out"]                             # a Signal
+s.values.shape                           # (3, 3, 61)
+[ax.name for ax in s.axes]               # ["R1:r", "C1:c", "freq"]
+s.at({"R1:r": 2000})                     # the Signal at R1:r = 2k, shape (3, 61)
+s[1, 2].file                             # the PsfFile behind one point
+```
 
-### Known risks
+### The objects
 
-**Multi-axis nodes.** `sweepVariable` is an array, and a `paramset` sweep may vary several parameters at once (inferred). It always
-holds one name in the current corpus, but a node must be able to contribute several axes.
+| Object | What it is | Main members |
+|---|---|---|
+| `Database` | One raw folder | `analyses` (path to `Analysis`), `db[path]`, `db.entry(name)`, `str(db)` lists everything |
+| `Analysis` | One result tree: an analysis with the sweeps around it | `path`, `entry`, `has_path`, `missing`, `signals` (name to `Signal`), `a[name]` |
+| `Signal` | One quantity of an analysis, over all its files | `name`, `units`, `axes`, `values`, `value`, `ragged`, `s[i, j]`, `at({...})`, `fields`, `field(name)`, `files`, `file` |
+| `Axis` | One sweep level, or the innermost axis | `name`, `units`, `values`, `parameters`, `len(axis)` |
 
-**Ragged sweeps.** Stacking assumes every leaf shares the innermost axis. An adaptive analysis could give different point counts per
-corner, and then no rectangular array exists. Detect this explicitly rather than failing inside numpy.
+`db.analyses` and `a.signals` are read-only mappings, as `PsfFile.variables` is at file level.
 
-**Partial runs.** A killed simulation leaves a logFile referencing files that do not exist. Opening the database should still work, and
-only access to the missing analysis should fail.
+### Analyses and their paths
 
-**The tree is a forest, and not fully typed.** Standalone analyses have no `sweep_tree_type`, and neither do Monte Carlo roots, so the
-structure has to come from `parent`.
+The logFile has one tree per result, not one per netlist statement. `mysweep { dc1  ac1  mynestedsweep { ac2 } }`
+gives three trees, one for each inner analysis, and a pss gives two, one for its time domain and one for its frequency
+domain. Each tree is an `Analysis`.
+
+An analysis is found by its netlist path: the statement names from the outside in, separated by `/`, as in
+`mysweep/mynestedsweep/ac2`. Where one analysis writes several kinds of result, the kind follows a `.`, as in
+Spectre's file names: `mypss.td`, `mypss.fd`, `mystb.margin`.
+
+The logFile doesn't hold these names on their own. It holds them glued into entry names such as
+`mysweep-001_mynestedsweep-002_ac2-ac`, by a rule that is undocumented and has exceptions. So each path is cut from the
+names along its tree, and accepted only if the parts glue back into every name Spectre wrote. An analysis that fails
+this check, or would share its path with another, keeps its logFile entry name as its path, `has_path` is false, and
+the listing says so. A naming case that isn't handled yet thus gives an unexpected name, never another analysis's data.
+`db.entry(name)` takes the logFile entry name and always works.
+
+### Signals and axes
+
+A Signal stacks the innermost column of every leaf file into one array. Its axes are the sweep levels from the outside in,
+then the innermost axis of the leaf files, so the shape follows the nesting in the netlist.
+
+- **Outer values come from the logFile.** Each child entry carries the value of its parent's sweep as a property. The parent
+  sweep file holds the same values with units, but not reliably (format-notes 4), so it only supplies the units, and
+  only where its values match the logFile's exactly. Otherwise `units` is `None`.
+- **A level can sweep several parameters together.** A paramset sweep varies `rval` and `cval` row by row: three points,
+  not a grid. Its axis holds both in `parameters`, and `values` raises, so nobody plots against one of them alone.
+- **A value with no inner axis** (a DC operating point, a stability margin) gives a Signal without one: no axes at all on
+  its own, or only the sweep axes under a sweep.
+- **Struct values** (noise contributions per device, poles) give `fields`, and `field(name)` is again a Signal.
+  `fields` is empty for any other Signal, so it also answers whether a Signal is a struct. Strings are numpy object
+  arrays, so they keep their shape.
+
+### Indexing, selection and ragged trees
+
+`s[i]` is the Signal at position `i` of the outermost axis, with the remaining axes, and `s[i, j]` goes two levels down.
+`s.at({"temp": 27})` selects by value. A value must match a point of that axis up to float rounding: no match, or two,
+raises and lists the nearest values. Selection never picks the nearest point and never interpolates, because both answer a
+different question than the one asked.
+
+**Ragged trees are common.** Spectre's transient chooses its own time steps, so the transients of a sweep or a Monte
+Carlo run usually differ in their time points. No single array holds them honestly. So whether the inner axes agree,
+by value and not just by length, decides only whether `s.values` works. Where they differ it raises and says to index
+first, `s[0].values` works, and `s.ragged` says so beforehand. Nothing is padded or resampled.
+
+### Partial runs
+
+A killed run leaves a logFile that names files which are missing or truncated. Opening still works. A missing or
+unreadable file is a hole, handled like a ragged point: `a.missing` lists them, the points around it can be read, and
+`s.values` raises and names the files. A folder without a logFile raises and points to `psf_parser.load`, because
+without the logFile the tree and the outer coordinates are gone.
+
+### Back to the file
+
+`s.files` gives the path of every leaf file, shaped like the outer axes. `s.file` gives the loaded `PsfFile` when the
+Signal spans exactly one file, and raises otherwise, as `value` does for `values`.
+
+### What is read when
+
+| Call | Reads |
+|---|---|
+| `Database(folder)` | the logFile |
+| `a.signals`, `a[name]` | the declarations of one leaf file |
+| `s.axes` | the logFile, and the parent sweep files for units |
+| `s.values`, `s[i]`, `s.at(...)` | the leaf files needed, through `psf_parser.load` |
+
+Loaded files keep their columns, and a Signal keeps its stacked array.
 
 ---
 
