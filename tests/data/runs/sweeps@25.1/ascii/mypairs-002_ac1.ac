@@ -1,0 +1,149 @@
+HEADER
+"PSFversion" "1.00"
+"simulator" "spectre"
+"version" "25.1.0.181.isr3"
+"date" "6:29:27 PM, Thur Nov 19, 2026"
+"design" "// Sweep tree shapes that rc_lowpass does not have."
+"analysis type" "ac"
+"analysis name" "mypairs-002_ac1"
+"analysis description" "AC Analysis `mypairs-002_ac1': freq = (1 Hz -> 1 MHz)"
+"xVecSorted" "ascending"
+"tolerance.relative" 0.001
+"start" 1
+"stop" 1000000
+"operating point producer" "mypairs-002_ac1"
+TYPE
+"sweep" FLOAT DOUBLE PROP(
+"key" "sweep"
+)
+"V" COMPLEX DOUBLE PROP(
+"units" "V"
+"key" "node"
+"tolerance" 9.9999999999999995e-07
+)
+"I" COMPLEX DOUBLE PROP(
+"units" "A"
+"key" "branch"
+"tolerance" 9.9999999999999998e-13
+)
+"MMF" COMPLEX DOUBLE PROP(
+"units" "A*turn"
+"key" "node"
+"tolerance" 9.9999999999999998e-13
+)
+"Wb" COMPLEX DOUBLE PROP(
+"units" "Wb"
+"key" "node"
+"tolerance" 1.0000000000000001e-09
+)
+"Temp" COMPLEX DOUBLE PROP(
+"units" "C"
+"key" "node"
+"tolerance" 0.0001
+)
+"Pwr" COMPLEX DOUBLE PROP(
+"units" "W"
+"key" "node"
+"tolerance" 1.0000000000000001e-09
+)
+"U" COMPLEX DOUBLE PROP(
+"units" ""
+"key" "node"
+"tolerance" 9.9999999999999995e-07
+)
+"V/Sec" COMPLEX DOUBLE PROP(
+"units" "V/s"
+"key" "node"
+"tolerance" 9.9999999999999991e-05
+)
+"I/Sec" COMPLEX DOUBLE PROP(
+"units" "A/s"
+"key" "node"
+"tolerance" 9.9999999999999995e-07
+)
+"1/Sec" COMPLEX DOUBLE PROP(
+"units" "1/s"
+"key" "node"
+"tolerance" 9.9999999999999991e-05
+)
+"HOD" COMPLEX DOUBLE PROP(
+"units" ""
+"key" "node"
+"tolerance" 0.01
+)
+"Q" COMPLEX DOUBLE PROP(
+"units" "Coul"
+"key" "node"
+"tolerance" 1.0000000000000001e-15
+)
+"Efield" COMPLEX DOUBLE PROP(
+"units" "V/m"
+"key" "node"
+"tolerance" 9.9999999999999995e-07
+"sigtype" "optical"
+)
+SWEEP
+"freq" "sweep" PROP(
+"sweep_direction" 0
+"units" "Hz"
+"plot" 0
+"grid" 3
+)
+TRACE
+"in" "V"
+"out" "V"
+"Vin:p" "I"
+VALUE
+"freq" 1
+"in" (1 0)
+"out" (0.99681244119603263 -0.056368415560830547)
+"Vin:p" (-1.0625196013224424e-06 -1.8789471853610183e-05)
+"freq" 3.1622776601683795
+"in" (1 0)
+"out" (0.96901335766164676 -0.17328147718365136)
+"Vin:p" (-1.0328880779451096e-05 -5.7760492394550449e-05)
+"freq" 10.000000000000002
+"in" (1 0)
+"out" (0.757704806991091 -0.4284719739419191)
+"Vin:p" (-8.0765064336302999e-05 -0.00014282399131397303)
+"freq" 31.6227766016838
+"in" (1 0)
+"out" (0.23822275386015343 -0.42599609552604845)
+"Vin:p" (-0.00025392574871328219 -0.00014199869850868281)
+"freq" 100.00000000000003
+"in" (1 0)
+"out" (0.03032368876669576 -0.17147642014655054)
+"Vin:p" (-0.00032322543707776809 -5.7158806715516847e-05)
+"freq" 316.22776601683802
+"in" (1 0)
+"out" (0.0031174481514102841 -0.055747014883611057)
+"Vin:p" (-0.00033229418394952988 -1.8582338294537019e-05)
+"freq" 1000.0000000000003
+"in" (1 0)
+"out" (0.00031262193955984232 -0.017678354196099484)
+"Vin:p" (-0.00033322912602014673 -5.8927847320331612e-06)
+"freq" 3162.2776601683804
+"in" (1 0)
+"out" (3.1270992354437858e-05 -0.0055919598066755654)
+"Vin:p" (-0.00033332290966921516 -1.8639866022251883e-06)
+"freq" 10000.000000000004
+"in" (1 0)
+"out" (3.1271872466674192e-06 -0.0017683827264954109)
+"Vin:p" (-0.00033333229093758445 -5.8946090883180361e-07)
+"freq" 31622.776601683807
+"in" (1 0)
+"out" (3.1271960480622581e-07 -0.00055921329295061887)
+"Vin:p" (-0.00033333322909346507 -1.8640443098353962e-07)
+"freq" 100000.00000000004
+"in" (1 0)
+"out" (3.1271969282044677e-08 -0.0001768388201275631)
+"Vin:p" (-0.00033333332290934358 -5.8946273375854368e-08)
+"freq" 316227.76601683808
+"in" (1 0)
+"out" (3.1271970162187147e-09 -5.5921346607886268e-05)
+"Vin:p" (-0.0003333333322909343 -1.8640448869295422e-08)
+"freq" 1000000
+"in" (1 0)
+"out" (3.1271970250201434e-10 -1.7683882560236051e-05)
+"Vin:p" (-0.00033333333322909341 -5.8946275200786831e-09)
+END

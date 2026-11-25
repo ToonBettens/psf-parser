@@ -1,0 +1,161 @@
+HEADER
+"PSFversion" "1.00"
+"simulator" "spectre"
+"version" "25.1.0.181.isr3"
+"date" "6:29:28 PM, Thur Nov 19, 2026"
+"design" "// Periodic analyses on a driven diode: pss and the small-signal analyses around it."
+"analysis type" "fd.pss"
+"analysis name" "mysweep-001_pss2"
+"analysis description" "Periodic Steady-State Analysis `mysweep-001_pss2': fund = 1 MHz"
+"xVecSorted" "ascending"
+"tolerance.relative" 0.001
+"fundamental" 1000000
+"harms" 5
+"P2:r" 50
+"P2:num" 1
+"P2:units" "Ohm"
+"P1:r" 50
+"P1:num" 2
+"P1:units" "Ohm"
+TYPE
+"sweep" FLOAT DOUBLE PROP(
+"key" "sweep"
+)
+"V" COMPLEX DOUBLE PROP(
+"units" "V"
+"key" "node"
+"tolerance" 9.9999999999999995e-07
+)
+"I" COMPLEX DOUBLE PROP(
+"units" "A"
+"key" "branch"
+"tolerance" 9.9999999999999998e-13
+)
+"MMF" COMPLEX DOUBLE PROP(
+"units" "A*turn"
+"key" "node"
+"tolerance" 9.9999999999999998e-13
+)
+"Wb" COMPLEX DOUBLE PROP(
+"units" "Wb"
+"key" "node"
+"tolerance" 1.0000000000000001e-09
+)
+"Temp" COMPLEX DOUBLE PROP(
+"units" "C"
+"key" "node"
+"tolerance" 0.0001
+)
+"Pwr" COMPLEX DOUBLE PROP(
+"units" "W"
+"key" "node"
+"tolerance" 1.0000000000000001e-09
+)
+"U" COMPLEX DOUBLE PROP(
+"units" ""
+"key" "node"
+"tolerance" 9.9999999999999995e-07
+)
+"V/Sec" COMPLEX DOUBLE PROP(
+"units" "V/s"
+"key" "node"
+"tolerance" 9.9999999999999991e-05
+)
+"I/Sec" COMPLEX DOUBLE PROP(
+"units" "A/s"
+"key" "node"
+"tolerance" 9.9999999999999995e-07
+)
+"1/Sec" COMPLEX DOUBLE PROP(
+"units" "1/s"
+"key" "node"
+"tolerance" 9.9999999999999991e-05
+)
+"HOD" COMPLEX DOUBLE PROP(
+"units" ""
+"key" "node"
+"tolerance" 0.01
+)
+"Q" COMPLEX DOUBLE PROP(
+"units" "Coul"
+"key" "node"
+"tolerance" 1.0000000000000001e-15
+)
+"Efield" COMPLEX DOUBLE PROP(
+"units" "V/m"
+"key" "node"
+"tolerance" 9.9999999999999995e-07
+"sigtype" "optical"
+)
+SWEEP
+"freq" "sweep" PROP(
+"sweep_direction" 0
+"units" "Hz"
+"plot" 3
+"grid" 1
+)
+TRACE
+"in" "V"
+"out" "V"
+"loopout" "V"
+"fb" "V"
+"buf" "V"
+"Ip:in" "I"
+"P1:p" "I"
+"P2:p" "I"
+VALUE
+"freq" 0
+"in" (-0.16623949668560303 0)
+"out" (0.15832284910347105 0)
+"loopout" (0 0)
+"fb" (0 0)
+"buf" (0 0)
+"Ip:in" (0 0)
+"P1:p" (-0.0033247902240230828 0)
+"P2:p" (0.0031664569820694178 0)
+"freq" 1000000
+"in" (-0.0073774080003806922 -1.7139602172530488)
+"out" (-0.0092549256412995419 -0.2718651736420884)
+"loopout" (0 0)
+"fb" (0 0)
+"buf" (0 0)
+"Ip:in" (0 0)
+"P1:p" (-0.00014750524032898171 0.005720795146235841)
+"P2:p" (-0.00018509851282599006 -0.0054373034728417789)
+"freq" 2000000
+"in" (0.17421869696903206 0.0093117558425474464)
+"out" (-0.16462390006787528 0.010852084974000973)
+"loopout" (0 0)
+"fb" (0 0)
+"buf" (0 0)
+"Ip:in" (0 0)
+"P1:p" (0.0034843735824106963 0.00018624085461622859)
+"P2:p" (-0.003292478001357508 0.00021704169948001851)
+"freq" 3000000
+"in" (0.0052542064209939055 -0.058472606653208699)
+"out" (0.0048481472715794539 0.054815116745083353)
+"loopout" (0 0)
+"fb" (0 0)
+"buf" (0 0)
+"Ip:in" (0 0)
+"P1:p" (0.00010508103228045009 -0.0011694518867105986)
+"P2:p" (9.6962945431588605e-05 0.0010963023349016684)
+"freq" 4000000
+"in" (0.010464355235250368 0.00042924074253637337)
+"out" (-0.0095175842016060937 0.0018799752914462286)
+"loopout" (0 0)
+"fb" (0 0)
+"buf" (0 0)
+"Ip:in" (0 0)
+"P1:p" (0.00020928733948223402 8.5891793888565901e-06)
+"P2:p" (-0.00019035168403212221 3.759950582892515e-05)
+"freq" 5000000
+"in" (0.0029831320221312867 -0.023214449298404976)
+"out" (0.0034841839165070014 0.021061195768482834)
+"loopout" (0 0)
+"fb" (0 0)
+"buf" (0 0)
+"Ip:in" (0 0)
+"P1:p" (5.9660241157521735e-05 -0.00046428916484194185)
+"P2:p" (6.9683678330140149e-05 0.00042122391536965651)
+END

@@ -1,0 +1,28 @@
+HEADER
+"PSFversion" "1.00"
+"simulator" "spectre"
+"version" "25.1.0.181.isr3"
+"date" "1:46:28 PM, Fri Nov 20, 2026"
+"design" "// Value types that the other netlists do not reach, written into both encodings for comparison."
+"analysis type" "info.subckts"
+"analysis name" "subs"
+"analysis description" "Circuit Information"
+"xVecSorted" "unknown"
+"tolerance.relative" 0.001
+TYPE
+"subckt" STRUCT(
+"subckt_file" STRING *
+"subckt_params" STRING *
+"subckt_terminals" STRING *
+"subckt_instances" STRING *
+) PROP(
+"key" "sub"
+)
+VALUE
+"divider" "subckt" (
+"types.scs 13"
+"ratio"
+"a b"
+"X1"
+)
+END

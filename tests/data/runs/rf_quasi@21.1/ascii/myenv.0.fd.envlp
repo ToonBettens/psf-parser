@@ -1,0 +1,127 @@
+HEADER
+"PSFversion" "1.00"
+"simulator" "spectre"
+"version" "21.1.0.132.isr1"
+"date" "1:49:03 PM, Fri Nov 20, 2026"
+"design" "// Multi-tone analyses on a diode mixer: qpss, hb and envlp."
+"analysis type" "fd.envlp"
+"analysis name" "myenv.0"
+"analysis description" "Envelope Following Analysis `myenv': time = (0 s -> 5 us)"
+"xVecSorted" "ascending"
+"tolerance.relative" 0.00100000
+"envclockname" "lo"
+"envclockperiod" 1.00000e-06
+"envstrobeperiod" 0.00000
+"envstarttime" 0.00000
+"envstoptime" 5.00000e-06
+"envtruestoptime" 5.00000e-06
+"envtrueoutputstarttime" 0.00000
+TYPE
+"sweep" FLOAT DOUBLE PROP(
+"key" "sweep"
+)
+"V" COMPLEX DOUBLE PROP(
+"units" "V"
+"key" "node"
+"tolerance" 1.00000e-06
+)
+"I" COMPLEX DOUBLE PROP(
+"units" "A"
+"key" "branch"
+"tolerance" 1.00000e-12
+)
+"MMF" COMPLEX DOUBLE PROP(
+"units" "A*turn"
+"key" "node"
+"tolerance" 1.00000e-12
+)
+"Wb" COMPLEX DOUBLE PROP(
+"units" "Wb"
+"key" "node"
+"tolerance" 1.00000e-09
+)
+"Temp" COMPLEX DOUBLE PROP(
+"units" "C"
+"key" "node"
+"tolerance" 0.000100000
+)
+"Pwr" COMPLEX DOUBLE PROP(
+"units" "W"
+"key" "node"
+"tolerance" 1.00000e-09
+)
+"U" COMPLEX DOUBLE PROP(
+"units" ""
+"key" "node"
+"tolerance" 1.00000e-06
+)
+"V/Sec" COMPLEX DOUBLE PROP(
+"units" "V/s"
+"key" "node"
+"tolerance" 0.000100000
+)
+"I/Sec" COMPLEX DOUBLE PROP(
+"units" "A/s"
+"key" "node"
+"tolerance" 1.00000e-06
+)
+"1/Sec" COMPLEX DOUBLE PROP(
+"units" "1/s"
+"key" "node"
+"tolerance" 0.000100000
+)
+"HOD" COMPLEX DOUBLE PROP(
+"units" ""
+"key" "node"
+"tolerance" 0.0100000
+)
+"Q" COMPLEX DOUBLE PROP(
+"units" "Coul"
+"key" "node"
+"tolerance" 1.00000e-15
+)
+SWEEP
+"time" "sweep" PROP(
+"sweep_direction" 0
+"units" "s"
+"plot" 0
+"grid" 1
+)
+TRACE
+"lo" "V"
+"rf" "V"
+"out" "V"
+"Vlo:p" "I"
+"Vrf:p" "I"
+VALUE
+"time" 0
+"lo" (1.36862e-06 0.00000)
+"rf" (-0.00266176 0.00000)
+"out" (0.000314326 0.00000)
+"Vlo:p" (-3.15358e-07 0.00000)
+"Vrf:p" (-3.15358e-07 0.00000)
+"time" 9.9999999999999995e-07
+"lo" (8.75395e-17 0.00000)
+"rf" (-0.00109408 0.00000)
+"out" (0.000285753 0.00000)
+"Vlo:p" (-2.85630e-07 0.00000)
+"Vrf:p" (-2.85630e-07 0.00000)
+"time" 1.9999999999999999e-06
+"lo" (1.51290e-14 0.00000)
+"rf" (0.000892786 0.00000)
+"out" (0.000234685 0.00000)
+"Vlo:p" (-2.34508e-07 0.00000)
+"Vrf:p" (-2.34508e-07 0.00000)
+"time" 2.9999999999999908e-06
+"lo" (5.12681e-05 0.00000)
+"rf" (0.00257901 0.00000)
+"out" (0.000194463 0.00000)
+"Vlo:p" (-1.86197e-07 0.00000)
+"Vrf:p" (-1.86197e-07 0.00000)
+"time" 3.9999999999999905e-06
+"lo" (8.29954e-05 0.00000)
+"rf" (0.00329116 0.00000)
+"out" (0.000157876 0.00000)
+"Vlo:p" (-1.57757e-07 0.00000)
+"Vrf:p" (-1.57757e-07 0.00000)
+END

@@ -22,12 +22,10 @@ Q1 (out in 0) qn
 X1 (in out) divider ratio=3
 R2 (out 0) resistor r=rval
 
-opts   info what=options       where=rawfile
+// Options, nodes and terminals cannot go to the rawfile, so they are left out.
 pars   info what=parameters    where=rawfile
 allp   info what=allparameters where=rawfile
 insts  info what=inst          where=rawfile
-nodes  info what=nodes         where=rawfile
-terms  info what=terminals     where=rawfile
 subs   info what=subckts       where=rawfile
 prims  info what=primitives    where=rawfile
 every  info what=all           where=rawfile

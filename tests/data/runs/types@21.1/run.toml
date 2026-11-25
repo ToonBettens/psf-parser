@@ -1,0 +1,5 @@
+netlist    = "types.scs"
+group      = "adhoc"
+psfversion = "unknown"
+command    = "spectre types.scs -format {format} -raw {outdir}"
+formats    = ["ascii", "binary"]

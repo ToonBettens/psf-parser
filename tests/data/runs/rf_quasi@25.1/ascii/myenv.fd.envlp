@@ -1,0 +1,100 @@
+HEADER
+"PSFversion" "1.00"
+"simulator" "spectre"
+"version" "25.1.0.181.isr3"
+"date" "6:29:29 PM, Thur Nov 19, 2026"
+"design" "// Multi-tone analyses on a diode mixer: qpss, hb and envlp."
+"analysis type" "fd.envlp"
+"analysis name" "myenv"
+"analysis description" "fd.envlp parent"
+"xVecSorted" "ascending"
+"tolerance.relative" 0.001
+TYPE
+"sweep" FLOAT DOUBLE PROP(
+"key" "sweep"
+)
+"V" FLOAT DOUBLE PROP(
+"units" "V"
+"key" "node"
+"tolerance" 9.9999999999999995e-07
+)
+"I" FLOAT DOUBLE PROP(
+"units" "A"
+"key" "branch"
+"tolerance" 9.9999999999999998e-13
+)
+"MMF" FLOAT DOUBLE PROP(
+"units" "A*turn"
+"key" "node"
+"tolerance" 9.9999999999999998e-13
+)
+"Wb" FLOAT DOUBLE PROP(
+"units" "Wb"
+"key" "node"
+"tolerance" 1.0000000000000001e-09
+)
+"Temp" FLOAT DOUBLE PROP(
+"units" "C"
+"key" "node"
+"tolerance" 0.0001
+)
+"Pwr" FLOAT DOUBLE PROP(
+"units" "W"
+"key" "node"
+"tolerance" 1.0000000000000001e-09
+)
+"U" FLOAT DOUBLE PROP(
+"units" ""
+"key" "node"
+"tolerance" 9.9999999999999995e-07
+)
+"V/Sec" FLOAT DOUBLE PROP(
+"units" "V/s"
+"key" "node"
+"tolerance" 9.9999999999999991e-05
+)
+"I/Sec" FLOAT DOUBLE PROP(
+"units" "A/s"
+"key" "node"
+"tolerance" 9.9999999999999995e-07
+)
+"1/Sec" FLOAT DOUBLE PROP(
+"units" "1/s"
+"key" "node"
+"tolerance" 9.9999999999999991e-05
+)
+"HOD" FLOAT DOUBLE PROP(
+"units" ""
+"key" "node"
+"tolerance" 0.01
+)
+"Q" FLOAT DOUBLE PROP(
+"units" "Coul"
+"key" "node"
+"tolerance" 1.0000000000000001e-15
+)
+"Efield" FLOAT DOUBLE PROP(
+"units" "V/m"
+"key" "node"
+"tolerance" 9.9999999999999995e-07
+"sigtype" "optical"
+)
+SWEEP
+"harmonic" "sweep" PROP(
+"sweep_direction" 0
+"units" "real"
+"plot" 0
+"grid" 1
+)
+VALUE
+"harmonic" 0
+"harmonic" 1
+"harmonic" 0
+"harmonic" 1
+"harmonic" 0
+"harmonic" 1
+"harmonic" 0
+"harmonic" 1
+"harmonic" 0
+"harmonic" 1
+END

@@ -1,0 +1,36 @@
+HEADER
+"PSFversion" "1.00"
+"Log Generator" "drlLog rev. 1.0"
+"Log Time Stamp" "Thu Nov 19 18:29:25 2026"
+"psfversion" "1.4.0"
+"simulator" "spectre"
+"version" "25.1.0.181.isr3"
+"date" "6:29:25 PM, Thur Nov 19, 2026"
+"design" "// A transient long enough for many windowed blocks, with many columns."
+"signalNameType" "spectre"
+"simMode" "Spectre"
+"measdgt" 0
+"ingold" 2
+"sst2usecolon" 0
+TYPE
+"analysisInst" STRUCT(
+"analysisType" STRING *
+"dataFile" STRING *
+"format" STRING *
+"parent" STRING *
+"sweepVariable" ARRAY ( * ) STRING *
+"description" STRING *
+)
+VALUE
+"mytran-tran" "analysisInst" (
+"tran"
+"mytran.tran.tran"
+"PSF"
+""
+("time")
+"Transient Analysis `mytran': time = (0 s -> 5 ms)"
+) PROP(
+"data_type" "swept_scalar"
+)
+
+END

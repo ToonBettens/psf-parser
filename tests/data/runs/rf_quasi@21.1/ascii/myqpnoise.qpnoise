@@ -1,0 +1,116 @@
+HEADER
+"PSFversion" "1.00"
+"simulator" "spectre"
+"version" "21.1.0.132.isr1"
+"date" "1:49:03 PM, Fri Nov 20, 2026"
+"design" "// Multi-tone analyses on a diode mixer: qpss, hb and envlp."
+"analysis type" "qpnoise"
+"analysis name" "myqpnoise"
+"analysis description" "Quasi-Periodic Noise Analysis `myqpnoise': freq = (1 kHz -> 100 kHz)"
+"xVecSorted" "ascending"
+"tolerance.relative" 0.00100000
+"clock frequency" 1.00000e+06
+"sweeptype" "absolute"
+"relharmvec" "0_0"
+"operating point producer" "myqpss"
+"output" "pair of nodes"
+"ground" "0"
+"positive output signal" "out"
+"negative output signal" "0"
+TYPE
+"sweep" FLOAT DOUBLE PROP(
+"key" "sweep"
+)
+"V/sqrt(Hz)" FLOAT DOUBLE PROP(
+"units" "V/sqrt(Hz)"
+"key" "noise"
+)
+"V^2/Hz" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+"key" "noise"
+)
+"d1" STRUCT(
+"id" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+)
+"total" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+)
+) PROP(
+"key" "inst"
+"master" "diode"
+)
+"resistor" STRUCT(
+"rn" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+)
+"total" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+)
+) PROP(
+"key" "inst"
+"master" "resistor"
+)
+SWEEP
+"freq" "sweep" PROP(
+"sweep_direction" 0
+"units" "Hz"
+"plot" 0
+"grid" 3
+)
+TRACE
+"D1" "d1"
+"R1" "resistor"
+"out" "V/sqrt(Hz)"
+VALUE
+"freq" 1000.00
+"D1" (
+6.84624e-20
+6.84624e-20
+)
+"R1" (
+1.62971e-17
+1.62971e-17
+)
+"out" 4.04544e-09
+"freq" 3162.28
+"D1" (
+6.84621e-20
+6.84621e-20
+)
+"R1" (
+1.62971e-17
+1.62971e-17
+)
+"out" 4.04543e-09
+"freq" 10000.0
+"D1" (
+6.84597e-20
+6.84597e-20
+)
+"R1" (
+1.62965e-17
+1.62965e-17
+)
+"out" 4.04536e-09
+"freq" 31622.8
+"D1" (
+6.84356e-20
+6.84356e-20
+)
+"R1" (
+1.62908e-17
+1.62908e-17
+)
+"out" 4.04466e-09
+"freq" 100000.
+"D1" (
+6.81950e-20
+6.81950e-20
+)
+"R1" (
+1.62341e-17
+1.62341e-17
+)
+"out" 4.03761e-09
+END

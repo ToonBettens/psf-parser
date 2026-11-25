@@ -1,0 +1,152 @@
+HEADER
+"PSFversion" "1.00"
+"Log Generator" "drlLog rev. 1.0"
+"Log Time Stamp" "Fri Nov 20 13:49:03 2026"
+"psfversion" ""
+"simulator" "spectre"
+"version" "21.1.0.132.isr1"
+"date" "1:49:03 PM, Fri Nov 20, 2026"
+"design" "// Multi-tone analyses on a diode mixer: qpss, hb and envlp."
+"signalNameType" "spectre"
+"simMode" "Spectre"
+"measdgt" 0
+"ingold" 2
+"sst2usecolon" 0
+TYPE
+"analysisInst" STRUCT(
+"analysisType" STRING *
+"dataFile" STRING *
+"format" STRING *
+"parent" STRING *
+"sweepVariable" ARRAY ( * ) STRING *
+"description" STRING *
+)
+VALUE
+"myqpss-fi.qpss" "analysisInst" (
+"fi.qpss"
+"myqpss.fi.qpss"
+"PSF"
+""
+("freq")
+"Quasi-Periodic Steady State Analysis `myqpss': largefund = 1 MHz"
+) PROP(
+"data_type" "swept_scalar"
+"harmonic_type" "coeff_vector"
+)
+
+"myqpss-fd.qpss" "analysisInst" (
+"fd.qpss"
+"myqpss.fd.qpss"
+"PSF"
+""
+("freq")
+"Quasi-Periodic Steady State Analysis `myqpss': largefund = 1 MHz"
+) PROP(
+"data_type" "swept_scalar"
+)
+
+"myqpac-qpac" "analysisInst" (
+"qpac"
+"myqpac.qpac"
+"PSF"
+""
+("freq")
+"Quasi-Periodic AC Analysis `myqpac': freq = (1 kHz -> 100 kHz)"
+) PROP(
+"data_type" "swept_scalar"
+"harmonic_type" "coeff_vector_sweep"
+)
+
+"myqpnoise-qpnoise" "analysisInst" (
+"qpnoise"
+"myqpnoise.qpnoise"
+"PSF"
+""
+("freq")
+"Quasi-Periodic Noise Analysis `myqpnoise': freq = (1 kHz -> 100 kHz)"
+)
+"myhb-fd.qpss_hb" "analysisInst" (
+"fd.qpss_hb"
+"myhb.fd.qpss_hb"
+"PSF"
+""
+("freq")
+"Harmonic Balance Steady State Analysis `myhb': largefund = 1 MHz"
+) PROP(
+"data_type" "swept_scalar"
+)
+
+"myhb-fi.qpss_hb" "analysisInst" (
+"fi.qpss_hb"
+"myhb.fi.qpss_hb"
+"PSF"
+""
+("freq")
+"Harmonic Balance Steady State Analysis `myhb': largefund = 1 MHz"
+) PROP(
+"data_type" "swept_scalar"
+"harmonic_type" "coeff_vector"
+)
+
+"myhbac-qpac_hbac" "analysisInst" (
+"qpac_hbac"
+"myhbac.qpac_hbac"
+"PSF"
+""
+("freq")
+"HB AC Analysis `myhbac': freq = (1 kHz -> 100 kHz)"
+) PROP(
+"data_type" "swept_scalar"
+"harmonic_type" "coeff_vector_sweep"
+)
+
+"myenv-fd.envlp" "analysisInst" (
+"fd.envlp"
+"myenv.fd.envlp"
+"PSF"
+""
+("harmonic")
+"fd.envlp parent"
+) PROP(
+"sweep_tree_type" "sweepNode"
+"data_type" "swept_scalar"
+)
+
+"myenv.0-fd.envlp" "analysisInst" (
+"fd.envlp"
+"myenv.0.fd.envlp"
+"PSF"
+"myenv-fd.envlp"
+("time")
+"Envelope Following Analysis `myenv': time = (0 s -> 5 us)"
+) PROP(
+"data_type" "swept_scalar"
+"sweep_tree_type" "leafNode"
+"harmonic" 0.00000
+)
+
+"myenv.1-fd.envlp" "analysisInst" (
+"fd.envlp"
+"myenv.1.fd.envlp"
+"PSF"
+"myenv-fd.envlp"
+("time")
+"Envelope Following Analysis `myenv': time = (0 s -> 5 us)"
+) PROP(
+"data_type" "swept_scalar"
+"sweep_tree_type" "leafNode"
+"harmonic" 1.00000
+)
+
+"myenv-td.envlp" "analysisInst" (
+"td.envlp"
+"myenv.td.envlp.tran"
+"PSF"
+""
+("time")
+"Envelope Following Analysis `myenv': time = (0 s -> 5 us)"
+) PROP(
+"data_type" "swept_scalar"
+)
+
+END

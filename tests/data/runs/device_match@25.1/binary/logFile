@@ -1,0 +1,124 @@
+HEADER
+"PSFversion" "1.00"
+"Log Generator" "drlLog rev. 1.0"
+"Log Time Stamp" "Thu Nov 19 18:29:24 2026"
+"psfversion" "1.4.0"
+"simulator" "spectre"
+"version" "25.1.0.181.isr3"
+"date" "6:29:24 PM, Thur Nov 19, 2026"
+"design" "// Result tables from dcmatch and sens, on a common-source stage with a hand-written model card."
+"signalNameType" "spectre"
+"simMode" "Spectre"
+"measdgt" 0
+"ingold" 2
+"sst2usecolon" 0
+TYPE
+"analysisInst" STRUCT(
+"analysisType" STRING *
+"dataFile" STRING *
+"format" STRING *
+"parent" STRING *
+"sweepVariable" ARRAY ( * ) STRING *
+"description" STRING *
+)
+VALUE
+"myop-dc" "analysisInst" (
+"dc"
+"myop.dc"
+"PSF"
+""
+()
+"DC Analysis `myop'"
+) PROP(
+"data_type" "scalar"
+)
+
+"myop.sens-dc" "analysisInst" (
+"dc"
+"myop.sens.dc"
+"PSF"
+""
+()
+"DC Analysis `myop' - Sensitivity"
+) PROP(
+"data_type" "swept_struct"
+)
+
+"myac-ac" "analysisInst" (
+"ac"
+"myac.ac"
+"PSF"
+""
+("freq")
+"AC Analysis `myac': freq = (1 Hz -> 1 GHz)"
+) PROP(
+"data_type" "swept_scalar"
+)
+
+"myac.sens-ac" "analysisInst" (
+"ac"
+"myac.sens.ac"
+"PSF"
+""
+("freq")
+"AC Analysis `myac': freq = (1 Hz -> 1 GHz) - Sensitivity"
+) PROP(
+"data_type" "swept_struct"
+)
+
+"mymatch-dcmatch" "analysisInst" (
+"dcmatch"
+"mymatch.dcmatch"
+"PSF"
+""
+()
+""
+) PROP(
+"data_type" "swept_struct"
+)
+
+"mytemp_myswept-sweep" "analysisInst" (
+"sweep"
+"mytemp_myswept.sweep"
+"PSF"
+""
+("temp")
+"Sweep parent"
+) PROP(
+"sweep_tree_type" "sweepNode"
+)
+
+"mytemp-000_myswept-dcmatch" "analysisInst" (
+"dcmatch"
+"mytemp-000_myswept.dcmatch"
+"PSF"
+""
+()
+""
+) PROP(
+"data_type" "swept_struct"
+)
+
+"mytemp-001_myswept-dcmatch" "analysisInst" (
+"dcmatch"
+"mytemp-001_myswept.dcmatch"
+"PSF"
+""
+()
+""
+) PROP(
+"data_type" "swept_struct"
+)
+
+"mytemp-002_myswept-dcmatch" "analysisInst" (
+"dcmatch"
+"mytemp-002_myswept.dcmatch"
+"PSF"
+""
+()
+""
+) PROP(
+"data_type" "swept_struct"
+)
+
+END

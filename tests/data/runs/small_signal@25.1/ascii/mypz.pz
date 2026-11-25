@@ -1,0 +1,62 @@
+HEADER
+"PSFversion" "1.00"
+"simulator" "spectre"
+"version" "25.1.0.181.isr3"
+"date" "6:29:26 PM, Thur Nov 19, 2026"
+"design" "// Small-signal analyses on linear circuits: noise, xf, pz, sp and stb."
+"analysis type" "pz"
+"analysis name" "mypz"
+"analysis description" "PZ Analysis `mypz'"
+"xVecSorted" "unknown"
+"tolerance.relative" 0.001
+"fmax" 1000000000000
+"zeroonly" 0
+TYPE
+"transferGain" STRUCT(
+"gain" FLOAT DOUBLE PROP(
+"description" "V(out,0)/Vin"
+)
+) PROP(
+"key" "inst"
+)
+"dcGain" STRUCT(
+"dcgain" FLOAT DOUBLE PROP(
+"description" "V(out,0)/Vin"
+)
+) PROP(
+"key" "inst"
+)
+"PoleAndQ" STRUCT(
+"pole" COMPLEX DOUBLE PROP(
+"units" "Hz"
+"description" "pole"
+)
+"qfactor" FLOAT DOUBLE PROP(
+"description" "qfactor"
+)
+) PROP(
+"key" "inst"
+)
+"ZeroAndQ" STRUCT(
+"zero" COMPLEX DOUBLE PROP(
+"units" "Hz"
+"description" "zero"
+)
+"qfactor" FLOAT DOUBLE PROP(
+"description" "qfactor"
+)
+) PROP(
+"key" "inst"
+)
+VALUE
+"transferGain" "transferGain" (
+10000000
+)
+"dcGain" "dcGain" (
+0
+)
+"Pole_1" "PoleAndQ" (
+(-159154.94309189534 0)
+0.5
+)
+END

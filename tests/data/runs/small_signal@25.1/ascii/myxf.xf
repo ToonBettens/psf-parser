@@ -1,0 +1,160 @@
+HEADER
+"PSFversion" "1.00"
+"simulator" "spectre"
+"version" "25.1.0.181.isr3"
+"date" "6:29:26 PM, Thur Nov 19, 2026"
+"design" "// Small-signal analyses on linear circuits: noise, xf, pz, sp and stb."
+"analysis type" "xf"
+"analysis name" "myxf"
+"analysis description" "Transfer Function Analysis `myxf': freq = (1 Hz -> 1 GHz)"
+"xVecSorted" "ascending"
+"tolerance.relative" 0.001
+"start" 1
+"stop" 1000000000
+"operating point producer" "myxf"
+"stimuli" "sources"
+"output" "pair of nodes"
+"ground" "0"
+"positive output signal" "out"
+"negative output signal" "0"
+TYPE
+"sweep" FLOAT DOUBLE PROP(
+"key" "sweep"
+)
+"V/V" COMPLEX DOUBLE PROP(
+"units" "V/V"
+"key" "branch"
+)
+"V/A" COMPLEX DOUBLE PROP(
+"units" "V/A"
+"key" "node"
+)
+"V/A*turn" COMPLEX DOUBLE PROP(
+"units" "V/A*turn"
+"key" "branch"
+)
+"V/Wb" COMPLEX DOUBLE PROP(
+"units" "V/Wb"
+"key" "branch"
+)
+"V/C" COMPLEX DOUBLE PROP(
+"units" "V/C"
+"key" "branch"
+)
+"V/W" COMPLEX DOUBLE PROP(
+"units" "V/W"
+"key" "branch"
+)
+"V/" COMPLEX DOUBLE PROP(
+"units" "V/"
+"key" "branch"
+)
+"V/(V/s)" COMPLEX DOUBLE PROP(
+"units" "V/(V/s)"
+"key" "branch"
+)
+"V/(A/s)" COMPLEX DOUBLE PROP(
+"units" "V/(A/s)"
+"key" "branch"
+)
+"V/(1/s)" COMPLEX DOUBLE PROP(
+"units" "V/(1/s)"
+"key" "branch"
+)
+"V/Coul" COMPLEX DOUBLE PROP(
+"units" "V/Coul"
+"key" "branch"
+)
+"V/(V/m)" COMPLEX DOUBLE PROP(
+"units" "V/(V/m)"
+"key" "branch"
+)
+SWEEP
+"freq" "sweep" PROP(
+"sweep_direction" 0
+"units" "Hz"
+"plot" 0
+"grid" 3
+)
+TRACE
+"P1" "V/V"
+"P2" "V/V"
+"Vin" "V/V"
+VALUE
+"freq" 1
+"P1" (0 0)
+"P2" (0 0)
+"Vin" (9.9999999996052154 -6.2831853069315351e-05)
+"freq" 3.1622776601683795
+"P1" (0 0)
+"P2" (0 0)
+"Vin" (9.9999999960521588 -0.00019869176523748167)
+"freq" 10.000000000000002
+"P1" (0 0)
+"P2" (0 0)
+"Vin" (9.9999999605215812 -0.00062831852823745649)
+"freq" 31.6227766016838
+"P1" (0 0)
+"P2" (0 0)
+"Vin" (9.9999996052158409 -0.0019869175747188592)
+"freq" 100.00000000000003
+"P1" (0 0)
+"P2" (0 0)
+"Vin" (9.9999960521597977 -0.0062831828266784323)
+"freq" 316.22776601683802
+"P1" (0 0)
+"P2" (0 0)
+"Vin" (9.9999605217382488 -0.019869098091537019)
+"freq" 1000.0000000000003
+"P1" (0 0)
+"P2" (0 0)
+"Vin" (9.9996052314087933 -0.062829372667583885)
+"freq" 3162.2776601683804
+"P1" (0 0)
+"P2" (0 0)
+"Vin" (9.9960537161699747 -0.19861335590585952)
+"freq" 10000.000000000004
+"P1" (0 0)
+"P2" (0 0)
+"Vin" (9.9606768240717276 -0.62584778270571717)
+"freq" 31622.776601683807
+"P1" (0 0)
+"P2" (0 0)
+"Vin" (9.6202093575416239 -1.9114563799586981)
+"freq" 100000.00000000004
+"P1" (0 0)
+"P2" (0 0)
+"Vin" (7.1695680032489761 -4.504772433683887)
+"freq" 316227.76601683808
+"P1" (0 0)
+"P2" (0 0)
+"Vin" (2.0210832286437794 -4.0157259454963601)
+"freq" 1000000.0000000006
+"P1" (0 0)
+"P2" (0 0)
+"Vin" (0.24704523031857611 -1.5522309613464755)
+"freq" 3162277.6601683814
+"P1" (0 0)
+"P2" (0 0)
+"Vin" (0.025266295636081782 -0.50202048829270696)
+"freq" 10000000.000000007
+"P1" (0 0)
+"P2" (0 0)
+"Vin" (0.0025323881296515954 -0.15911463888302907)
+"freq" 31622776.601683818
+"P1" (0 0)
+"P2" (0 0)
+"Vin" (0.00025329654302945601 -0.050327937282943047)
+"freq" 100000000.00000009
+"P1" (0 0)
+"P2" (0 0)
+"Vin" (2.5330231748357836e-05 -0.015915453994873596)
+"freq" 316227766.01683825
+"P1" (0 0)
+"P2" (0 0)
+"Vin" (2.5330289494347113e-06 -0.0050329199355951858)
+"freq" 1000000000
+"P1" (0 0)
+"P2" (0 0)
+"Vin" (2.5330295268960567e-07 -0.0015915493906045362)
+END

@@ -1,0 +1,100 @@
+HEADER
+"PSFversion" "1.00"
+"simulator" "spectre"
+"version" "25.1.0.181.isr3"
+"date" "6:29:28 PM, Thur Nov 19, 2026"
+"design" "// Periodic analyses on a driven diode: pss and the small-signal analyses around it."
+"analysis type" "pxf"
+"analysis name" "mypxf.-1"
+"analysis description" "Periodic Transfer Function Analysis `mypxf': freq = (1 kHz -> 100 kHz)"
+"xVecSorted" "descending"
+"tolerance.relative" 0.001
+"fundamental frequency" 1000000
+"harmonic" -1
+"sweeptype" "absolute"
+"freqaxis" "absin"
+"operating point producer" "mypss"
+"stimuli" "sources"
+"output" "pair of nodes"
+"ground" "0"
+"positive output signal" "out"
+"negative output signal" "0"
+TYPE
+"sweep" FLOAT DOUBLE PROP(
+"key" "sweep"
+)
+"V/V" COMPLEX DOUBLE PROP(
+"units" "V/V"
+"key" "branch"
+)
+"V/A" COMPLEX DOUBLE PROP(
+"units" "V/A"
+"key" "node"
+)
+"V/A*turn" COMPLEX DOUBLE PROP(
+"units" "V/A*turn"
+"key" "branch"
+)
+"V/Wb" COMPLEX DOUBLE PROP(
+"units" "V/Wb"
+"key" "branch"
+)
+"V/C" COMPLEX DOUBLE PROP(
+"units" "V/C"
+"key" "branch"
+)
+"V/W" COMPLEX DOUBLE PROP(
+"units" "V/W"
+"key" "branch"
+)
+"V/" COMPLEX DOUBLE PROP(
+"units" "V/"
+"key" "branch"
+)
+"V/(V/s)" COMPLEX DOUBLE PROP(
+"units" "V/(V/s)"
+"key" "branch"
+)
+"V/(A/s)" COMPLEX DOUBLE PROP(
+"units" "V/(A/s)"
+"key" "branch"
+)
+"V/(1/s)" COMPLEX DOUBLE PROP(
+"units" "V/(1/s)"
+"key" "branch"
+)
+"V/Coul" COMPLEX DOUBLE PROP(
+"units" "V/Coul"
+"key" "branch"
+)
+"V/(V/m)" COMPLEX DOUBLE PROP(
+"units" "V/(V/m)"
+"key" "branch"
+)
+SWEEP
+"freq" "sweep" PROP(
+"sweep_direction" 0
+"units" "Hz"
+"plot" 0
+"grid" 3
+)
+TRACE
+"P1" "V/V"
+"P2" "V/V"
+VALUE
+"freq" 999000
+"P1" (0.00021088467960942689 0.28343056763066948)
+"P2" (-0.0082653914539640334 -0.26968661476763783)
+"freq" 996837.72233983164
+"P1" (0.00020109323828830126 0.28343036876888633)
+"P2" (-0.0082386310651020016 -0.26968775992487237)
+"freq" 990000
+"P1" (0.00017013037992869083 0.28342973543798683)
+"P2" (-0.0081540065080677165 -0.26969135412936818)
+"freq" 968377.22339831619
+"P1" (7.2221202374852362e-05 0.28342768792687745)
+"P2" (-0.0078863925757291474 -0.26970244900290036)
+"freq" 900000
+"P1" (-0.00023735503123559253 0.28342076583205716)
+"P2" (-0.0070400530158679 -0.26973482431916013)
+END

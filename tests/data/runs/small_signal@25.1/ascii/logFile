@@ -1,0 +1,113 @@
+HEADER
+"PSFversion" "1.00"
+"Log Generator" "drlLog rev. 1.0"
+"Log Time Stamp" "Thu Nov 19 18:29:26 2026"
+"psfversion" "1.4.0"
+"simulator" "spectre"
+"version" "25.1.0.181.isr3"
+"date" "6:29:26 PM, Thur Nov 19, 2026"
+"design" "// Small-signal analyses on linear circuits: noise, xf, pz, sp and stb."
+"signalNameType" "spectre"
+"simMode" "Spectre"
+"measdgt" 0
+"ingold" 2
+"sst2usecolon" 0
+TYPE
+"analysisInst" STRUCT(
+"analysisType" STRING *
+"dataFile" STRING *
+"format" STRING *
+"parent" STRING *
+"sweepVariable" ARRAY ( * ) STRING *
+"description" STRING *
+)
+VALUE
+"mynoise-noise" "analysisInst" (
+"noise"
+"mynoise.noise"
+"PSF"
+""
+("freq")
+"Noise Analysis `mynoise': freq = (1 Hz -> 1 GHz)"
+) PROP(
+"data_type" "swept_struct"
+)
+
+"myxf-xf" "analysisInst" (
+"xf"
+"myxf.xf"
+"PSF"
+""
+("freq")
+"Transfer Function Analysis `myxf': freq = (1 Hz -> 1 GHz)"
+) PROP(
+"data_type" "swept_scalar"
+)
+
+"mypz-pz" "analysisInst" (
+"pz"
+"mypz.pz"
+"PSF"
+""
+()
+"PZ Analysis `mypz'"
+) PROP(
+"data_type" "struct"
+)
+
+"mysp-sp" "analysisInst" (
+"sp"
+"mysp.sp"
+"PSF"
+""
+("freq")
+"S-Parameter Analysis `mysp': freq = (1 MHz -> 1 GHz)"
+) PROP(
+"data_type" "swept_scalar"
+)
+
+"myspnoise-noise.sp" "analysisInst" (
+"noise.sp"
+"myspnoise.noise.sp"
+"PSF"
+""
+("freq")
+"S-Parameter Analysis `myspnoise': freq = (1 MHz -> 1 GHz)"
+) PROP(
+"data_type" "swept_struct"
+)
+
+"myspnoise-sp" "analysisInst" (
+"sp"
+"myspnoise.sp"
+"PSF"
+""
+("freq")
+"S-Parameter Analysis `myspnoise': freq = (1 MHz -> 1 GHz)"
+) PROP(
+"data_type" "swept_scalar"
+)
+
+"mystb-stb" "analysisInst" (
+"stb"
+"mystb.stb"
+"PSF"
+""
+("freq")
+"Stability Analysis `mystb': freq = (1 Hz -> 1 GHz)"
+) PROP(
+"data_type" "swept_scalar"
+)
+
+"mystb-margin.stb" "analysisInst" (
+"margin.stb"
+"mystb.margin.stb"
+"PSF"
+""
+()
+"Stability Analysis `mystb': freq = (1 Hz -> 1 GHz)"
+) PROP(
+"data_type" "scalar"
+)
+
+END

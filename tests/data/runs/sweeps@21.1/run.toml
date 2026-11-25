@@ -1,0 +1,5 @@
+netlist    = "sweeps.scs"
+group      = "adhoc"
+psfversion = "unknown"
+command    = "spectre sweeps.scs -format {format} -raw {outdir}"
+formats    = ["ascii", "binary"]

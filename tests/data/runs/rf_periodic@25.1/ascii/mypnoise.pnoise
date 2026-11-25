@@ -1,0 +1,219 @@
+HEADER
+"PSFversion" "1.00"
+"simulator" "spectre"
+"version" "25.1.0.181.isr3"
+"date" "6:29:28 PM, Thur Nov 19, 2026"
+"design" "// Periodic analyses on a driven diode: pss and the small-signal analyses around it."
+"analysis type" "pnoise"
+"analysis name" "mypnoise"
+"analysis description" "Periodic Noise Analysis `mypnoise': freq = (1 kHz -> 100 kHz)"
+"xVecSorted" "ascending"
+"tolerance.relative" 0.001
+"fundamental frequency" 1000000
+"sweeptype" "absolute"
+"relharmnum" 1
+"operating point producer" "mypss"
+"output" "pair of nodes"
+"ground" "0"
+"positive output signal" "out"
+"negative output signal" "0"
+TYPE
+"sweep" FLOAT DOUBLE PROP(
+"key" "sweep"
+)
+"V/sqrt(Hz)" FLOAT DOUBLE PROP(
+"units" "V/sqrt(Hz)"
+"key" "noise"
+)
+"V^2/Hz" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+"key" "noise"
+)
+"d1" STRUCT(
+"id" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+"noise_type" "shot"
+)
+"total" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+)
+) PROP(
+"key" "inst"
+"master" "diode"
+)
+"P2" STRUCT(
+"rn" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+)
+"ext_file_noise" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+)
+"total" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+)
+) PROP(
+"key" "inst"
+"master" "port"
+)
+"P1" STRUCT(
+"rn" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+)
+"ext_file_noise" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+)
+"total" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+)
+) PROP(
+"key" "inst"
+"master" "port"
+)
+"resistor" STRUCT(
+"rn" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+"noise_type" "thermal"
+)
+"total" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+)
+) PROP(
+"key" "inst"
+"master" "resistor"
+)
+SWEEP
+"freq" "sweep" PROP(
+"sweep_direction" 0
+"units" "Hz"
+"plot" 0
+"grid" 3
+)
+TRACE
+"D1" "d1"
+"P2" "P2"
+"P1" "P1"
+"Ro" "resistor"
+"R1" "resistor"
+"out" "V/sqrt(Hz)"
+VALUE
+"freq" 1000
+"D1" (
+2.6976330758450494e-21
+2.6976330758450494e-21
+)
+"P2" (
+5.1556981688222814e-19
+0
+5.1556981688222814e-19
+)
+"P1" (
+6.319096971963433e-20
+0
+6.319096971963433e-20
+)
+"Ro" (
+0
+0
+)
+"R1" (
+2.6680738023655228e-20
+2.6680738023655228e-20
+)
+"out" 7.7983277547264112e-10
+"freq" 3162.2776601683795
+"D1" (
+2.6976330683316307e-21
+2.6976330683316307e-21
+)
+"P2" (
+5.1556981323703642e-19
+0
+5.1556981323703642e-19
+)
+"P1" (
+6.3190969572882802e-20
+0
+6.3190969572882802e-20
+)
+"Ro" (
+0
+0
+)
+"R1" (
+2.6680737835016556e-20
+2.6680737835016556e-20
+)
+"out" 7.7983277291562153e-10
+"freq" 10000.000000000002
+"D1" (
+2.6976329931975165e-21
+2.6976329931975165e-21
+)
+"P2" (
+5.155697767851389e-19
+0
+5.155697767851389e-19
+)
+"P1" (
+6.3190968105367132e-20
+0
+6.3190968105367132e-20
+)
+"Ro" (
+0
+0
+)
+"R1" (
+2.6680735948630864e-20
+2.6680735948630864e-20
+)
+"out" 7.7983274734543848e-10
+"freq" 31622.7766016838
+"D1" (
+2.6976322418558218e-21
+2.6976322418558218e-21
+)
+"P2" (
+5.1556941226608008e-19
+0
+5.1556941226608008e-19
+)
+"P1" (
+6.3190953430197318e-20
+0
+6.3190953430197318e-20
+)
+"Ro" (
+0
+0
+)
+"R1" (
+2.6680717084769571e-20
+2.6680717084769571e-20
+)
+"out" 7.798324916434956e-10
+"freq" 100000
+"D1" (
+2.6976247283887799e-21
+2.6976247283887799e-21
+)
+"P2" (
+5.1556576706632086e-19
+0
+5.1556576706632086e-19
+)
+"P1" (
+6.3190806677127288e-20
+0
+6.3190806677127288e-20
+)
+"Ro" (
+0
+0
+)
+"R1" (
+2.6680528445682023e-20
+2.6680528445682023e-20
+)
+"out" 7.7982993461236084e-10
+END

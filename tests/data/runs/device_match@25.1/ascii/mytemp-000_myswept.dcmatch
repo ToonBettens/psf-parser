@@ -1,0 +1,63 @@
+HEADER
+"PSFversion" "1.00"
+"simulator" "spectre"
+"version" "25.1.0.181.isr3"
+"date" "6:29:24 PM, Thur Nov 19, 2026"
+"design" "// Result tables from dcmatch and sens, on a common-source stage with a hand-written model card."
+"analysis type" "dcmatch"
+"analysis name" "mytemp-000_myswept"
+"analysis description" ""
+"xVecSorted" "unknown"
+"tolerance.relative" 0.001
+"threshold" 0.001
+TYPE
+"totalVariation" STRUCT(
+"sigmaOut" FLOAT DOUBLE PROP(
+"units" "V"
+"description" "V(d,0)"
+)
+"dcOp" FLOAT DOUBLE PROP(
+"units" "V"
+"description" "V(d,0)"
+)
+) PROP(
+"key" "inst"
+)
+"mismatch" STRUCT(
+"Contribution" FLOAT DOUBLE PROP(
+"units" "V"
+"description" "Contribution"
+)
+"Sensitivity" FLOAT DOUBLE PROP(
+"units" " "
+"description" "Sensitivity"
+)
+) PROP(
+"key" "model"
+)
+"process" STRUCT(
+"Contribution" FLOAT DOUBLE PROP(
+"units" "V"
+"description" "Contribution"
+)
+"Sensitivity" FLOAT DOUBLE PROP(
+"units" " "
+"description" "Sensitivity"
+)
+) PROP(
+"key" "parameters"
+)
+"devicesigmaout" STRUCT(
+"sigmaOut" FLOAT DOUBLE PROP(
+"units" "V"
+"description" "sigmaOut"
+)
+) PROP(
+"key" "inst"
+)
+VALUE
+"totalOutput" "totalVariation" (
+0
+1.3505165519300515
+)
+END

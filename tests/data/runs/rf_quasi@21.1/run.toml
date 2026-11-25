@@ -1,0 +1,5 @@
+netlist    = "rf_quasi.scs"
+group      = "adhoc"
+psfversion = "unknown"
+command    = "spectre rf_quasi.scs -format {format} -raw {outdir}"
+formats    = ["ascii", "binary"]

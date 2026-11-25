@@ -1,0 +1,30 @@
+HEADER
+"PSFversion" "1.00"
+"simulator" "spectre"
+"version" "25.1.0.181.isr3"
+"date" "1:46:28 PM, Fri Nov 20, 2026"
+"design" "// Value types that the other netlists do not reach, written into both encodings for comparison."
+"analysis type" "info"
+"analysis name" "pars"
+"analysis description" "Circuit Information"
+"xVecSorted" "unknown"
+"tolerance.relative" 0.001
+TYPE
+"top-level" STRUCT(
+"temp" FLOAT DOUBLE
+"tnom" FLOAT DOUBLE
+"temper" FLOAT DOUBLE
+"time" FLOAT DOUBLE
+"rval" FLOAT DOUBLE
+) PROP(
+"key" "parameters"
+)
+VALUE
+"top-level" "top-level" (
+27
+27
+27
+0
+1000
+)
+END

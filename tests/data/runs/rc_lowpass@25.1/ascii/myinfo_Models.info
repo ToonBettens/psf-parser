@@ -1,0 +1,12 @@
+HEADER
+"PSFversion" "1.00"
+"simulator" "spectre"
+"version" "25.1.0.181.isr3"
+"date" "6:29:25 PM, Thur Nov 19, 2026"
+"design" "// RC Low-Pass Filter"
+"analysis type" "info"
+"analysis name" "myinfo_Models"
+"analysis description" "Circuit Information"
+"xVecSorted" "unknown"
+"tolerance.relative" 0.001
+END

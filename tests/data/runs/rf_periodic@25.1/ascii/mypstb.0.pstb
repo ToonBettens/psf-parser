@@ -1,0 +1,51 @@
+HEADER
+"PSFversion" "1.00"
+"simulator" "spectre"
+"version" "25.1.0.181.isr3"
+"date" "6:29:28 PM, Thur Nov 19, 2026"
+"design" "// Periodic analyses on a driven diode: pss and the small-signal analyses around it."
+"analysis type" "pstb"
+"analysis name" "mypstb.0"
+"analysis description" "Periodic STB Analysis `mypstb': freq = (1 kHz -> 100 kHz)"
+"xVecSorted" "ascending"
+"tolerance.relative" 0.001
+"fundamental frequency" 1000000
+"harmonic" 0
+"operating point producer" "mypss"
+"probe" "Ip"
+"gainMarginInfo" "No gain margin, phase does not reach 0 Deg"
+"phaseMarginInfo" "No phase margin. Gain(dB) has no zero-crossing point from positive to negative."
+TYPE
+"sweep" FLOAT DOUBLE PROP(
+"key" "sweep"
+)
+"LOOPGAIN" COMPLEX DOUBLE PROP(
+"key" "gain"
+)
+"IMPEDANCE" COMPLEX DOUBLE PROP(
+"key" "advStb"
+)
+"ADMITTANCE" COMPLEX DOUBLE PROP(
+"key" "advStb"
+)
+SWEEP
+"freq" "sweep" PROP(
+"sweep_direction" 0
+"units" "Hz"
+"plot" 0
+"grid" 2
+)
+TRACE
+"loopGain" "LOOPGAIN"
+VALUE
+"freq" 1000
+"loopGain" (-99.996044415115151 0.62892197090435131)
+"freq" 3162.2776601683795
+"loopGain" (-99.96045822759767 1.9881181284462497)
+"freq" 10000.000000000002
+"loopGain" (-99.605984462208355 6.2646871906608199)
+"freq" 31622.7766016838
+"loopGain" (-96.194781032780242 19.132229504411953)
+"freq" 100000
+"loopGain" (-71.654979160193392 45.067303615498801)
+END

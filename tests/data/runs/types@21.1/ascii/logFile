@@ -1,0 +1,93 @@
+HEADER
+"PSFversion" "1.00"
+"Log Generator" "drlLog rev. 1.0"
+"Log Time Stamp" "Fri Nov 20 13:49:01 2026"
+"psfversion" ""
+"simulator" "spectre"
+"version" "21.1.0.132.isr1"
+"date" "1:49:01 PM, Fri Nov 20, 2026"
+"design" "// Value types that the other netlists do not reach, written into both encodings for comparison."
+"signalNameType" "spectre"
+"simMode" "Spectre"
+"measdgt" 0
+"ingold" 2
+"sst2usecolon" 0
+TYPE
+"analysisInst" STRUCT(
+"analysisType" STRING *
+"dataFile" STRING *
+"format" STRING *
+"parent" STRING *
+"sweepVariable" ARRAY ( * ) STRING *
+"description" STRING *
+)
+VALUE
+"pars-info" "analysisInst" (
+"info"
+"pars.info"
+"PSF"
+""
+()
+"Circuit Information"
+) PROP(
+"data_type" "struct"
+)
+
+"allp-info.allparameters" "analysisInst" (
+"info.allparameters"
+"allp.info.allparameters"
+"PSF"
+""
+()
+"Circuit Information"
+)
+"insts-info" "analysisInst" (
+"info"
+"insts.info"
+"PSF"
+""
+()
+"Circuit Information"
+) PROP(
+"data_type" "struct"
+)
+
+"subs-info.subckts" "analysisInst" (
+"info.subckts"
+"subs.info.subckts"
+"PSF"
+""
+()
+"Circuit Information"
+)
+"prims-info.primitives" "analysisInst" (
+"info.primitives"
+"prims.info.primitives"
+"PSF"
+""
+()
+"Circuit Information"
+)
+"every-info" "analysisInst" (
+"info"
+"every.info"
+"PSF"
+""
+()
+"Circuit Information"
+) PROP(
+"data_type" "struct"
+)
+
+"myop-dc" "analysisInst" (
+"dc"
+"myop.dc"
+"PSF"
+""
+()
+"DC Analysis `myop'"
+) PROP(
+"data_type" "scalar"
+)
+
+END

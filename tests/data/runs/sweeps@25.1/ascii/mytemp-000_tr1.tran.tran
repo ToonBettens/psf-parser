@@ -1,0 +1,338 @@
+HEADER
+"PSFversion" "1.00"
+"simulator" "spectre"
+"version" "25.1.0.181.isr3"
+"date" "6:29:27 PM, Thur Nov 19, 2026"
+"design" "// Sweep tree shapes that rc_lowpass does not have."
+"analysis type" "tran"
+"analysis name" "mytemp-000_tr1"
+"analysis description" "Transient Analysis `mytemp-000_tr1': time = (0 s -> 2 ms)"
+"xVecSorted" "ascending"
+"tolerance.relative" 0.001
+"start" 0
+"outputstart" 0
+"stop" 0.002
+"step" 1.9999999999999999e-06
+"istep" 0.001
+"maxstep" 4.0000000000000003e-05
+"ic" "all"
+"useprevic" "no"
+"skipdc" "no"
+"reltol" 0.001
+"abstol(V)" 9.9999999999999995e-07
+"abstol(I)" 9.9999999999999998e-13
+"temp" -40
+"tnom" 27
+"tempeffects" "all"
+"errpreset" "moderate"
+"method" "traponly"
+"lteratio" 3.5
+"relref" "sigglobal"
+"cmin" 0
+"gmin" 9.9999999999999998e-13
+TYPE
+"sweep" FLOAT DOUBLE PROP(
+"key" "sweep"
+)
+"LogicV" FLOAT DOUBLE PROP(
+"key" "node"
+)
+"V" FLOAT DOUBLE PROP(
+"units" "V"
+"key" "node"
+"tolerance" 9.9999999999999995e-07
+)
+"I" FLOAT DOUBLE PROP(
+"units" "A"
+"key" "branch"
+"tolerance" 9.9999999999999998e-13
+)
+"MMF" FLOAT DOUBLE PROP(
+"units" "A*turn"
+"key" "node"
+"tolerance" 9.9999999999999998e-13
+)
+"Wb" FLOAT DOUBLE PROP(
+"units" "Wb"
+"key" "node"
+"tolerance" 1.0000000000000001e-09
+)
+"Temp" FLOAT DOUBLE PROP(
+"units" "C"
+"key" "node"
+"tolerance" 0.0001
+)
+"Pwr" FLOAT DOUBLE PROP(
+"units" "W"
+"key" "node"
+"tolerance" 1.0000000000000001e-09
+)
+"U" FLOAT DOUBLE PROP(
+"units" ""
+"key" "node"
+"tolerance" 9.9999999999999995e-07
+)
+"V/Sec" FLOAT DOUBLE PROP(
+"units" "V/s"
+"key" "node"
+"tolerance" 9.9999999999999991e-05
+)
+"I/Sec" FLOAT DOUBLE PROP(
+"units" "A/s"
+"key" "node"
+"tolerance" 9.9999999999999995e-07
+)
+"1/Sec" FLOAT DOUBLE PROP(
+"units" "1/s"
+"key" "node"
+"tolerance" 9.9999999999999991e-05
+)
+"HOD" FLOAT DOUBLE PROP(
+"units" ""
+"key" "node"
+"tolerance" 0.01
+)
+"Q" FLOAT DOUBLE PROP(
+"units" "Coul"
+"key" "node"
+"tolerance" 1.0000000000000001e-15
+)
+"Efield" FLOAT DOUBLE PROP(
+"units" "V/m"
+"key" "node"
+"tolerance" 9.9999999999999995e-07
+"sigtype" "optical"
+)
+SWEEP
+"time" "sweep" PROP(
+"sweep_direction" 0
+"units" "s"
+"plot" 0
+"grid" 1
+)
+TRACE
+"in" "V"
+"out" "V"
+"Vin:p" "I"
+VALUE
+"time" 0
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 1.9999999999999999e-06
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 6.0000000000000002e-06
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 1.4000000000000001e-05
+"in" 1
+"out" 1
+"Vin:p" 1.1057998253238582e-19
+"time" 3.0000000000000004e-05
+"in" 1
+"out" 1
+"Vin:p" 2.8888949165808538e-34
+"time" 6.2000000000000016e-05
+"in" 1
+"out" 1
+"Vin:p" -3.8518598887744717e-34
+"time" 0.00010200000000000001
+"in" 1
+"out" 1
+"Vin:p" -2.7211348642773541e-20
+"time" 0.00014200000000000001
+"in" 1
+"out" 1
+"Vin:p" -5.4422697285546949e-20
+"time" 0.00018200000000000001
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.000222
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.00026200000000000003
+"in" 1
+"out" 1
+"Vin:p" -2.7211348642773191e-20
+"time" 0.00030200000000000002
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.00034200000000000002
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.00038200000000000002
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.00042200000000000001
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.00046200000000000001
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.00050200000000000006
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.00054200000000000006
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.00058200000000000005
+"in" 1
+"out" 1
+"Vin:p" -5.442269728554684e-20
+"time" 0.00062200000000000005
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.00066200000000000005
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.00070200000000000004
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.00074200000000000004
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.00078200000000000003
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.00082200000000000003
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.00086200000000000003
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.00090200000000000002
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.00094200000000000002
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.00098200000000000002
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.0010220000000000001
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.0010620000000000002
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.0011020000000000003
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.0011420000000000004
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.0011820000000000005
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.0012220000000000006
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.0012620000000000008
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.0013020000000000009
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.001342000000000001
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.0013820000000000011
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.0014220000000000012
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.0014620000000000013
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.0015020000000000014
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.0015420000000000015
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.0015820000000000016
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.0016220000000000017
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.0016620000000000018
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.0017020000000000019
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.001742000000000002
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.0017820000000000021
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.0018220000000000022
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.0018620000000000023
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.0019020000000000024
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.0019420000000000025
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.0019710000000000014
+"in" 1
+"out" 1
+"Vin:p" 0
+"time" 0.002
+"in" 1
+"out" 1
+"Vin:p" -2.0519153979035079e-20
+END

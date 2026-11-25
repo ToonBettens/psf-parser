@@ -1,0 +1,118 @@
+HEADER
+"PSFversion" "1.00"
+"simulator" "spectre"
+"version" "25.1.0.181.isr3"
+"date" "6:29:29 PM, Thur Nov 19, 2026"
+"design" "// Multi-tone analyses on a diode mixer: qpss, hb and envlp."
+"analysis type" "qpnoise"
+"analysis name" "myqpnoise"
+"analysis description" "Quasi-Periodic Noise Analysis `myqpnoise': freq = (1 kHz -> 100 kHz)"
+"xVecSorted" "ascending"
+"tolerance.relative" 0.001
+"clock frequency" 1000000
+"sweeptype" "absolute"
+"relharmvec" "0_0"
+"operating point producer" "myqpss"
+"output" "pair of nodes"
+"ground" "0"
+"positive output signal" "out"
+"negative output signal" "0"
+TYPE
+"sweep" FLOAT DOUBLE PROP(
+"key" "sweep"
+)
+"V/sqrt(Hz)" FLOAT DOUBLE PROP(
+"units" "V/sqrt(Hz)"
+"key" "noise"
+)
+"V^2/Hz" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+"key" "noise"
+)
+"d1" STRUCT(
+"id" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+"noise_type" "shot"
+)
+"total" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+)
+) PROP(
+"key" "inst"
+"master" "diode"
+)
+"resistor" STRUCT(
+"rn" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+"noise_type" "thermal"
+)
+"total" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+)
+) PROP(
+"key" "inst"
+"master" "resistor"
+)
+SWEEP
+"freq" "sweep" PROP(
+"sweep_direction" 0
+"units" "Hz"
+"plot" 0
+"grid" 3
+)
+TRACE
+"D1" "d1"
+"R1" "resistor"
+"out" "V/sqrt(Hz)"
+VALUE
+"freq" 1000
+"D1" (
+6.846237013878093e-20
+6.846237013878093e-20
+)
+"R1" (
+1.6297120122157668e-17
+1.6297120122157668e-17
+)
+"out" 4.0454397155681913e-09
+"freq" 3162.2776601683795
+"D1" (
+6.8462128546971709e-20
+6.8462128546971709e-20
+)
+"R1" (
+1.6297063208007365e-17
+1.6297063208007365e-17
+)
+"out" 4.0454326513432824e-09
+"freq" 10000.000000000002
+"D1" (
+6.8459712722876527e-20
+6.8459712722876527e-20
+)
+"R1" (
+1.6296494087966209e-17
+1.6296494087966209e-17
+)
+"out" 4.045362011079983e-09
+"freq" 31622.7766016838
+"D1" (
+6.843556387916862e-20
+6.843556387916862e-20
+)
+"R1" (
+1.6290805071457377e-17
+1.6290805071457377e-17
+)
+"out" 4.044655811726944e-09
+"freq" 100000
+"D1" (
+6.8195011518387827e-20
+6.8195011518387827e-20
+)
+"R1" (
+1.6234132453486841e-17
+1.6234132453486841e-17
+)
+"out" 4.0376140807418967e-09
+END

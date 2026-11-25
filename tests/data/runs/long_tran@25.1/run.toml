@@ -1,0 +1,5 @@
+netlist    = "long_tran.scs"
+group      = "base"
+psfversion = "1.4.0"
+command    = "spectre long_tran.scs -format {format} -raw {outdir}"
+formats    = ["ascii", "binary"]

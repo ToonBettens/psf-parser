@@ -1,0 +1,69 @@
+HEADER
+"PSFversion" "1.00"
+"Log Generator" "drlLog rev. 1.0"
+"Log Time Stamp" "Thu Nov 19 18:29:24 2026"
+"psfversion" "1.4.0"
+"simulator" "spectre"
+"version" "25.1.0.181.isr3"
+"date" "6:29:24 PM, Thur Nov 19, 2026"
+"design" "// Spectre's default six digits in psfascii, which is what most real files have."
+"signalNameType" "spectre"
+"simMode" "Spectre"
+"measdgt" 0
+"ingold" 2
+"sst2usecolon" 0
+TYPE
+"analysisInst" STRUCT(
+"analysisType" STRING *
+"dataFile" STRING *
+"format" STRING *
+"parent" STRING *
+"sweepVariable" ARRAY ( * ) STRING *
+"description" STRING *
+)
+VALUE
+"myop-dc" "analysisInst" (
+"dc"
+"myop.dc"
+"PSF"
+""
+()
+"DC Analysis `myop'"
+) PROP(
+"data_type" "scalar"
+)
+
+"mydc-dc" "analysisInst" (
+"dc"
+"mydc.dc"
+"PSF"
+""
+("dc")
+"DC Analysis `mydc': Vin:dc = (0 V -> 2 V)"
+) PROP(
+"data_type" "scalar"
+)
+
+"myac-ac" "analysisInst" (
+"ac"
+"myac.ac"
+"PSF"
+""
+("freq")
+"AC Analysis `myac': freq = (1 Hz -> 1 MHz)"
+) PROP(
+"data_type" "swept_scalar"
+)
+
+"mytran-tran" "analysisInst" (
+"tran"
+"mytran.tran.tran"
+"PSF"
+""
+("time")
+"Transient Analysis `mytran': time = (0 s -> 20 ms)"
+) PROP(
+"data_type" "swept_scalar"
+)
+
+END

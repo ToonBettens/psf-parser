@@ -1,0 +1,5 @@
+netlist    = "long_tran.scs"
+group      = "adhoc"
+psfversion = "unknown"
+command    = "spectre long_tran.scs -format {format} -raw {outdir}"
+formats    = ["ascii", "binary"]

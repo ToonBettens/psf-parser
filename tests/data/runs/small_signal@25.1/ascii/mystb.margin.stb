@@ -1,0 +1,41 @@
+HEADER
+"PSFversion" "1.00"
+"simulator" "spectre"
+"version" "25.1.0.181.isr3"
+"date" "6:29:26 PM, Thur Nov 19, 2026"
+"design" "// Small-signal analyses on linear circuits: noise, xf, pz, sp and stb."
+"analysis type" "margin.stb"
+"analysis name" "mystb"
+"analysis description" "Stability Analysis `mystb': freq = (1 Hz -> 1 GHz)"
+"xVecSorted" "ascending"
+"tolerance.relative" 0.001
+"operating point producer" "mystb"
+"probe" "Ip"
+"gainMarginInfo" "No gain margin. Phase does not reach 0 Deg"
+"phaseMargin" "9.007906e+01 Deg"
+"phaseMarginFrequency" "1.417877e+08 Hz"
+TYPE
+"dB" FLOAT DOUBLE PROP(
+"key" "gain"
+"units" "dB"
+)
+"Deg" FLOAT DOUBLE PROP(
+"key" "gain"
+"units" "Deg"
+)
+"Hz" FLOAT DOUBLE PROP(
+"key" "gain"
+"units" "Hz"
+)
+"stbstate" STRING *
+VALUE
+"gainMargin" "dB" nan PROP(
+"gainMarginInfo" "No gain margin. Phase does not reach 0 Deg"
+)
+"gainMarginFreq" "Hz" nan
+"phaseMargin" "Deg" 90.079059832287726 PROP(
+"phaseMarginInfo" "Phase margin = 9.007906e+01 Deg at frequency = 1.417877e+08 Hz"
+)
+"phaseMarginFreq" "Hz" 141787681.17141044
+"stb_state" "stbstate" "The circuit is stable. No gain margin. Phase does not reach 0."
+END

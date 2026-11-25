@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from pathlib import Path
 
 import pytest
 
@@ -12,10 +13,11 @@ from psf_parser.errors import PsfStructureError
 from psf_parser.model import Kind, PsfFile, PsfType, Role, Variable
 
 FLOAT = PsfType("V", Kind.FLOAT64)
+MYAC = Path(__file__).parent / "data" / "runs" / "rc_lowpass@23.1" / "ascii" / "myac.ac"
 
 
-def _myac_text(run) -> str:
-    return next(s for s in run.samples("ascii") if s.path.name == "myac.ac").path.read_text()
+def _myac_text() -> str:
+    return MYAC.read_text()
 
 
 def test_equal_columns_pass():
@@ -29,6 +31,23 @@ def test_unequal_columns_raise():
     file = PsfFile()
     add_variable(file, Variable("freq", FLOAT, Role.SWEEP, values=[1.0, 2.0]))
     add_variable(file, Variable("out", FLOAT, Role.TRACE, values=[3.0]))
+    with pytest.raises(PsfStructureError):
+        check(file)
+
+
+def test_traces_that_are_all_empty_pass():
+    file = PsfFile()
+    add_variable(file, Variable("pairs", FLOAT, Role.SWEEP, values=[1.0, 2.0, 3.0]))
+    add_variable(file, Variable("rval", FLOAT, Role.TRACE, values=[]))
+    add_variable(file, Variable("cval", FLOAT, Role.TRACE, values=[]))
+    check(file)
+
+
+def test_one_empty_trace_among_full_ones_raises():
+    file = PsfFile()
+    add_variable(file, Variable("freq", FLOAT, Role.SWEEP, values=[1.0, 2.0]))
+    add_variable(file, Variable("in", FLOAT, Role.TRACE, values=[3.0, 4.0]))
+    add_variable(file, Variable("out", FLOAT, Role.TRACE, values=[]))
     with pytest.raises(PsfStructureError):
         check(file)
 
@@ -54,8 +73,8 @@ def test_duplicate_type_raises():
         add_type(file, FLOAT)
 
 
-def test_load_raises_on_a_missing_value(run, tmp_path):
-    text = _myac_text(run)
+def test_load_raises_on_a_missing_value(tmp_path):
+    text = _myac_text()
     value = text.index("\nVALUE\n")
     damaged = text[:value] + re.sub(r'"out" \(.*\)\n', "", text[value:], count=1)
     path = tmp_path / "myac.ac"
@@ -65,8 +84,8 @@ def test_load_raises_on_a_missing_value(run, tmp_path):
         _ = file["out"].values
 
 
-def test_load_raises_on_a_value_for_an_undeclared_variable(run, tmp_path):
-    text = _myac_text(run)
+def test_load_raises_on_a_value_for_an_undeclared_variable(tmp_path):
+    text = _myac_text()
     value = text.index("\nVALUE\n")
     path = tmp_path / "myac.ac"
     path.write_text(text[:value] + text[value:].replace('"out" (', '"nope" (', 1))

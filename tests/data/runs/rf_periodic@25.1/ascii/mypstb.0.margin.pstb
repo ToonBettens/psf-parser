@@ -1,0 +1,40 @@
+HEADER
+"PSFversion" "1.00"
+"simulator" "spectre"
+"version" "25.1.0.181.isr3"
+"date" "6:29:28 PM, Thur Nov 19, 2026"
+"design" "// Periodic analyses on a driven diode: pss and the small-signal analyses around it."
+"analysis type" "margin.pstb"
+"analysis name" "mypstb.0"
+"analysis description" "Periodic STB Analysis `mypstb': freq = (1 kHz -> 100 kHz)"
+"xVecSorted" "ascending"
+"tolerance.relative" 0.001
+"fundamental frequency" 1000000
+"harmonic" 0
+"operating point producer" "mypss"
+"probe" "Ip"
+"gainMarginInfo" "No gain margin, phase does not reach 0 Deg"
+"phaseMarginInfo" "No phase margin. Gain(dB) has no zero-crossing point from positive to negative."
+TYPE
+"dB" FLOAT DOUBLE PROP(
+"key" "gain"
+"units" "dB"
+)
+"Deg" FLOAT DOUBLE PROP(
+"key" "gain"
+"units" "Deg"
+)
+"Hz" FLOAT DOUBLE PROP(
+"key" "gain"
+"units" "Hz"
+)
+VALUE
+"gainMargin" "dB" nan PROP(
+"gainMarginInfo" "No gain margin, phase does not reach 0 Deg"
+)
+"gainMarginFreq" "Hz" nan
+"phaseMargin" "Deg" nan PROP(
+"phaseMarginInfo" "No phase margin. Gain(dB) has no zero-crossing point from positive to negative."
+)
+"phaseMarginFreq" "Hz" nan
+END

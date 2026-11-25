@@ -1,0 +1,127 @@
+HEADER
+"PSFversion" "1.00"
+"simulator" "spectre"
+"version" "21.1.0.132.isr1"
+"date" "1:49:03 PM, Fri Nov 20, 2026"
+"design" "// Multi-tone analyses on a diode mixer: qpss, hb and envlp."
+"analysis type" "fd.envlp"
+"analysis name" "myenv.1"
+"analysis description" "Envelope Following Analysis `myenv': time = (0 s -> 5 us)"
+"xVecSorted" "ascending"
+"tolerance.relative" 0.00100000
+"envclockname" "lo"
+"envclockperiod" 1.00000e-06
+"envstrobeperiod" 0.00000
+"envstarttime" 0.00000
+"envstoptime" 5.00000e-06
+"envtruestoptime" 5.00000e-06
+"envtrueoutputstarttime" 0.00000
+TYPE
+"sweep" FLOAT DOUBLE PROP(
+"key" "sweep"
+)
+"V" COMPLEX DOUBLE PROP(
+"units" "V"
+"key" "node"
+"tolerance" 1.00000e-06
+)
+"I" COMPLEX DOUBLE PROP(
+"units" "A"
+"key" "branch"
+"tolerance" 1.00000e-12
+)
+"MMF" COMPLEX DOUBLE PROP(
+"units" "A*turn"
+"key" "node"
+"tolerance" 1.00000e-12
+)
+"Wb" COMPLEX DOUBLE PROP(
+"units" "Wb"
+"key" "node"
+"tolerance" 1.00000e-09
+)
+"Temp" COMPLEX DOUBLE PROP(
+"units" "C"
+"key" "node"
+"tolerance" 0.000100000
+)
+"Pwr" COMPLEX DOUBLE PROP(
+"units" "W"
+"key" "node"
+"tolerance" 1.00000e-09
+)
+"U" COMPLEX DOUBLE PROP(
+"units" ""
+"key" "node"
+"tolerance" 1.00000e-06
+)
+"V/Sec" COMPLEX DOUBLE PROP(
+"units" "V/s"
+"key" "node"
+"tolerance" 0.000100000
+)
+"I/Sec" COMPLEX DOUBLE PROP(
+"units" "A/s"
+"key" "node"
+"tolerance" 1.00000e-06
+)
+"1/Sec" COMPLEX DOUBLE PROP(
+"units" "1/s"
+"key" "node"
+"tolerance" 0.000100000
+)
+"HOD" COMPLEX DOUBLE PROP(
+"units" ""
+"key" "node"
+"tolerance" 0.0100000
+)
+"Q" COMPLEX DOUBLE PROP(
+"units" "Coul"
+"key" "node"
+"tolerance" 1.00000e-15
+)
+SWEEP
+"time" "sweep" PROP(
+"sweep_direction" 0
+"units" "s"
+"plot" 0
+"grid" 1
+)
+TRACE
+"lo" "V"
+"rf" "V"
+"out" "V"
+"Vlo:p" "I"
+"Vrf:p" "I"
+VALUE
+"time" 0
+"lo" (-3.85329e-05 -0.499998)
+"rf" (0.00314384 -0.510779)
+"out" (-0.000274321 -0.000441591)
+"Vlo:p" (-4.50143e-09 6.14439e-07)
+"Vrf:p" (-4.50143e-09 6.14439e-07)
+"time" 9.9999999999999995e-07
+"lo" (-4.12439e-05 -0.499998)
+"rf" (0.00829255 -0.506661)
+"out" (-0.000243555 -0.000402331)
+"Vlo:p" (-1.04702e-08 5.56347e-07)
+"Vrf:p" (-1.04702e-08 5.56347e-07)
+"time" 1.9999999999999999e-06
+"lo" (-4.12439e-05 -0.499998)
+"rf" (0.0102606 -0.499999)
+"out" (-0.000198007 -0.000331315)
+"Vlo:p" (-1.11798e-08 4.56570e-07)
+"Vrf:p" (-1.11798e-08 4.56570e-07)
+"time" 2.9999999999999908e-06
+"lo" (-0.000595915 -0.499931)
+"rf" (0.00773024 -0.493276)
+"out" (-0.000168790 -0.000270802)
+"Vlo:p" (-9.68536e-09 3.62649e-07)
+"Vrf:p" (-9.68536e-09 3.62649e-07)
+"time" 3.9999999999999905e-06
+"lo" (-0.000538735 -0.499960)
+"rf" (0.00264881 -0.489182)
+"out" (-0.000139515 -0.000219201)
+"Vlo:p" (-5.45362e-09 3.07728e-07)
+"Vrf:p" (-5.45362e-09 3.07728e-07)
+END

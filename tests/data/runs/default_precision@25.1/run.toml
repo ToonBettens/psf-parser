@@ -1,0 +1,5 @@
+netlist    = "default_precision.scs"
+group      = "base"
+psfversion = "1.4.0"
+command    = "spectre default_precision.scs -format {format} -raw {outdir}"
+formats    = ["ascii", "binary"]

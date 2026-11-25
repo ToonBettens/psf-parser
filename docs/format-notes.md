@@ -58,6 +58,27 @@ VALUE
 "in" (1 0)
 ```
 
+### 1.2 Declared traces without values
+
+The parent file of a paramset sweep (`sweep paramset=...`, Spectre 25.1) declares one trace
+per swept parameter but writes only the sweep column, in both encodings:
+
+```
+SWEEP
+"pairs" "sweep" PROP( ... )
+TRACE
+"rval" "sweep"
+"cval" "sweep"
+VALUE
+"pairs" 1
+"pairs" 2
+"pairs" 3
+```
+
+The parameter values are in the logFile, as properties of each child analysis. So a table
+whose traces are all empty is valid. Traces of unequal, non-zero length still mean a damaged
+file.
+
 ---
 
 ## 2. psfascii
@@ -80,14 +101,19 @@ Values dominate the size of a large file: 97% of the bytes in the ascii `mytran`
 
 ### 2.1 Floats may arrive without a decimal point
 
-psfascii formats doubles with the simulator's `precision` option, which defaults to `"%g"`, six
-significant digits. Formats in the `%g` family drop the decimal point for integral values, so
-`1.0` is written `1` and tokenizes as an integer while the declared type is `FLOAT DOUBLE`.
+psfascii formats doubles with the simulator's `precision` option. Formats in the `%g` family drop
+the decimal point for integral values, so `1.0` is written `1` and tokenizes as an integer while
+the declared type is `FLOAT DOUBLE`.
 
-`precision="%.17g"` round-trips float64 exactly, and the test corpus uses it. At the default of six
-digits the text cannot represent the value the binary holds (`0.24` versus
-`0.24000000000000002`), so the two encodings can only be compared to a tolerance. qpss frequency index files
-(`*.fi.qpss`) have six digits whatever `precision` says.
+Only 17 significant digits round-trip a float64, so `precision="%.17g"` makes psfascii exact, and
+the test corpus uses it. With fewer digits the text cannot hold the value the binary holds (`0.24`
+versus `0.24000000000000002`). The default differs by version: 23.1 writes six significant digits
+(`%g`), 25.1 sixteen (`2.000000000000000e-05`).
+
+Some files ignore `precision` and have six digits: qpss frequency index files (`*.fi.qpss`) and
+sensitivity files (`*.sens.dc`, `*.sens.ac`) in 25.1, and in 21.1 the traces of ac, qpac, qpnoise
+and hb files, while their sweep column keeps full precision. So the digits can differ by column
+within one file.
 
 ### 2.2 A repeated row without its sweep value
 
@@ -324,7 +350,9 @@ the value section. The other added keys are `BINPSF creation time`, `PSF_LIB_BUI
 ## 4. The logFile
 
 A raw folder holds one file per analysis, plus a `logFile`. The logFile is an ordinary shape-B PSF file
-and always psfascii, whatever `-format` the run used. Each entry is a struct describing one other file:
+and always psfascii, whatever `-format` the run used. Some `info` files are psfascii in a psfbin run too
+(`what=parameters`, `primitives`, `subckts`, and in 25.1 `allparameters`). Each entry is a struct
+describing one other file:
 
 ```
 "mysweep-001_mynestedsweep-002_ac2-ac" "analysisInst" (

@@ -31,8 +31,15 @@ def check_row_count(file: PsfFile, variable: Variable, count: int) -> None:
 
 
 def check(file: PsfFile) -> None:
-    """Raise if the sweep and trace columns differ in length, the usual sign of a desynchronised parser."""
+    """Raise if the sweep and trace columns differ in length, the usual sign of a desynchronised parser.
+
+    Traces that are all empty are allowed: the parent file of a paramset sweep declares its
+    traces but writes only the sweep (format-notes 1.2).
+    """
     columns = [v for v in file if v.role is not Role.ENTRY]
+    traces = [v for v in columns if v.role is Role.TRACE]
+    if traces and all(len(v.values) == 0 for v in traces):
+        columns = [v for v in columns if v.role is Role.SWEEP]
     if len({len(v.values) for v in columns}) > 1:
         detail = ", ".join(f"{v.name}={len(v.values)}" for v in columns)
         raise PsfStructureError(f"columns have unequal lengths, so the value section desynchronised: {detail}")

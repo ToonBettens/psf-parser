@@ -1,0 +1,197 @@
+HEADER
+"PSFversion" "1.00"
+"simulator" "spectre"
+"version" "25.1.0.181.isr3"
+"date" "6:29:29 PM, Thur Nov 19, 2026"
+"design" "// Multi-tone analyses on a diode mixer: qpss, hb and envlp."
+"analysis type" "fi.qpss"
+"analysis name" "myqpss"
+"analysis description" "Quasi-Periodic Steady State Analysis `myqpss': largefund = 1 MHz"
+"xVecSorted" "unsorted"
+"tolerance.relative" 0.00100000
+"largefundname" "lo"
+"largefundfreq" "1 MHz"
+"largefundmaxharm" "3"
+"totalmoderatefunds" 1
+"moderatefundnames" "rf"
+"moderatefundfreqs" "1.1 MHz"
+"moderatefundmaxharms" "1"
+TYPE
+"sweep" FLOAT DOUBLE PROP(
+"key" "sweep"
+)
+"V" COMPLEX DOUBLE PROP(
+"units" "V"
+"key" "node"
+"tolerance" 1.00000e-06
+)
+"I" COMPLEX DOUBLE PROP(
+"units" "A"
+"key" "branch"
+"tolerance" 1.00000e-12
+)
+"MMF" COMPLEX DOUBLE PROP(
+"units" "A*turn"
+"key" "node"
+"tolerance" 1.00000e-12
+)
+"Wb" COMPLEX DOUBLE PROP(
+"units" "Wb"
+"key" "node"
+"tolerance" 1.00000e-09
+)
+"Temp" COMPLEX DOUBLE PROP(
+"units" "C"
+"key" "node"
+"tolerance" 0.000100000
+)
+"Pwr" COMPLEX DOUBLE PROP(
+"units" "W"
+"key" "node"
+"tolerance" 1.00000e-09
+)
+"U" COMPLEX DOUBLE PROP(
+"units" ""
+"key" "node"
+"tolerance" 1.00000e-06
+)
+"V/Sec" COMPLEX DOUBLE PROP(
+"units" "V/s"
+"key" "node"
+"tolerance" 0.000100000
+)
+"I/Sec" COMPLEX DOUBLE PROP(
+"units" "A/s"
+"key" "node"
+"tolerance" 1.00000e-06
+)
+"1/Sec" COMPLEX DOUBLE PROP(
+"units" "1/s"
+"key" "node"
+"tolerance" 0.000100000
+)
+"HOD" COMPLEX DOUBLE PROP(
+"units" ""
+"key" "node"
+"tolerance" 0.0100000
+)
+"Q" COMPLEX DOUBLE PROP(
+"units" "Coul"
+"key" "node"
+"tolerance" 1.00000e-15
+)
+"Efield" COMPLEX DOUBLE PROP(
+"units" "V/m"
+"key" "node"
+"tolerance" 1.00000e-06
+"sigtype" "optical"
+)
+"harmUnit" COMPLEX DOUBLE PROP(
+"units" "harmonic"
+"key" "harmonic Index"
+)
+SWEEP
+"freq" "sweep" PROP(
+"sweep_direction" 0
+"units" "Hz"
+"plot" 0
+"grid" 1
+)
+TRACE
+"lo" "V"
+"rf" "V"
+"out" "V"
+"Vlo:p" "I"
+"Vrf:p" "I"
+"lo_harm_index" "harmUnit"
+"rf_harm_index" "harmUnit"
+VALUE
+"freq" 100000.
+"lo" (6.93889e-18 6.93889e-18)
+"rf" (-1.52696e-10 7.30785e-10)
+"out" (2.35079e-05 7.53835e-05)
+"Vlo:p" (-1.87729e-08 -7.68663e-08)
+"Vrf:p" (-1.87729e-08 -7.68663e-08)
+"lo_harm_index" (-1.00000 0.00000)
+"rf_harm_index" (1.00000 0.00000)
+"freq" 0.00000
+"lo" (2.43264e-08 0.00000)
+"rf" (2.43264e-08 0.00000)
+"out" (0.000228003 0.00000)
+"Vlo:p" (-2.28020e-07 0.00000)
+"Vrf:p" (-2.28020e-07 0.00000)
+"lo_harm_index" (0.00000 0.00000)
+"rf_harm_index" (0.00000 0.00000)
+"freq" 1.10000e+06
+"lo" (-1.38778e-17 -5.55112e-17)
+"rf" (0.00951056 -0.00309017)
+"out" (4.43413e-05 -5.05987e-05)
+"Vlo:p" (-7.93101e-08 1.99569e-08)
+"Vrf:p" (-7.93101e-08 1.99569e-08)
+"lo_harm_index" (0.00000 0.00000)
+"rf_harm_index" (1.00000 0.00000)
+"freq" 1.00000e+06
+"lo" (-1.99058e-07 -0.500000)
+"rf" (-1.99058e-07 -0.500000)
+"out" (-0.000199011 -0.000318975)
+"Vlo:p" (-1.37346e-09 4.44012e-07)
+"Vrf:p" (-1.37346e-09 4.44012e-07)
+"lo_harm_index" (1.00000 0.00000)
+"rf_harm_index" (0.00000 0.00000)
+"freq" 2.10000e+06
+"lo" (-1.73472e-18 -1.73472e-18)
+"rf" (5.68335e-10 4.89916e-10)
+"out" (-4.45869e-05 -1.87028e-05)
+"Vlo:p" (1.99051e-08 7.75290e-08)
+"Vrf:p" (1.99051e-08 7.75290e-08)
+"lo_harm_index" (1.00000 0.00000)
+"rf_harm_index" (1.00000 0.00000)
+"freq" 900000.
+"lo" (0.00000 -5.55112e-17)
+"rf" (-6.82410e-10 2.07628e-09)
+"out" (-6.05663e-05 1.77036e-05)
+"Vlo:p" (7.05783e-08 1.65394e-08)
+"Vrf:p" (7.05783e-08 1.65394e-08)
+"lo_harm_index" (2.00000 0.00000)
+"rf_harm_index" (-1.00000 0.00000)
+"freq" 2.00000e+06
+"lo" (4.05202e-08 -2.49564e-08)
+"rf" (4.05202e-08 -2.49564e-08)
+"out" (-0.000160171 0.000198697)
+"Vlo:p" (4.09826e-07 2.58921e-09)
+"Vrf:p" (4.09826e-07 2.58921e-09)
+"lo_harm_index" (2.00000 0.00000)
+"rf_harm_index" (0.00000 0.00000)
+"freq" 3.10000e+06
+"lo" (-8.67362e-19 -1.30104e-18)
+"rf" (-7.18406e-10 -2.06237e-09)
+"out" (-7.39885e-06 3.30700e-05)
+"Vlo:p" (7.18160e-08 -1.86499e-08)
+"Vrf:p" (7.18160e-08 -1.86499e-08)
+"lo_harm_index" (2.00000 0.00000)
+"rf_harm_index" (1.00000 0.00000)
+"freq" 1.90000e+06
+"lo" (0.00000 3.46945e-18)
+"rf" (-1.26835e-10 -5.00841e-10)
+"out" (2.46140e-05 3.20238e-05)
+"Vlo:p" (1.36147e-08 -6.14017e-08)
+"Vrf:p" (1.36147e-08 -6.14017e-08)
+"lo_harm_index" (3.00000 0.00000)
+"rf_harm_index" (-1.00000 0.00000)
+"freq" 3.00000e+06
+"lo" (-1.35988e-07 4.29814e-09)
+"rf" (-1.35988e-07 4.29814e-09)
+"out" (0.000147733 8.02182e-05)
+"Vlo:p" (3.52073e-09 -3.58688e-07)
+"Vrf:p" (3.52073e-09 -3.58688e-07)
+"lo_harm_index" (3.00000 0.00000)
+"rf_harm_index" (0.00000 0.00000)
+"freq" 4.10000e+06
+"lo" (-4.33681e-19 -4.33681e-19)
+"rf" (4.07561e-10 3.18605e-10)
+"out" (2.34210e-05 2.71281e-06)
+"Vlo:p" (-1.64279e-08 -6.30582e-08)
+"Vrf:p" (-1.64279e-08 -6.30582e-08)
+"lo_harm_index" (3.00000 0.00000)
+"rf_harm_index" (1.00000 0.00000)
+END

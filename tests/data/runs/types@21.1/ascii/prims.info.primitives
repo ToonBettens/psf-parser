@@ -1,0 +1,48 @@
+HEADER
+"PSFversion" "1.00"
+"simulator" "spectre"
+"version" "21.1.0.132.isr1"
+"date" "1:49:01 PM, Fri Nov 20, 2026"
+"design" "// Value types that the other netlists do not reach, written into both encodings for comparison."
+"analysis type" "info.primitives"
+"analysis name" "prims"
+"analysis description" "Circuit Information"
+"xVecSorted" "unknown"
+"tolerance.relative" 0.00100000
+TYPE
+"primitive" STRUCT(
+"model" STRING *
+"oppoint" STRING *
+"output" STRING *
+"inst" STRING *
+"region" STRING *
+"terminals" STRING *
+) PROP(
+"key" "prim"
+)
+VALUE
+"bht" "primitive" (
+"mode type latb latl c10 qp0 ich hjci hf0 ahjei rhjei hjei hjei0 mcf tsf hfc hfe alit cjei0 vdei zei aljei cjci0 vdci zci vptci t0 dt0h tbvl tef0 gtfe thcs alhc fthc vces vdck rci0 vlim vpt tr vcbar icbar acbar delck alqf ibeis mbei ireis mrei ibcis mbci favl qavl rbi0 fdqr0 fgeo fqi fcrbi dvgbe zetahjei zetavgbe zetarth flcono alrth cjep0 vdep zep aljep ibeps mbep ireps mrep cjcx0 vdcx zcx vptcx ccox fbc ibcxs mbcx ceox rbx re rcx cjs0 vds zs vpts rsu csu iscs msc itss msf msr ibets abet kf af krbi kfre afre tnom vgb alb alfav alqav zetaci alvs alces aldck zetarbi zetarbx zetarcx zetare alt0 kt0 rth cth version updatelevel minr imax tmax tmin mvt0 vgc vge vgs zetact zetabet tbhrec tunode cbepar fbepar f1vg f2vg cfbe zetacx cbcpar fbcpar ajei ajep ahc flsh flcomp flnqs cornoise_flag compatible cscp0 vdsp zsp vptsp aick kavl alkav hcavl hvdavl "
+"region temp tk dtsh ic ib vbei qjei cjei vbep qjep cjep vbci qjci cjci vbcp qjcp cjcp vbcx qjcx cjcx vsc qjs cjs qdsu cdsu vcei tf qf qdei cdei qdci cdci qp it itf itr ibet gm si sfb srb sfc src rbi rbx rcx re rsu is ft pwr iavl ibei ibci ibep ijbcx ijsc ieei ie cbe cbc betar beta betadc betaac gmavl gms rpii rpix rmui rmux rmus ro ros cpii cpix cmui cmux ccs crbi vef ver vbe vbc vce gmi roi rb "
+"tempeff meff "
+"trise self_heating m isnoisy area "
+"off fwd rev sat "
+"c b e s t "
+)
+"resistor" "primitive" (
+"r rsh thresh rthresh rac l w etch etchl scaler tc1 tc2 tnom trise coeffs nonlinform symmetric kf af wdexp ldexp weexp wf leexp lf fexp mr mrl mrlp mrw mrwp mrlw1 mrlw1p mrlw2 mrlw2p c cj cjsw thick di cratio tc1c tc2c shrink scalec dtemp cap dw dlr cox capsw res ef bv_max "
+"trise v i res pwr "
+"leff weff reff ceff tempeff meff "
+"r l w lvl m scale resform tc1 tc1r tc2 tc2r isnoisy bv_max c tc1c tc2c rac scaler scalec dtemp cap "
+""
+"1 2 0 "
+)
+"vsource" "primitive" (
+""
+"v i pwr "
+"tempeff "
+"dc type fundname delay edgetype val0 val1 period rise fall width file offset scale stretch rms pwlfilter rolloff pwlbandwidth allbrkpts pwlperiod pwlperiodstart twidth sinedc ampl freq sinephase ampl2 freq2 sinephase2 fundname2 iqmodfiles fmmodindex fmmodfreq fmmodfiles ammodindex ammodoffset ammodfreq ammodphase damp freqvec amplvec phasevec maxharms td1 tau1 td2 tau2 expperiod data rptstart rpttimes td01 td10 ref jitter rjseed rjrms pjamp pjfreq pjtype seed taps lfsrtaps lfsrseed registerlength triggerthreshold triggerdelthresh triggerdirection transitionreference modulation pam4_mapping oscmacrofile freqscale amplscale noisefile noisetype noiseinterp isnoisy mag phase xfmag pacmag pacphase m tc1 tc2 tnom trise "
+""
+"p n ctlp ctln "
+)
+END

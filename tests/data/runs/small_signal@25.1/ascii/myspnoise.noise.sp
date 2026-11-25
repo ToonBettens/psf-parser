@@ -1,0 +1,372 @@
+HEADER
+"PSFversion" "1.00"
+"simulator" "spectre"
+"version" "25.1.0.181.isr3"
+"date" "6:29:26 PM, Thur Nov 19, 2026"
+"design" "// Small-signal analyses on linear circuits: noise, xf, pz, sp and stb."
+"analysis type" "noise.sp"
+"analysis name" "myspnoise"
+"analysis description" "S-Parameter Analysis `myspnoise': freq = (1 MHz -> 1 GHz)"
+"xVecSorted" "ascending"
+"tolerance.relative" 0.001
+"operating point producer" "myspnoise"
+"output" "probe"
+"output probe" "P2"
+"output probe type" "voltage"
+"ground" "0"
+"positive output signal" "b"
+"negative output signal" "0"
+"input probe" "P1"
+TYPE
+"sweep" FLOAT DOUBLE PROP(
+"key" "sweep"
+)
+"V/sqrt(Hz)" FLOAT DOUBLE PROP(
+"units" "V/sqrt(Hz)"
+"key" "noise"
+)
+"V^2/Hz" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+"key" "noise"
+)
+"V/V" FLOAT DOUBLE PROP(
+"units" "V/V"
+"key" "noise"
+)
+"Noise factor" FLOAT DOUBLE PROP(
+"units" "(V^2/Hz)/(V^2/Hz)"
+"key" "noise"
+)
+"dB" FLOAT DOUBLE PROP(
+"units" "dB"
+"key" "noise"
+)
+"P2" STRUCT(
+"rn" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+)
+"ext_file_noise" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+)
+"total" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+)
+) PROP(
+"key" "inst"
+"master" "port"
+)
+"P1" STRUCT(
+"rn" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+)
+"ext_file_noise" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+)
+"total" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+)
+) PROP(
+"key" "inst"
+"master" "port"
+)
+"resistor" STRUCT(
+"rn" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+"noise_type" "thermal"
+)
+"total" FLOAT DOUBLE PROP(
+"units" "V^2/Hz"
+)
+) PROP(
+"key" "inst"
+"master" "resistor"
+)
+"S" FLOAT DOUBLE PROP(
+"units" "S"
+"key" "noise"
+)
+"Ohm" FLOAT DOUBLE PROP(
+"units" "Ohm"
+"key" "noise"
+)
+"Ohm/Ohm" FLOAT DOUBLE PROP(
+"units" "Ohm/Ohm"
+"key" "noise"
+)
+SWEEP
+"freq" "sweep" PROP(
+"sweep_direction" 0
+"units" "Hz"
+"plot" 0
+"grid" 3
+)
+TRACE
+"P2" "P2"
+"P1" "P1"
+"Ro" "resistor"
+"R3" "resistor"
+"R2" "resistor"
+"R1" "resistor"
+"out" "V/sqrt(Hz)"
+"Fmin" "Noise factor"
+"NFmin" "dB"
+"F" "Noise factor"
+"NF" "dB"
+"Gopt" "S"
+"Bopt" "S"
+"RN" "Ohm"
+"NNR" "Ohm/Ohm"
+VALUE
+"freq" 1000000
+"P2" (
+3.5589381016652841e-19
+0
+3.5589381016652841e-19
+)
+"P1" (
+8.8973452541632102e-20
+0
+8.8973452541632102e-20
+)
+"Ro" (
+0
+0
+)
+"R3" (
+9.2087523380589228e-20
+9.2087523380589228e-20
+)
+"R2" (
+0
+0
+)
+"R1" (
+0
+0
+)
+"out" 7.3277198778934618e-10
+"Fmin" 1.0000000000000002
+"NFmin" 9.6432746655328694e-16
+"F" 2.0350000000000001
+"NF" 3.0856441356123883
+"Gopt" -8.5729418336942532e-43
+"Bopt" 1.3094229136298367e-22
+"RN" 51.749999999999986
+"NNR" 1.0349999999999997
+"freq" 3162277.6601683795
+"P2" (
+3.5589366966534543e-19
+0
+3.5589366966534543e-19
+)
+"P1" (
+8.8973417416336357e-20
+0
+8.8973417416336357e-20
+)
+"Ro" (
+0
+0
+)
+"R3" (
+9.2087487025908122e-20
+9.2087487025908122e-20
+)
+"R2" (
+0
+0
+)
+"R1" (
+0
+0
+)
+"out" 7.3277184314600266e-10
+"Fmin" 1.0000000000000007
+"NFmin" 2.8929823996598604e-15
+"F" 2.0350000000000001
+"NF" 3.0856441356123883
+"Gopt" -7.7156476503248203e-40
+"Bopt" -3.9282687408895082e-21
+"RN" 51.749999999999993
+"NNR" 1.0349999999999999
+"freq" 10000000.000000002
+"P2" (
+3.5589226465961704e-19
+0
+3.5589226465961704e-19
+)
+"P1" (
+8.8973066164904259e-20
+0
+8.8973066164904259e-20
+)
+"Ro" (
+0
+0
+)
+"R3" (
+9.2087123480675902e-20
+9.2087123480675902e-20
+)
+"R2" (
+0
+0
+)
+"R1" (
+0
+0
+)
+"out" 7.3277039671727818e-10
+"Fmin" 1.0000000202305317
+"NFmin" 8.7860081919347204e-08
+"F" 2.0349999999999993
+"NF" 3.0856441356123865
+"Gopt" 1.9546407239518441e-10
+"Bopt" 1.3617998301750307e-20
+"RN" 51.749999999999964
+"NNR" 1.0349999999999993
+"freq" 31622776.601683803
+"P2" (
+3.5587821521244847e-19
+0
+3.5587821521244847e-19
+)
+"P1" (
+8.8969553803112118e-20
+0
+8.8969553803112118e-20
+)
+"Ro" (
+0
+0
+)
+"R3" (
+9.2083488186221044e-20
+9.2083488186221044e-20
+)
+"R2" (
+0
+0
+)
+"R1" (
+0
+0
+)
+"out" 7.3275593290111382e-10
+"Fmin" 1.0000000202309314
+"NFmin" 8.7861817708751875e-08
+"F" 2.0350000000000006
+"NF" 3.0856441356123896
+"Gopt" 1.9546793264071647e-10
+"Bopt" -3.3521226588923813e-20
+"RN" 51.750000000000007
+"NNR" 1.0350000000000001
+"freq" 100000000.00000003
+"P2" (
+3.5573778172550441e-19
+0
+3.5573778172550441e-19
+)
+"P1" (
+8.8934445431376102e-20
+0
+8.8934445431376102e-20
+)
+"Ro" (
+0
+0
+)
+"R3" (
+9.2047151021474267e-20
+9.2047151021474267e-20
+)
+"R2" (
+0
+0
+)
+"R1" (
+0
+0
+)
+"out" 7.326113418302741e-10
+"Fmin" 1
+"NFmin" 0
+"F" 2.0349999999999993
+"NF" 3.0856441356123865
+"Gopt" 4.440892098500627e-18
+"Bopt" 1.6760613294461903e-20
+"RN" 51.749999999999993
+"NNR" 1.0349999999999999
+"freq" 316227766.01683807
+"P2" (
+3.5433951872290334e-19
+0
+3.5433951872290334e-19
+)
+"P1" (
+8.8584879680725835e-20
+0
+8.8584879680725835e-20
+)
+"Ro" (
+0
+0
+)
+"R3" (
+9.1685350469551235e-20
+9.1685350469551235e-20
+)
+"R2" (
+0
+0
+)
+"R1" (
+0
+0
+)
+"out" 7.3117012307203877e-10
+"Fmin" 1
+"NFmin" 0
+"F" 2.0349999999999993
+"NF" 3.0856441356123865
+"Gopt" 5.5511151231257838e-18
+"Bopt" -0
+"RN" 51.750000000000007
+"NNR" 1.0350000000000001
+"freq" 1000000000
+"P2" (
+3.4093858591958609e-19
+0
+3.4093858591958609e-19
+)
+"P1" (
+8.5234646479896521e-20
+0
+8.5234646479896521e-20
+)
+"Ro" (
+0
+0
+)
+"R3" (
+8.8217859106692897e-20
+8.8217859106692897e-20
+)
+"R2" (
+0
+0
+)
+"R1" (
+0
+0
+)
+"out" 7.1721063259420204e-10
+"Fmin" 1.0000000000000007
+"NFmin" 2.8929823996598604e-15
+"F" 2.0350000000000001
+"NF" 3.0856441356123883
+"Gopt" 4.440892098500627e-18
+"Bopt" -1.3408490635569528e-19
+"RN" 51.749999999999986
+"NNR" 1.0349999999999997
+END

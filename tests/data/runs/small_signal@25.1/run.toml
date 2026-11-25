@@ -1,0 +1,5 @@
+netlist    = "small_signal.scs"
+group      = "base"
+psfversion = "1.4.0"
+command    = "spectre small_signal.scs -format {format} -raw {outdir}"
+formats    = ["ascii", "binary"]
