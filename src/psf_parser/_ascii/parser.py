@@ -27,7 +27,7 @@ class AsciiParser:
 
     def __init__(self, path: str | Path):
         self.path = Path(path)
-        self.file = PsfFile(path=str(self.path))
+        self.file = PsfFile(path=self.path)
         self.values_at = 0
         self.values_row = 1
 

@@ -165,13 +165,13 @@ reads only the logFile at first and parses a data file when its values are asked
 
 ```python
 db = psf_parser.Database("raw/")
-print(db)                                # every analysis: path, axes, signals
-a = db["mysweep/mynestedsweep/ac2"]      # an Analysis
-s = a["out"]                             # a Signal
-s.values.shape                           # (3, 3, 61)
-[ax.name for ax in s.axes]               # ["R1:r", "C1:c", "freq"]
-s.at({"R1:r": 2000})                     # the Signal at R1:r = 2k, shape (3, 61)
-s[1, 2].file                             # the PsfFile behind one point
+print(db)  # every analysis: path, axes, signals
+a = db["mysweep/mynestedsweep/ac2"]  # an Analysis
+s = a["out"]  # a Signal
+s.values.shape  # (3, 3, 61)
+[ax.name for ax in s.axes]  # ["R1:r", "C1:c", "freq"]
+s.at({"R1:r": 2000})  # the Signal at R1:r = 2k, shape (3, 61)
+s[1, 2].file  # the PsfFile behind one point
 ```
 
 ### The objects

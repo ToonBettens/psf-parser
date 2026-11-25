@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable, Iterator, Mapping
 from dataclasses import dataclass, field
 from enum import Enum
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -139,7 +140,7 @@ class PsfFile:
     header: dict[str, Scalar] = field(default_factory=dict)
     types: dict[str, PsfType] = field(default_factory=dict)
     variables: dict[str, Variable] = field(default_factory=dict)
-    path: str | None = None
+    path: Path | None = None
 
     @property
     def sweep(self) -> Variable | None:

@@ -75,6 +75,7 @@ def _same(a: Any, b: Any, tolerance: float = 0.0) -> bool:
 def test_sample_loads(sample):
     file = psf_parser.load(sample.path)
     assert isinstance(file, psf_parser.PsfFile)
+    assert file.path == sample.path
     traces = [variable for variable in file if variable.role is Role.TRACE]
     # A paramset sweep's parent declares its traces but writes none (format-notes 1.2).
     traces_written = not traces or any(len(variable.values) > 0 for variable in traces)

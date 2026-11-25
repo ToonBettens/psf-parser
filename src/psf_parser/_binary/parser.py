@@ -52,7 +52,7 @@ class BinaryParser:
 
     def __init__(self, path: str | Path):
         self.path = Path(path)
-        self.file = PsfFile(path=str(self.path))
+        self.file = PsfFile(path=self.path)
         self.types_by_id: dict[int, PsfType] = {}
         self.variables_by_id: dict[int, Variable] = {}
         self.values_at = 0
