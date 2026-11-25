@@ -260,6 +260,7 @@ Loaded files keep their columns, and a Signal keeps its stacked array.
 ```
 src/psf_parser/
   __init__.py     the public names
+  _load.py        load: one file, either encoding
   errors.py       PsfParserError -> PsfParseError, PsfStructureError
   model.py        Kind, Role, PsfType, Variable, PsfFile
   database.py     the Database layer
