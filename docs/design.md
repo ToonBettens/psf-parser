@@ -207,9 +207,10 @@ the listing says so. A naming case that isn't handled yet thus gives an unexpect
 A Signal stacks the innermost column of every leaf file into one array. Its axes are the sweep levels from the outside in,
 then the innermost axis of the leaf files, so the shape follows the nesting in the netlist.
 
-- **Outer values come from the logFile.** Each child entry carries the value of its parent's sweep as a property. The parent
-  sweep file holds the same values with units, but not reliably (format-notes 4), so it only supplies the units, and
-  only where its values match the logFile's exactly. Otherwise `units` is `None`.
+- **Outer values are checked against the logFile.** Each child entry carries the value of its parent's sweep as a
+  property, but with six significant digits. The parent sweep file holds the values at full precision and with units,
+  but not reliably (format-notes 4.5). So the parent file's column is used where it agrees with the logFile to those
+  six digits, and otherwise the logFile's values are used, with `units` `None`.
 - **A level can sweep several parameters together.** A paramset sweep varies `rval` and `cval` row by row: three points,
   not a grid. Its axis holds both in `parameters`, and `values` raises, so nobody plots against one of them alone.
 - **A value with no inner axis** (a DC operating point, a stability margin) gives a Signal without one: no axes at all on
@@ -230,6 +231,11 @@ Carlo run usually differ in their time points. No single array holds them honest
 by value and not just by length, decides only whether `s.values` works. Where they differ it raises and says to index
 first, `s[0].values` works, and `s.ragged` says so beforehand. Nothing is padded or resampled.
 
+A ragged axis is still in `s.axes`, with its name and units, so `s.axes` has the same length whatever the data. Its
+`values` raise, as they do for an axis that sweeps several parameters. The same holds for a sweep level whose values
+differ between the points outside it. Positions on such an axis mean different things under different outer points,
+so it can be indexed only after the axes outside it.
+
 ### Partial runs
 
 A killed run leaves a logFile that names files which are missing or truncated. Opening still works. A missing or
@@ -248,10 +254,11 @@ Signal spans exactly one file, and raises otherwise, as `value` does for `values
 |---|---|
 | `Database(folder)` | the logFile |
 | `a.signals`, `a[name]` | the declarations of one leaf file |
-| `s.axes` | the logFile, and the parent sweep files for units |
+| `s.axes` | the logFile, the parent sweep files, and the sweep column of every leaf file, to see whether they agree |
 | `s.values`, `s[i]`, `s.at(...)` | the leaf files needed, through `psf_parser.load` |
 
-Loaded files keep their columns, and a Signal keeps its stacked array.
+Loaded files keep their columns, and a Signal keeps its stacked array. So a Signal over several files is held twice,
+once as columns and once stacked. A Signal over one file is a view of that file's column and costs nothing extra.
 
 ---
 

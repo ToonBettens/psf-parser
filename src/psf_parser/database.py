@@ -10,9 +10,11 @@ from functools import cached_property
 from pathlib import Path
 from types import MappingProxyType
 
+import numpy as np
+
 from psf_parser._load import load
-from psf_parser.errors import PsfParseError
-from psf_parser.model import Properties
+from psf_parser.errors import PsfParseError, PsfParserError
+from psf_parser.model import Properties, PsfFile
 
 LOGFILE = "logFile"
 ENTRY_FIELDS = ("analysisType", "dataFile", "parent", "sweepVariable")
@@ -20,6 +22,10 @@ ENTRY_FIELDS = ("analysisType", "dataFile", "parent", "sweepVariable")
 INDEX = re.compile(r"-\d+_")
 # Statements that only sweep and write no values of their own.
 SWEEP_TYPES = ("sweep", "montecarlo")
+# The logFile writes coordinates with six significant digits (format-notes 4.2).
+LOGFILE_TOLERANCE = 1e-5
+# Selecting by value allows for float rounding only.
+MATCH_TOLERANCE = 1e-9
 
 
 @dataclass(eq=False)
@@ -78,6 +84,8 @@ class Analysis:
         self.entry = root.entry
         self.has_path = path is not None
         self.path = path if path is not None else root.entry
+        self._loaded: dict[str, PsfFile | Exception] = {}
+        self._coordinates_of: dict[str, _Coordinates] = {}
 
     @cached_property
     def _leaves(self) -> tuple[_Node, ...]:
@@ -99,13 +107,15 @@ class Analysis:
         depth_nodes = [self._root]
         while depth_nodes and all(node.children for node in depth_nodes):
             parameters = depth_nodes[0].sweep_variables
-            name = parameters[0] if len(parameters) == 1 else self._level_name(len(levels), parameters)
             counts = tuple(len(node.children) for node in depth_nodes)
-            levels.append(_Level(name, parameters, counts))
+            levels.append(_Level(self._level_name(len(levels), parameters), parameters, counts))
             depth_nodes = [child for node in depth_nodes for child in node.children]
         return tuple(levels)
 
     def _level_name(self, depth: int, parameters: tuple[str, ...]) -> str:
+        """A level's parameter, or for several, the statement that sweeps them (or their names joined)."""
+        if len(parameters) == 1:
+            return parameters[0]
         if depth < len(self._statements):
             return self._statements[depth]
         return ",".join(parameters)
@@ -114,6 +124,80 @@ class Analysis:
     def missing(self) -> tuple[Path, ...]:
         """The data files the logFile names for this analysis that don't exist, checked once."""
         return tuple(leaf.data_file for leaf in self._leaves if not leaf.data_file.is_file())
+
+    @cached_property
+    def signals(self) -> Mapping[str, Signal]:
+        """Every quantity of this analysis by name, read-only.
+
+        The names come from the declarations of the first leaf file that can be read: its traces, or
+        its entries when it has no sweep.
+
+        Raises:
+            FileNotFoundError: No leaf file of this analysis exists.
+            PsfParseError: No leaf file can be read, and the first one exists but is damaged.
+        """
+        first_error: Exception | None = None
+        for leaf in self._leaves:
+            file = self._try_load(leaf)
+            if isinstance(file, Exception):
+                first_error = first_error or file
+                continue
+            variables = file.traces if file.sweep is not None else file.entries
+            return MappingProxyType({v.name: Signal(self, v.name) for v in variables})
+        if first_error is not None:
+            raise first_error
+        return MappingProxyType({})
+
+    def __getitem__(self, name: str) -> Signal:
+        try:
+            return self.signals[name]
+        except KeyError:
+            raise KeyError(f"no signal {name!r} in {self.path!r}; available: {', '.join(self.signals)[:200]}") from None
+
+    def _try_load(self, node: _Node) -> PsfFile | Exception:
+        """A data file, loaded once, or the error loading it raised."""
+        if node.entry not in self._loaded:
+            try:
+                self._loaded[node.entry] = load(node.data_file)
+            except (OSError, PsfParserError) as error:
+                self._loaded[node.entry] = error
+        return self._loaded[node.entry]
+
+    def _coordinates(self, node: _Node) -> _Coordinates:
+        """The coordinates of a node's children, from the logFile and, where it fits, the node's own file."""
+        if node.entry in self._coordinates_of:
+            return self._coordinates_of[node.entry]
+        written: dict[str, np.ndarray] | None = {}
+        for parameter in node.sweep_variables:
+            column = [child.properties.get(parameter) for child in node.children]
+            if any(not isinstance(value, int | float) for value in column):
+                written = None
+                break
+            written[parameter] = _read_only(np.array(column, dtype=float))
+        precise, units = self._parent_column(node, written)
+        coordinates = _Coordinates(written, precise, units)
+        self._coordinates_of[node.entry] = coordinates
+        return coordinates
+
+    def _parent_column(
+        self, node: _Node, written: dict[str, np.ndarray] | None
+    ) -> tuple[np.ndarray | None, str | None]:
+        """A sweep file's own column, with its units, when it agrees with the logFile (format-notes 4.5)."""
+        if written is None or len(written) != 1:
+            return None, None
+        ((parameter, values),) = written.items()
+        file = self._try_load(node)
+        if isinstance(file, Exception) or file.sweep is None or file.sweep.name != parameter:
+            return None, None
+        try:
+            column = file.sweep.values
+        except PsfParserError:
+            return None, None
+        if not isinstance(column, np.ndarray) or column.shape != values.shape or column.dtype.kind not in "iuf":
+            return None, None
+        if not np.allclose(column, values, rtol=LOGFILE_TOLERANCE, atol=0.0):
+            return None, None
+        return column, file.sweep.units
 
     def _describe(self) -> str:
         """The axes as far as the logFile knows them: each sweep level with its length, then the inner axis."""
@@ -130,6 +214,363 @@ class Analysis:
 
     def __repr__(self) -> str:
         return f"<Analysis {self.path}>"
+
+
+@dataclass(frozen=True)
+class _Coordinates:
+    """The coordinates of one sweep node's children.
+
+    Attributes:
+        written: Each parameter's values as the logFile writes them, or None when a child lacks one.
+        precise: The node's own file's column, when it agrees with `written`.
+        units: That column's units.
+    """
+
+    written: dict[str, np.ndarray] | None
+    precise: np.ndarray | None
+    units: str | None
+
+
+class Axis:
+    """One axis of a Signal: a sweep level, or the innermost axis of the leaf files.
+
+    An axis that differs between the points of the axes outside it is ragged: it keeps its name and
+    units, and its values raise until those outer axes are indexed.
+
+    Attributes:
+        name: The swept parameter, such as `"R1:r"` or `"freq"`, or for a level that sweeps several
+            parameters together, the sweep statement's name.
+        units: The units, or None where the run doesn't give them reliably.
+    """
+
+    def __init__(
+        self,
+        name: str,
+        units: str | None,
+        parameters: dict[str, np.ndarray] | None,
+        names: tuple[str, ...],
+        ragged: str | None = None,
+    ):
+        self.name = name
+        self.units = units
+        self._parameters = parameters
+        self._names = names
+        self._ragged = ragged
+
+    @property
+    def parameters(self) -> Mapping[str, np.ndarray]:
+        """Each swept parameter's values, one entry per point, read-only.
+
+        Raises:
+            ValueError: The axis is ragged.
+        """
+        if self._parameters is None:
+            raise ValueError(f"the {self.name} axis {self._ragged}; index the axes outside it first")
+        return MappingProxyType(self._parameters)
+
+    @property
+    def values(self) -> np.ndarray:
+        """The values at each point, for an axis that sweeps one parameter.
+
+        Raises:
+            ValueError: The axis sweeps several parameters together (use `parameters`), or is ragged.
+        """
+        parameters = self.parameters
+        if len(parameters) != 1:
+            raise ValueError(f"the {self.name} axis sweeps {', '.join(parameters)} together; use .parameters")
+        return next(iter(parameters.values()))
+
+    def __len__(self) -> int:
+        return len(next(iter(self.parameters.values())))
+
+    def __repr__(self) -> str:
+        units = f" [{self.units}]" if self.units else ""
+        size = f"{len(self)} points" if self._parameters is not None else "ragged"
+        return f"<Axis {self.name}{units}: {size}>"
+
+
+@dataclass
+class _Layout:
+    """How a Signal's leaf files are arranged: every axis, which are kept, and the leaves in order."""
+
+    axes: list[Axis]
+    kept: list[int]
+    leaves: list[_Node]
+    inner: int | None
+    problems: list[str]
+
+
+class Signal:
+    """One quantity of an analysis over all its files, such as `out[R1:r, C1:c, freq]`.
+
+    Indexing takes the kept axes in order: `s[1]` is the Signal at the second point of the first axis,
+    with the remaining axes. `at()` selects by value on any axis.
+
+    Attributes:
+        name: The quantity's name, as declared in the leaf files.
+        analysis: The analysis it belongs to.
+    """
+
+    def __init__(self, analysis: Analysis, name: str, picks: Mapping[int, int] | None = None):
+        self.analysis = analysis
+        self.name = name
+        self._picks = dict(picks or {})
+
+    @cached_property
+    def _layout(self) -> _Layout:
+        analysis = self.analysis
+        axes: list[Axis] = []
+        kept: list[int] = []
+        problems: list[str] = []
+        nodes = [analysis._root]
+        while any(node.children for node in nodes):
+            level = len(axes)
+            if not all(node.children for node in nodes):
+                swept = next(node for node in nodes if node.children)
+                name = analysis._level_name(level, swept.sweep_variables)
+                axes.append(Axis(name, None, None, swept.sweep_variables, "is not swept under every outer point"))
+                problems.append("its sweep tree is not equally deep everywhere")
+                kept.append(level)
+                nodes = [leaf for node in nodes for leaf in _leaves_under(node)]
+                break
+            axes.append(self._level_axis(nodes, level))
+            if level in self._picks:
+                nodes = [node.children[self._picks[level]] for node in nodes]
+            else:
+                kept.append(level)
+                nodes = [child for node in nodes for child in node.children]
+
+        inner = None
+        if nodes and nodes[0].sweep_variables:
+            inner = len(axes)
+            axes.append(self._inner_axis(nodes, problems))
+            if inner not in self._picks:
+                kept.append(inner)
+        for node in nodes:
+            problem = self._hole(node)
+            if problem:
+                problems.append(problem)
+        return _Layout(axes, kept, nodes, inner, problems)
+
+    def _level_axis(self, nodes: list[_Node], level: int) -> Axis:
+        """The axis of one sweep level, from every node at that depth."""
+        parameters = nodes[0].sweep_variables
+        name = self.analysis._level_name(level, parameters)
+        if any(node.sweep_variables != parameters for node in nodes):
+            return Axis(name, None, None, parameters, "sweeps different parameters under different outer points")
+        coordinates = [self.analysis._coordinates(node) for node in nodes]
+        written = [c.written for c in coordinates if c.written is not None]
+        if len(written) != len(coordinates):
+            return Axis(name, None, None, parameters, "has no coordinates in the logFile")
+        first = written[0]
+        if any(not _same_columns(first, w) for w in written[1:]):
+            return Axis(name, None, None, parameters, "differs between the points of the axes outside it")
+        precise = [c.precise for c in coordinates if c.precise is not None]
+        units = {c.units for c in coordinates}
+        agree = len(precise) == len(coordinates) and all(np.array_equal(p, precise[0]) for p in precise)
+        if agree and len(units) == 1:
+            return Axis(name, units.pop(), {parameters[0]: precise[0]}, parameters)
+        return Axis(name, None, first, parameters)
+
+    def _inner_axis(self, leaves: list[_Node], problems: list[str]) -> Axis:
+        """The innermost axis, shared by every leaf file that can be read, or ragged."""
+        name = leaves[0].sweep_variables[0]
+        columns = []
+        units = None
+        for leaf in leaves:
+            file = self.analysis._try_load(leaf)
+            if isinstance(file, Exception) or file.sweep is None:
+                continue
+            try:
+                column = file.sweep.values
+            except PsfParserError as error:
+                problems.append(f"{leaf.data_file.name} can't be read ({error})")
+                continue
+            if isinstance(column, np.ndarray):
+                columns.append(column)
+                units = file.sweep.units
+        if not columns:
+            return Axis(name, None, None, (name,), "could not be read from any leaf file")
+        first = columns[0]
+        if any(len(c) != len(first) or not np.array_equal(c, first) for c in columns[1:]):
+            lengths = sorted({len(c) for c in columns})
+            detail = f" ({lengths[0]} to {lengths[-1]} points)" if len(lengths) > 1 else ""
+            return Axis(name, units, None, (name,), f"differs between the leaf files{detail}")
+        return Axis(name, units, {name: first}, (name,))
+
+    def _hole(self, leaf: _Node) -> str | None:
+        """Why a leaf can't give this Signal's values, or None."""
+        if leaf.is_empty_sweep:
+            return f"{leaf.entry} holds no results"
+        file = self.analysis._try_load(leaf)
+        if isinstance(file, FileNotFoundError):
+            return f"{leaf.data_file.name} is missing"
+        if isinstance(file, Exception):
+            return f"{leaf.data_file.name} can't be read ({file})"
+        if self.name not in file:
+            return f"{leaf.data_file.name} has no {self.name!r}"
+        return None
+
+    @property
+    def axes(self) -> tuple[Axis, ...]:
+        """The remaining axes, outermost first: the sweep levels, then the leaf files' own sweep."""
+        layout = self._layout
+        return tuple(layout.axes[k] for k in layout.kept)
+
+    @property
+    def ragged(self) -> bool:
+        """Whether `values` would fail: an axis differs between outer points, or a leaf file is missing."""
+        return bool(self._problems())
+
+    def _problems(self) -> list[str]:
+        layout = self._layout
+        ragged_axes = [
+            f"the {layout.axes[k].name} axis {layout.axes[k]._ragged}" for k in layout.kept if layout.axes[k]._ragged
+        ]
+        return ragged_axes + layout.problems
+
+    @cached_property
+    def units(self) -> str | None:
+        """The units of the quantity, from the first leaf file that can be read."""
+        for leaf in self._layout.leaves:
+            file = self.analysis._try_load(leaf)
+            if not isinstance(file, Exception) and self.name in file:
+                return file[self.name].units
+        return None
+
+    @cached_property
+    def values(self) -> np.ndarray:
+        """Every value as one read-only array, shaped like the axes.
+
+        Raises:
+            ValueError: The Signal is ragged; the message names the reason, and indexing the outer axes
+                first gives Signals that aren't.
+            PsfParseError: A leaf file's values are damaged.
+        """
+        problems = self._problems()
+        if problems:
+            hint = "; index the outer axes first, such as s[0]" if len(self.axes) > 1 else ""
+            raise ValueError(f"{self.name!r} in {self.analysis.path!r} is not one array: {'; '.join(problems)}{hint}")
+        layout = self._layout
+        columns = []
+        for leaf in layout.leaves:
+            file = self.analysis._try_load(leaf)
+            assert not isinstance(file, Exception)
+            column = file[self.name].values
+            if not isinstance(column, np.ndarray):
+                raise ValueError(f"{self.name!r} holds {file[self.name].type.kind.value} values, not numbers")
+            if layout.inner is None:
+                column = column[0]
+            elif layout.inner in self._picks:
+                column = column[self._picks[layout.inner]]
+            columns.append(column)
+        shape = tuple(len(layout.axes[k]) for k in layout.kept)
+        if len(columns) == 1 and isinstance(columns[0], np.ndarray):
+            # One leaf: a view of the file's own column, so it isn't held twice.
+            return _read_only(columns[0].reshape(shape))
+        return _read_only(np.array(columns).reshape(shape))
+
+    @property
+    def value(self) -> int | float | complex:
+        """The single value, when the Signal holds exactly one.
+
+        Raises:
+            ValueError: It holds more than one value.
+        """
+        values = self.values
+        if values.size != 1:
+            raise ValueError(f"{self.name!r} holds {values.size} values; use .values")
+        return values.item()
+
+    @property
+    def files(self) -> np.ndarray:
+        """The path of every leaf file, shaped like the outer axes, including files that are missing.
+
+        Raises:
+            ValueError: An outer axis is ragged, so the paths have no common shape.
+        """
+        layout = self._layout
+        outer = [k for k in layout.kept if k != layout.inner]
+        if any(layout.axes[k]._ragged for k in outer) or len(layout.leaves) != _product(
+            len(layout.axes[k]) for k in outer
+        ):
+            raise ValueError(f"the files of {self.name!r} have no common shape; index the outer axes first")
+        paths = np.empty(len(layout.leaves), dtype=object)
+        paths[:] = [leaf.data_file for leaf in layout.leaves]
+        return paths.reshape(tuple(len(layout.axes[k]) for k in outer))
+
+    @property
+    def file(self) -> PsfFile:
+        """The loaded file behind this Signal, when it spans exactly one.
+
+        Raises:
+            ValueError: The Signal spans several files.
+            FileNotFoundError: The file is missing.
+            PsfParseError: The file can't be read.
+        """
+        leaves = self._layout.leaves
+        if len(leaves) != 1:
+            raise ValueError(f"{self.name!r} spans {len(leaves)} files; index the outer axes first, or use .files")
+        file = self.analysis._try_load(leaves[0])
+        if isinstance(file, Exception):
+            raise file
+        return file
+
+    def __getitem__(self, key: int | tuple[int, ...]) -> Signal:
+        positions = key if isinstance(key, tuple) else (key,)
+        kept = self._layout.kept
+        if len(positions) > len(kept):
+            raise IndexError(f"{self.name!r} has {len(kept)} axes; got {len(positions)} indices")
+        picks = dict(self._picks)
+        for level, position in zip(kept, positions, strict=False):
+            if not isinstance(position, int | np.integer) or isinstance(position, bool):
+                raise TypeError(f"index a Signal with integers, not {type(position).__name__}; slice .values instead")
+            picks[level] = self._checked_position(level, int(position))
+        return Signal(self.analysis, self.name, picks)
+
+    def at(self, selection: Mapping[str, float]) -> Signal:
+        """The Signal at given values of some of its axes, matched to within float rounding.
+
+        Args:
+            selection: Axis or parameter names, such as `{"R1:r": 2000}`, each with one value. For an axis
+                that sweeps several parameters, any one of them selects the point.
+
+        Returns:
+            The Signal without the selected axes.
+
+        Raises:
+            KeyError: A name is not an axis or parameter of this Signal.
+            ValueError: A value matches no point or several, or its axis is ragged.
+        """
+        signal = self
+        for name, target in selection.items():
+            layout = signal._layout
+            level = next((k for k in layout.kept if name == layout.axes[k].name or name in layout.axes[k]._names), None)
+            if level is None:
+                names = ", ".join(layout.axes[k].name for k in layout.kept)
+                raise KeyError(f"no axis or parameter {name!r} in {self.name!r}; axes: {names}")
+            axis = layout.axes[level]
+            parameters = axis.parameters
+            values = parameters.get(name)
+            if values is None:
+                values = axis.values
+            position = _match(name, values, target)
+            picks = dict(signal._picks)
+            picks[level] = position
+            signal = Signal(self.analysis, self.name, picks)
+        return signal
+
+    def _checked_position(self, level: int, position: int) -> int:
+        axis = self._layout.axes[level]
+        size = len(axis)
+        if not -size <= position < size:
+            raise IndexError(f"index {position} is out of range for the {axis.name} axis of {size} points")
+        return position % size
+
+    def __repr__(self) -> str:
+        units = f" [{self.units}]" if self.units else ""
+        axes = ", ".join(axis.name for axis in self.axes)
+        return f"<Signal {self.name}{units}: {axes or 'no axes'}>"
 
 
 class Database:
@@ -294,3 +735,37 @@ def _unique_paths(candidates: dict[str, str | None]) -> dict[str, str | None]:
             return paths
         for entry in clashing:
             paths[entry] = None
+
+
+def _leaves_under(node: _Node) -> list[_Node]:
+    """Every entry without children under a node, in logFile order."""
+    if not node.children:
+        return [node]
+    return [leaf for child in node.children for leaf in _leaves_under(child)]
+
+
+def _same_columns(a: dict[str, np.ndarray], b: dict[str, np.ndarray]) -> bool:
+    return a.keys() == b.keys() and all(np.array_equal(a[name], b[name]) for name in a)
+
+
+def _product(sizes) -> int:
+    result = 1
+    for size in sizes:
+        result *= size
+    return result
+
+
+def _read_only(array: np.ndarray) -> np.ndarray:
+    array.setflags(write=False)
+    return array
+
+
+def _match(name: str, values: np.ndarray, target: float) -> int:
+    """The one position where an axis has the target value, to within float rounding."""
+    hits = np.flatnonzero(np.isclose(values, target, rtol=MATCH_TOLERANCE, atol=0.0))
+    if len(hits) == 1:
+        return int(hits[0])
+    nearest = values[np.argsort(np.abs(values - target), kind="stable")[:3]]
+    found = "no point matches" if len(hits) == 0 else f"{len(hits)} points match"
+    listed = ", ".join(f"{value:g}" for value in nearest)
+    raise ValueError(f"{name} = {target:g}: {found}; nearest: {listed}")

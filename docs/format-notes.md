@@ -395,6 +395,9 @@ back together.
 
 A Monte Carlo run has the same structure, with `iteration` as the swept parameter.
 
+The logFile writes these coordinates with six significant digits (`"C1:c" 1.00000e-06`, `"R1:r" 1000.00`),
+observed in every run, while the parent sweep file (4.5) writes them at full precision.
+
 `sweepVariable` holds one name, except for a paramset sweep, which lists every parameter it varies
 (`("rval" "cval")`). Each child then carries all of them as properties.
 
@@ -408,6 +411,8 @@ A root's entry name is `<name>-<analysisType>`, and the names inside a tree add 
   `mysweep-000_pss2-td.pss`.
 - pac and pxf sidebands are a level of their own (`sweepVariable` `harmonic`), whose leaves add the sideband after a
   dot: `mypac.-2-pac`.
+  Each sideband file's `freq` column is that sideband's own frequency, `|f + k * fund|` (1999000 Hz for 1 kHz
+  at sideband -2 with a 1 MHz fundamental), so the sidebands share no frequency axis.
 
 One analysis can give several roots: qpss gives `myqpss-fi.qpss` and `myqpss-fd.qpss`, stb gives `mystb-stb` and
 `mystb-margin.stb`.
@@ -427,7 +432,8 @@ A sweep's own data file (`mysweep_ac2.sweep`) has the swept parameter as its swe
 - A paramset level's sweep column is an index 1, 2, 3, named after the paramset in 25.1 (`pairs`) and
   `iteration_mypairs` in 21.1. Its declared traces `rval` and `cval` have no values (1.2).
 
-So the logFile is the reliable source of a level's values.
+So the logFile is the reliable source of which values a level has, and the parent file only adds precision
+and units where it agrees with it.
 
 ---
 

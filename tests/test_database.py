@@ -196,4 +196,4 @@ def test_entry_inside_a_tree_names_its_analysis():
 def test_entry_name_given_as_path_suggests_entry():
     db = psf_parser.Database(RUNS_DIR / "rc_lowpass@25.1" / "ascii")
     with pytest.raises(KeyError, match=r"use db\.entry\(\)"):
-        db["mysweep_ac2-sweep"]
+        _ = db["mysweep_ac2-sweep"]
