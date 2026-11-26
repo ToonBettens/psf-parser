@@ -9,12 +9,14 @@ from dataclasses import dataclass, field
 from functools import cached_property
 from pathlib import Path
 from types import MappingProxyType
+from typing import Any
 
 import numpy as np
 
+from psf_parser._columns import as_column
 from psf_parser._load import load
 from psf_parser.errors import PsfParseError, PsfParserError
-from psf_parser.model import Properties, PsfFile
+from psf_parser.model import Kind, Properties, PsfFile, Variable
 
 LOGFILE = "logFile"
 ENTRY_FIELDS = ("analysisType", "dataFile", "parent", "sweepVariable")
@@ -304,17 +306,19 @@ class Signal:
     """One quantity of an analysis over all its files, such as `out[R1:r, C1:c, freq]`.
 
     Indexing takes the kept axes in order: `s[1]` is the Signal at the second point of the first axis,
-    with the remaining axes. `at()` selects by value on any axis.
+    with the remaining axes. `at()` selects by value on any axis. A struct quantity, such as a noise
+    contribution per device, has `fields`, and `field(name)` is again a Signal.
 
     Attributes:
         name: The quantity's name, as declared in the leaf files.
         analysis: The analysis it belongs to.
     """
 
-    def __init__(self, analysis: Analysis, name: str, picks: Mapping[int, int] | None = None):
+    def __init__(self, analysis: Analysis, name: str, picks: Mapping[int, int] | None = None, field: str | None = None):
         self.analysis = analysis
         self.name = name
         self._picks = dict(picks or {})
+        self._field = field
 
     @cached_property
     def _layout(self) -> _Layout:
@@ -409,6 +413,8 @@ class Signal:
             return f"{leaf.data_file.name} can't be read ({file})"
         if self.name not in file:
             return f"{leaf.data_file.name} has no {self.name!r}"
+        if self._field is not None and self._field not in _field_names(file[self.name]):
+            return f"{leaf.data_file.name} has no field {self._field!r} in {self.name!r}"
         return None
 
     @property
@@ -429,24 +435,61 @@ class Signal:
         ]
         return ragged_axes + layout.problems
 
-    @cached_property
-    def units(self) -> str | None:
-        """The units of the quantity, from the first leaf file that can be read."""
+    def _declaration(self) -> Variable | None:
+        """The quantity as the first leaf file that can be read declares it."""
         for leaf in self._layout.leaves:
             file = self.analysis._try_load(leaf)
             if not isinstance(file, Exception) and self.name in file:
-                return file[self.name].units
+                return file[self.name]
         return None
+
+    @cached_property
+    def units(self) -> str | None:
+        """The units of the quantity, or of the field, from the first leaf file that can be read."""
+        variable = self._declaration()
+        if variable is None:
+            return None
+        if self._field is None:
+            return variable.units
+        return next((f.units for f in variable.type.fields if f.name == self._field), None)
+
+    @cached_property
+    def fields(self) -> tuple[str, ...]:
+        """The field names of a struct quantity, in declared order, and empty for any other."""
+        variable = self._declaration()
+        if variable is None or self._field is not None:
+            return ()
+        return _field_names(variable)
+
+    def field(self, name: str) -> Signal:
+        """One field of a struct quantity, over the same axes.
+
+        Args:
+            name: A field name from `fields`, such as `"rn"` for a noise contribution.
+
+        Returns:
+            The field as a Signal of its own.
+
+        Raises:
+            KeyError: The quantity has no field of that name.
+        """
+        if name not in self.fields:
+            raise KeyError(f"{self.name!r} has no field {name!r}; fields: {', '.join(self.fields) or 'none'}")
+        return Signal(self.analysis, self.name, self._picks, name)
 
     @cached_property
     def values(self) -> np.ndarray:
         """Every value as one read-only array, shaped like the axes.
 
+        Numbers come as numeric arrays, strings as object arrays of the same shape.
+
         Raises:
-            ValueError: The Signal is ragged; the message names the reason, and indexing the outer axes
-                first gives Signals that aren't.
+            ValueError: The quantity is a struct (use `field()`), or the Signal is ragged; the message
+                names the reason, and indexing the outer axes first gives Signals that aren't.
             PsfParseError: A leaf file's values are damaged.
         """
+        if self.fields:
+            raise ValueError(f"{self.name!r} is a struct with fields {', '.join(self.fields)}; use .field(name)")
         problems = self._problems()
         if problems:
             hint = "; index the outer axes first, such as s[0]" if len(self.axes) > 1 else ""
@@ -456,9 +499,7 @@ class Signal:
         for leaf in layout.leaves:
             file = self.analysis._try_load(leaf)
             assert not isinstance(file, Exception)
-            column = file[self.name].values
-            if not isinstance(column, np.ndarray):
-                raise ValueError(f"{self.name!r} holds {file[self.name].type.kind.value} values, not numbers")
+            column = self._column(file[self.name])
             if layout.inner is None:
                 column = column[0]
             elif layout.inner in self._picks:
@@ -468,10 +509,29 @@ class Signal:
         if len(columns) == 1 and isinstance(columns[0], np.ndarray):
             # One leaf: a view of the file's own column, so it isn't held twice.
             return _read_only(columns[0].reshape(shape))
-        return _read_only(np.array(columns).reshape(shape))
+        if all(isinstance(column, np.ndarray | np.generic) and column.dtype != object for column in columns):
+            return _read_only(np.array(columns).reshape(shape))
+        stacked = np.empty((len(columns), *np.shape(columns[0])), dtype=object)
+        for index, column in enumerate(columns):
+            stacked[index] = column
+        return _read_only(stacked.reshape(shape))
+
+    def _column(self, variable: Variable) -> np.ndarray:
+        """This Signal's column of one leaf file, as an array: a field's values for a struct."""
+        if self._field is None:
+            values = variable.values
+        else:
+            kind = next(f.kind for f in variable.type.fields if f.name == self._field)
+            values = as_column(kind, [item[self._field] for item in variable.values])
+        if isinstance(values, np.ndarray):
+            return values
+        objects = np.empty(len(values), dtype=object)
+        for index, value in enumerate(values):
+            objects[index] = value
+        return objects
 
     @property
-    def value(self) -> int | float | complex:
+    def value(self) -> Any:
         """The single value, when the Signal holds exactly one.
 
         Raises:
@@ -526,7 +586,7 @@ class Signal:
             if not isinstance(position, int | np.integer) or isinstance(position, bool):
                 raise TypeError(f"index a Signal with integers, not {type(position).__name__}; slice .values instead")
             picks[level] = self._checked_position(level, int(position))
-        return Signal(self.analysis, self.name, picks)
+        return Signal(self.analysis, self.name, picks, self._field)
 
     def at(self, selection: Mapping[str, float]) -> Signal:
         """The Signal at given values of some of its axes, matched to within float rounding.
@@ -557,7 +617,7 @@ class Signal:
             position = _match(name, values, target)
             picks = dict(signal._picks)
             picks[level] = position
-            signal = Signal(self.analysis, self.name, picks)
+            signal = Signal(self.analysis, self.name, picks, self._field)
         return signal
 
     def _checked_position(self, level: int, position: int) -> int:
@@ -568,9 +628,10 @@ class Signal:
         return position % size
 
     def __repr__(self) -> str:
+        field = f" field {self._field}" if self._field else ""
         units = f" [{self.units}]" if self.units else ""
         axes = ", ".join(axis.name for axis in self.axes)
-        return f"<Signal {self.name}{units}: {axes or 'no axes'}>"
+        return f"<Signal {self.name}{field}{units}: {axes or 'no axes'}>"
 
 
 class Database:
@@ -769,3 +830,10 @@ def _match(name: str, values: np.ndarray, target: float) -> int:
     found = "no point matches" if len(hits) == 0 else f"{len(hits)} points match"
     listed = ", ".join(f"{value:g}" for value in nearest)
     raise ValueError(f"{name} = {target:g}: {found}; nearest: {listed}")
+
+
+def _field_names(variable: Variable) -> tuple[str, ...]:
+    """The field names of a struct variable, and empty for any other."""
+    if variable.type.kind is not Kind.STRUCT:
+        return ()
+    return tuple(f.name for f in variable.type.fields)
